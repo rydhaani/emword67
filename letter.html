@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta charset="utf-8">
+<title>A letter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap">
+<style>
+:root { --space: #02040d; --cyan: #4ff6ff; --accent: #ff4f9a; --ink: #fff; --font-mono: "Courier Prime", "Courier New", Courier, monospace; color-scheme: dark; }
+html, body { min-height: 100%; margin: 0; }
+body { background: var(--space); color: var(--ink); font-family: var(--font-mono); }
+main { min-height: 100vh; min-height: 100dvh; box-sizing: border-box; display: grid; place-items: center; text-align: center;
+  padding-block: 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.box { display: flex; flex-direction: column; gap: 14px; align-items: center; border: 2px solid var(--accent); border-radius: 14px; padding: 28px 24px; max-width: 360px;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 40%, transparent); }
+h1 { margin: 0; font-size: 34px; text-shadow: 0 0 12px var(--accent); }
+p { margin: 0; line-height: 1.5; opacity: .85; }
+a { color: var(--space); background: var(--accent); text-decoration: none; font-weight: 700; padding: 10px 18px; border-radius: 8px; }
+</style>
+<main><div class="box"><h1>A letter</h1><p>Coming soon ♥</p><a href="index.html">◀ BACK</a></div></main>
+
+</html>

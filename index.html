@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta charset="utf-8">
+<title>For You</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap">
+<style>
+/* Layout: one centred column in starry space — glowing title, then three glowing doors (stacked on phones, a row of three on wide screens). */
+:root {
+  --space: #02040d;
+  --cyan: #4ff6ff;
+  --cyan-dim: rgba(79, 246, 255, 0.5);
+  --cyan-faint: rgba(79, 246, 255, 0.12);
+  --pink: #ff4f9a;
+  --green: #3dff8a;
+  --panel: rgba(2, 18, 26, 0.88);
+  --ink: #ffffff;
+  --ink-soft: rgba(255, 255, 255, 0.78);
+  --font-mono: "Courier Prime", "Courier New", Courier, monospace;
+  color-scheme: dark;
+}
+[hidden] { display: none !important; }
+html, body { min-height: 100%; margin: 0; }
+body { background: var(--space); color: var(--ink); font-family: var(--font-mono); -webkit-tap-highlight-color: transparent; }
+#stars { position: fixed; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+
+main {
+  position: relative; min-height: 100vh; min-height: 100dvh; box-sizing: border-box;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 36px;
+  padding-block: calc(env(safe-area-inset-top, 0px) + 48px) calc(env(safe-area-inset-bottom, 0px) + 40px);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+header { text-align: center; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.eyebrow { font-size: 13px; letter-spacing: .22em; text-transform: uppercase; color: var(--cyan); text-shadow: 0 0 8px var(--cyan-dim); }
+h1 {
+  margin: 0; font: 700 clamp(52px, 15vw, 104px)/1 var(--font-mono); letter-spacing: -.02em;
+  text-shadow: 0 0 10px var(--cyan), 0 0 34px var(--cyan-dim), 0 0 70px rgba(255, 79, 154, .45);
+}
+h1 .heart { color: var(--pink); text-shadow: 0 0 12px var(--pink), 0 0 40px var(--pink); display: inline-block; animation: beat 2.4s ease-in-out infinite; }
+@keyframes beat { 0%, 60%, 100% { transform: scale(1); } 10% { transform: scale(1.18); } 20% { transform: scale(1); } 30% { transform: scale(1.12); } }
+.lede { margin: 0; max-width: 34ch; font-size: 17px; line-height: 1.5; color: var(--ink-soft); text-wrap: balance; }
+
+.doors { width: 100%; max-width: 980px; display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 760px) { .doors { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
+
+.door {
+  position: relative; display: flex; flex-direction: column; gap: 14px; min-width: 0;
+  padding: 22px 22px 20px; border-radius: 16px; text-decoration: none; color: var(--ink);
+  background: var(--panel); border: 2px solid var(--cyan-dim);
+  box-shadow: 0 0 14px var(--cyan-faint), inset 0 0 14px var(--cyan-faint);
+  transition: transform .25s ease, border-color .25s, box-shadow .25s;
+}
+.door:hover, .door:focus-visible { transform: translateY(-4px); border-color: var(--cyan); box-shadow: 0 0 22px var(--cyan-dim), inset 0 0 16px var(--cyan-faint); outline: none; }
+.door:active { transform: translateY(-1px) scale(.99); }
+.door .top { display: flex; align-items: center; gap: 14px; }
+.door svg { flex: none; width: 52px; height: 52px; }
+.door h2 { margin: 0; font: 700 26px/1.1 var(--font-mono); color: var(--ink); text-shadow: 0 0 10px var(--cyan-dim); }
+.door .tag { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--cyan); margin-bottom: 3px; }
+.door p { margin: 0; font-size: 16px; line-height: 1.45; color: var(--ink-soft); }
+.door .go { margin-top: auto; align-self: flex-start; font: 700 15px var(--font-mono); letter-spacing: .06em; color: var(--space); background: var(--cyan); border-radius: 8px; padding: 9px 16px; box-shadow: 0 0 12px var(--cyan-dim); }
+.door.pink { border-color: rgba(255, 79, 154, .55); box-shadow: 0 0 14px rgba(255, 79, 154, .14), inset 0 0 14px rgba(255, 79, 154, .1); }
+.door.pink:hover, .door.pink:focus-visible { border-color: var(--pink); box-shadow: 0 0 22px rgba(255, 79, 154, .5), inset 0 0 16px rgba(255, 79, 154, .12); }
+.door.pink .tag { color: var(--pink); }
+.door.pink .go { background: var(--pink); color: var(--ink); box-shadow: 0 0 12px rgba(255, 79, 154, .6); }
+.door.green .tag { color: var(--green); }
+.door.green .go { background: var(--green); box-shadow: 0 0 12px rgba(61, 255, 138, .55); }
+.door.green { border-color: rgba(61, 255, 138, .5); }
+.door.green:hover, .door.green:focus-visible { border-color: var(--green); box-shadow: 0 0 22px rgba(61, 255, 138, .45), inset 0 0 16px rgba(61, 255, 138, .1); }
+
+footer { font-size: 13px; color: var(--cyan); opacity: .7; letter-spacing: .08em; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+
+<canvas id="stars"></canvas>
+<main>
+  <header>
+    <div class="eyebrow">Made with love, just for</div>
+    <h1>you<span class="heart">♥</span></h1>
+    <p class="lede">Three little things I made for you. Open them in any order.</p>
+  </header>
+
+  <nav class="doors" aria-label="Pages">
+    <a class="door pink" href="letter.html">
+      <div class="top">
+        <svg viewBox="0 0 52 52" aria-hidden="true">
+          <rect x="4" y="11" width="44" height="30" rx="4" fill="none" stroke="#ff4f9a" stroke-width="2.5"/>
+          <path d="M5 13 L26 29 L47 13" fill="none" stroke="#ff4f9a" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M26 37.5c-3.6-2.6-6-4.6-6-7a3.1 3.1 0 0 1 6-1.2 3.1 3.1 0 0 1 6 1.2c0 2.4-2.4 4.4-6 7z" fill="#ff4f9a"/>
+        </svg>
+        <div><div class="tag">From me to you</div><h2>A letter</h2></div>
+      </div>
+      <p>Everything I wanted to say, written down properly.</p>
+      <span class="go">OPEN IT ▶</span>
+    </a>
+
+    <a class="door" href="map.html">
+      <div class="top">
+        <svg viewBox="0 0 52 52" aria-hidden="true">
+          <circle cx="26" cy="26" r="20" fill="none" stroke="#4ff6ff" stroke-width="2.5"/>
+          <ellipse cx="26" cy="26" rx="9" ry="20" fill="none" stroke="#4ff6ff" stroke-width="1.6"/>
+          <path d="M7 19h38M7 33h38" fill="none" stroke="#4ff6ff" stroke-width="1.6"/>
+          <circle cx="35" cy="17" r="3.2" fill="#3dff8a"/>
+        </svg>
+        <div><div class="tag">A little game</div><h2>LoveTap</h2></div>
+      </div>
+      <p>Spin the globe, find ten cities, see what they make.</p>
+      <span class="go">PLAY ▶</span>
+    </a>
+
+    <a class="door green" href="list.html">
+      <div class="top">
+        <svg viewBox="0 0 52 52" aria-hidden="true">
+          <rect x="8" y="5" width="36" height="42" rx="4" fill="none" stroke="#3dff8a" stroke-width="2.5"/>
+          <path d="M15 17h22M15 26h22M15 35h14" fill="none" stroke="#3dff8a" stroke-width="2.2" stroke-linecap="round"/>
+          <circle cx="38" cy="38" r="7" fill="#02040d" stroke="#3dff8a" stroke-width="2"/>
+          <path d="M36 35v6l5-3z" fill="#3dff8a"/>
+        </svg>
+        <div><div class="tag">Pictures &amp; songs</div><h2>The list</h2></div>
+      </div>
+      <p>Photos, songs, and all the little things.</p>
+      <span class="go">LOOK ▶</span>
+    </a>
+  </nav>
+
+  <footer>made with ♥</footer>
+</main>
+
+<script>
+(function stars() {
+  const cv = document.getElementById("stars"), x = cv.getContext("2d");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W, H, dpr, list = [];
+  function size() {
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    list = Array.from({ length: Math.round(W * H / 1500) }, () => ({ x: rnd() * W, y: rnd() * H, r: rnd() < .9 ? .6 : 1.2, a: .2 + rnd() * .6, s: rnd() * 6, v: .5 + rnd() * 1.5, c: rnd() < .08 ? "#ff9cc6" : rnd() < .15 ? "#9ffaff" : "#d9ecff" }));
+  }
+  function draw(t) {
+    x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    x.fillStyle = "#02040d"; x.fillRect(0, 0, W, H);
+    for (const s of list) {
+      x.globalAlpha = reduce ? s.a : s.a * (.55 + .45 * Math.sin(t / 1000 * s.v + s.s));
+      x.fillStyle = s.c; x.beginPath(); x.arc(s.x, s.y, s.r, 0, Math.PI * 2); x.fill();
+    }
+    x.globalAlpha = 1;
+    if (!reduce) requestAnimationFrame(draw);
+  }
+  window.addEventListener("resize", () => { size(); if (reduce) draw(0); });
+  size(); requestAnimationFrame(draw);
+})();
+</script>
+
+</html>
