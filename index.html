@@ -142,6 +142,49 @@ main.page { justify-content: flex-start; gap: 0; padding-block: calc(env(safe-ar
 .shot.empty svg { width: 22px; height: 22px; color: rgba(255,255,255,.35); }
 .strip .stamp { position: absolute; left: 0; right: 0; bottom: 9px; text-align: center; font-size: 11px; letter-spacing: .08em; color: #8a8478; font-weight: 500; }
 
+
+/* phone: the letter's photo strip prints out of a slot bar at the end */
+.dispense { display: none; }
+@media (max-width: 979px) {
+  #letter .strips-row { display: none; }
+  .dispense { display: flex; flex-direction: column; align-items: center; margin: 56px auto 0; width: 220px; }
+}
+.dispense .bar {
+  position: relative; z-index: 2; width: 220px; height: 34px; border-radius: 17px; cursor: pointer;
+  background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+  border: 1px solid rgba(255,255,255,.14); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.12);
+  display: grid; place-items: center;
+}
+.dispense .bar::before { /* the slot */
+  content: ""; width: 186px; height: 6px; border-radius: 3px; background: #05060c;
+  box-shadow: inset 0 2px 3px rgba(0,0,0,.95), 0 1px 0 rgba(255,255,255,.1);
+}
+.dispense .bar::after { /* little light that blinks while printing */
+  content: ""; position: absolute; right: 12px; top: 50%; width: 5px; height: 5px; margin-top: -2.5px; border-radius: 50%;
+  background: var(--green); opacity: .25; transition: opacity .3s;
+}
+.dispense.printing .bar::after { opacity: 1; box-shadow: 0 0 8px var(--green); animation: blink .5s steps(1) infinite; }
+@keyframes blink { 50% { opacity: .2; } }
+.dispense .tray { width: 200px; margin-top: -18px; padding: 0 0 40px; overflow: hidden; display: flex; justify-content: center; }
+.dispense .strip { --tilt: 0deg; position: static; transform: translateY(-102%); transition: none; }
+.dispense.out .strip { animation: print 3.2s cubic-bezier(.3,.7,.3,1) forwards; }
+.dispense.done .strip { transform: translateY(0) rotate(-1.5deg); animation: none; }
+@keyframes print {
+  0%   { transform: translateY(-102%); }
+  14%  { transform: translateY(-80%); }
+  24%  { transform: translateY(-80%); }
+  38%  { transform: translateY(-56%); }
+  48%  { transform: translateY(-56%); }
+  62%  { transform: translateY(-32%); }
+  72%  { transform: translateY(-32%); }
+  88%  { transform: translateY(3%) rotate(-.5deg); }
+  94%  { transform: translateY(-1%) rotate(-1.8deg); }
+  100% { transform: translateY(0) rotate(-1.5deg); }
+}
+.dispense .hint { margin-top: -26px; font-size: 13px; color: var(--ink-faint); transition: opacity .4s; }
+.dispense.done .hint { opacity: 0; }
+
 /* ---------- vinyl player ---------- */
 .player {
   position: fixed; z-index: 10; top: calc(env(safe-area-inset-top, 0px) + 16px); right: max(16px, env(safe-area-inset-right, 0px));
@@ -251,6 +294,11 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
         <p>a second paragraph can sit here, about the year you've had and what you hope the next one holds.</p>
         <p>and a short last one, to close it off softly.</p>
         <p class="sign">with all my love,<span>me</span></p>
+      </div>
+      <div class="dispense" id="dispense">
+        <div class="bar" role="button" tabindex="0" aria-label="print the photo strip again"></div>
+        <div class="tray"><div class="strip" data-strip="letter-left"></div></div>
+        <div class="hint">printing…</div>
       </div>
     </article>
   </div>
@@ -590,6 +638,30 @@ route();
   }
   showTrack(); setPlaying(false); $("npT").textContent = "pyaru <3"; $("npA").textContent = "tap the record";
   requestAnimationFrame(tick);
+})();
+
+/* phone: print the strip when the slot bar scrolls into view */
+(function dispenser() {
+  const box = $("dispense"), bar = box.querySelector(".bar");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let busy = false;
+  function print() {
+    if (busy) return;
+    if (reduce) { box.classList.add("done"); return; }
+    busy = true;
+    box.classList.remove("done", "out"); void box.offsetWidth;
+    box.classList.add("out", "printing");
+    try { navigator.vibrate && navigator.vibrate([25, 420, 25, 420, 25, 420, 50]); } catch (e) {}
+    setTimeout(() => { box.classList.remove("printing"); }, 2700);
+    setTimeout(() => { box.classList.remove("out"); box.classList.add("done"); busy = false; }, 3300);
+  }
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting && !box.classList.contains("done") && !box.classList.contains("out")) print();
+  }), { rootMargin: "0px 0px -18% 0px", threshold: 1 });
+  io.observe(bar);
+  bar.addEventListener("click", print);
+  bar.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); print(); } });
+  window.addEventListener("hashchange", () => { if (location.hash === "#letter" && !busy) box.classList.remove("done", "out"); });
 })();
 </script>
 
