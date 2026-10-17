@@ -9,7 +9,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
 <style>
-/* Layout: a centred column floating in a galaxy that drifts with the cursor; title, one line, three glass cards (stacked on phones, a row on wide screens). */
+/* Layout: one page, three views (home / letter / list) floating in a galaxy that drifts with the cursor.
+   Home: title + three glass cards. Letter and list: a reading column with photobooth strips at the sides (below it on phones).
+   A tiny vinyl player sits in the top-right corner on every view. */
 :root {
   --space: #03040b;
   --ink: #f5f6fb;
@@ -87,13 +89,125 @@ h1 .heart svg, .mini svg { display: block; width: 100%; height: 100%; }
 .arrow svg { width: 14px; height: 14px; }
 .card:hover .arrow, .card:focus-visible .arrow { background: var(--accent); border-color: var(--accent); color: var(--space); transform: translateX(2px); }
 
+
+/* ---------- letter + list views ---------- */
+main.page { justify-content: flex-start; gap: 0; padding-block: calc(env(safe-area-inset-top, 0px) + 28px) calc(env(safe-area-inset-bottom, 0px) + 64px); }
+.back {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+  color: var(--ink-soft); font-size: 15px; padding: 9px 16px 9px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--glass); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  transition: color .2s, border-color .2s;
+}
+.back svg { width: 14px; height: 14px; }
+.back:hover, .back:focus-visible { color: var(--ink); border-color: rgba(255,255,255,.3); outline: none; }
+.spread { width: 100%; max-width: 1080px; margin-top: 40px; display: grid; grid-template-columns: 1fr; gap: 40px; align-items: start; }
+@media (min-width: 980px) { .spread { grid-template-columns: 168px minmax(0, 1fr) 168px; gap: 56px; } .spread .strip-l { order: 0; } .spread .sheet { order: 1; } .spread .strip-r { order: 2; } }
+.strips-row { display: contents; }
+@media (max-width: 979px) {
+  .strips-row { display: flex; gap: 20px; justify-content: center; order: 2; padding-top: 8px; }
+  .strips-row .strip { width: min(42vw, 168px); }
+}
+.sheet { min-width: 0; max-width: 620px; justify-self: center; width: 100%; }
+.sheet .kicker { font-size: 15px; color: var(--ink-soft); margin-bottom: 10px; }
+.sheet h1.title { font-size: clamp(40px, 9vw, 64px); font-weight: 600; letter-spacing: -.045em; line-height: 1; margin: 0 0 32px; text-shadow: none; text-wrap: balance; }
+.letter-body p { margin: 0 0 1.15em; font-size: 19px; line-height: 1.65; color: rgba(245,246,251,.88); font-weight: 400; letter-spacing: -.005em; }
+.letter-body .sign { margin-top: 2em; color: var(--ink); }
+.letter-body .sign span { display: block; font-size: 26px; font-weight: 600; letter-spacing: -.03em; margin-top: 4px; color: var(--pink); }
+
+.wins { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.wins li {
+  display: grid; grid-template-columns: 22px 1fr; gap: 14px; align-items: baseline;
+  padding: 16px 2px; border-bottom: 1px solid var(--line); font-size: 19px; line-height: 1.45; color: rgba(245,246,251,.9);
+  opacity: 0; transform: translateY(8px); animation: rise .6s cubic-bezier(.2,.8,.2,1) forwards; animation-delay: calc(var(--i) * 60ms);
+}
+.wins li:first-child { border-top: 1px solid var(--line); }
+.wins li svg { width: 14px; height: 14px; color: var(--green); transform: translateY(1px); }
+.wins li:nth-child(3n+2) svg { color: var(--pink); }
+.wins li:nth-child(3n) svg { color: var(--cyan); }
+@keyframes rise { to { opacity: 1; transform: none; } }
+
+/* photobooth strip */
+.strip {
+  --tilt: -2.5deg;
+  width: 168px; box-sizing: border-box; padding: 10px 10px 34px; position: relative;
+  background: #f6f3ee; border-radius: 3px; transform: rotate(var(--tilt));
+  box-shadow: 0 18px 40px -14px rgba(0,0,0,.8), 0 2px 6px rgba(0,0,0,.4);
+  display: flex; flex-direction: column; gap: 8px; transition: transform .4s cubic-bezier(.2,.8,.2,1);
+}
+.strip.r { --tilt: 2.2deg; }
+@media (min-width: 980px) { .strip { position: sticky; top: 110px; } .strip.r { margin-top: 170px; top: 270px; } }
+.strip:hover { transform: rotate(0deg) scale(1.03); }
+.shot { aspect-ratio: 4 / 3; width: 100%; background: #1b1d27 center / cover no-repeat; overflow: hidden; position: relative; }
+.shot.empty { background: linear-gradient(145deg, #2a2338, #1a2b3a); display: grid; place-items: center; }
+.shot.empty svg { width: 22px; height: 22px; color: rgba(255,255,255,.35); }
+.strip .stamp { position: absolute; left: 0; right: 0; bottom: 9px; text-align: center; font-size: 11px; letter-spacing: .08em; color: #8a8478; font-weight: 500; }
+
+/* ---------- vinyl player ---------- */
+.player {
+  position: fixed; z-index: 10; top: calc(env(safe-area-inset-top, 0px) + 16px); right: max(16px, env(safe-area-inset-right, 0px));
+  width: 132px; box-sizing: border-box; padding: 14px 12px 10px; border-radius: 22px;
+  background: rgba(14, 15, 26, .55); border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: 0 12px 40px -16px rgba(0,0,0,.8);
+  display: flex; flex-direction: column; align-items: center; gap: 9px; user-select: none; -webkit-user-select: none;
+}
+.vinyl-wrap { position: relative; width: 92px; height: 92px; }
+.vinyl {
+  width: 100%; height: 100%; border-radius: 50%; cursor: grab; touch-action: none; position: relative;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 30%, rgba(255,255,255,.05) 30.5% 31%, transparent 31.5%),
+    repeating-radial-gradient(circle at 50% 50%, #0c0c10 0 1.4px, #17171d 1.6px 2.6px),
+    #111;
+  box-shadow: 0 6px 18px -6px rgba(0,0,0,.9), inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.vinyl:active { cursor: grabbing; }
+.vinyl::after { /* light sheen that stays still while the record turns */
+  content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+  background: conic-gradient(from 210deg, transparent 0 8%, rgba(255,255,255,.13) 13%, transparent 20% 58%, rgba(255,255,255,.08) 63%, transparent 70%);
+}
+.sheen { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; background: conic-gradient(from 210deg, transparent 0 8%, rgba(255,255,255,.14) 13%, transparent 20% 58%, rgba(255,255,255,.09) 63%, transparent 70%); }
+.vinyl::after { display: none; }
+.label {
+  position: absolute; inset: 31%; border-radius: 50%; background: var(--pink) center / cover no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.3);
+}
+.label::after { content: ""; position: absolute; left: 50%; top: 50%; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 50%; background: #0b0b10; box-shadow: inset 0 0 0 1px rgba(255,255,255,.2); }
+.np { width: 100%; text-align: center; min-width: 0; line-height: 1.25; }
+.np .t { font-size: 12px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -.01em; }
+.np .a { font-size: 11px; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ctrls { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.ctrls button {
+  width: 30px; height: 30px; border-radius: 50%; border: 0; padding: 0; cursor: pointer; display: grid; place-items: center;
+  background: transparent; color: var(--ink-soft); transition: background .2s, color .2s, transform .15s;
+}
+.ctrls button:hover, .ctrls button:focus-visible { color: var(--ink); background: rgba(255,255,255,.08); outline: none; }
+.ctrls button:active { transform: scale(.92); }
+.ctrls button svg { width: 15px; height: 15px; }
+.ctrls .pp { width: 34px; height: 34px; background: var(--ink); color: #0b0b10; }
+.ctrls .pp:hover, .ctrls .pp:focus-visible { background: #fff; color: #0b0b10; }
+.ctrls .pp svg { width: 14px; height: 14px; }
+.player .note { font-size: 10px; color: var(--ink-faint); text-align: center; line-height: 1.3; }
+.player a.sp { font-size: 10px; color: var(--ink-faint); text-decoration: none; display: inline-flex; gap: 4px; align-items: center; }
+.player a.sp:hover { color: var(--ink-soft); }
+.player a.sp svg { width: 10px; height: 10px; }
+#spotifyHost { position: fixed; left: 0; bottom: 0; width: 300px; height: 80px; opacity: 0; pointer-events: none; z-index: -1; overflow: hidden; }
+@media (max-width: 640px) {
+  .player { flex-direction: row; width: auto; max-width: calc(100vw - 32px); padding: 8px 10px 8px 8px; border-radius: 999px; gap: 8px; }
+  .vinyl-wrap { width: 46px; height: 46px; }
+  .label::after { width: 6px; height: 6px; margin: -3px 0 0 -3px; }
+  .np { display: none; }
+  .player .foot { display: none; }
+  main#home { padding-top: calc(env(safe-area-inset-top, 0px) + 96px); }
+  main.page { padding-top: calc(env(safe-area-inset-top, 0px) + 24px); }
+}
+
 footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
 
 <canvas id="sky"></canvas>
-<main>
+<main id="home" class="view">
   <header>
     <div class="eyebrow">made with love, just for</div>
     <h1>you<span class="heart" aria-label="love"><svg viewBox="0 0 24 22" aria-hidden="true"><path fill="currentColor" d="M12 21.5C5.6 16.6 1 12.5 1 7.4 1 3.9 3.7 1.2 7.1 1.2c2 0 3.8 1 4.9 2.6 1.1-1.6 2.9-2.6 4.9-2.6 3.4 0 6.1 2.7 6.1 6.2 0 5.1-4.6 9.2-11 14.1z"/></svg></span></h1>
@@ -101,7 +215,7 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
   </header>
 
   <nav class="cards" aria-label="pages">
-    <a class="card pink" href="letter.html">
+    <a class="card pink" href="#letter">
       <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3.5 7l8.5 6 8.5-6"/></svg></span>
       <span class="text"><h2>a letter</h2><p>everything i wanted to say, written down.</p></span>
       <span class="arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span>
@@ -111,7 +225,7 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
       <span class="text"><h2>lovetap</h2><p>spin the globe, find ten cities, see what they make.</p></span>
       <span class="arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span>
     </a>
-    <a class="card green" href="list.html">
+    <a class="card green" href="#list">
       <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V6l11-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg></span>
       <span class="text"><h2>the list</h2><p>photos, songs, and all the little things.</p></span>
       <span class="arrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg></span>
@@ -120,6 +234,57 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
 
   <footer>made with <span class="mini"><svg viewBox="0 0 24 22" aria-hidden="true"><path fill="currentColor" d="M12 21.5C5.6 16.6 1 12.5 1 7.4 1 3.9 3.7 1.2 7.1 1.2c2 0 3.8 1 4.9 2.6 1.1-1.6 2.9-2.6 4.9-2.6 3.4 0 6.1 2.7 6.1 6.2 0 5.1-4.6 9.2-11 14.1z"/></svg></span></footer>
 </main>
+
+<main id="letter" class="view page" hidden>
+  <a class="back" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 8H3M7 4L3 8l4 4"/></svg>back</a>
+  <div class="spread">
+    <div class="strips-row">
+      <div class="strip strip-l" data-strip="letter-left"></div>
+      <div class="strip r strip-r" data-strip="letter-right"></div>
+    </div>
+    <article class="sheet">
+      <div class="kicker">a letter, for your birthday</div>
+      <h1 class="title">happy birthday</h1>
+      <div class="letter-body">
+        <p>dear you,</p>
+        <p>this is where your birthday letter goes. it's a placeholder for now, so the real words will replace these lines once they're ready.</p>
+        <p>a second paragraph can sit here, about the year you've had and what you hope the next one holds.</p>
+        <p>and a short last one, to close it off softly.</p>
+        <p class="sign">with all my love,<span>me</span></p>
+      </div>
+    </article>
+  </div>
+</main>
+
+<main id="list" class="view page" hidden>
+  <a class="back" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 8H3M7 4L3 8l4 4"/></svg>back</a>
+  <div class="spread">
+    <div class="strips-row">
+      <div class="strip strip-l" data-strip="list-left"></div>
+      <div class="strip r strip-r" data-strip="list-right"></div>
+    </div>
+    <article class="sheet">
+      <div class="kicker">this past year, you</div>
+      <h1 class="title">look at everything you did</h1>
+      <ul class="wins" id="wins"></ul>
+    </article>
+  </div>
+</main>
+
+<aside class="player" id="player" aria-label="music player">
+  <div class="vinyl-wrap">
+    <div class="vinyl" id="vinyl" role="button" tabindex="0" aria-label="play or pause. drag to spin the record."><div class="label" id="vlabel"></div></div>
+    <div class="sheen"></div>
+  </div>
+  <div class="np"><div class="t" id="npT">pyaru &lt;3</div><div class="a" id="npA">tap the record</div></div>
+  <div class="ctrls">
+    <button id="prev" aria-label="previous song"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M3 2.5h1.6v11H3zM13.5 2.8v10.4L5.6 8z"/></svg></button>
+    <button id="pp" class="pp" aria-label="play"><svg id="ppIcon" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M4.5 2.5v11l9-5.5z"/></svg></button>
+    <button id="next" aria-label="next song"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M11.4 2.5H13v11h-1.6zM2.5 2.8v10.4L10.4 8z"/></svg></button>
+  </div>
+  <div class="foot"><a class="sp" id="spLink" href="https://open.spotify.com/playlist/5yFl03PWSwDg5IioamWvBj" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8" fill="currentColor"/><path d="M4 6.2c2.7-.8 5.6-.6 8 .7M4.5 8.4c2.2-.6 4.5-.4 6.5.6M5 10.5c1.7-.4 3.4-.3 5 .5" stroke="#0b0b10" stroke-width="1.1" fill="none" stroke-linecap="round"/></svg>on spotify</a></div>
+</aside>
+<div id="spotifyHost"><div id="spotifyEmbed"></div></div>
 <canvas id="trail"></canvas>
 
 <script>
@@ -260,6 +425,171 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
   function frame(now) { drawSky(now); drawTrail(now); requestAnimationFrame(frame); }
   window.addEventListener("resize", build);
   build(); requestAnimationFrame(frame);
+})();
+</script>
+
+<script>
+/* ======== edit these ======== */
+const WINS = [ // things they achieved this year, one per line
+  "achievement one goes here",
+  "a small win goes here",
+  "a big win goes here",
+  "another thing you did",
+  "something you're proud of",
+  "something i'm proud of you for",
+  "one more for the list",
+  "and the last one",
+];
+const PHOTOS = { // photo file names, four per strip. leave "" to show an empty frame.
+  "letter-left":  ["", "", "", ""],
+  "letter-right": ["", "", "", ""],
+  "list-left":    ["", "", "", ""],
+  "list-right":   ["", "", "", ""],
+};
+const STRIP_STAMP = "oct 2026";
+const PLAYLIST_COVER = "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da844191b38f44c50481316df903";
+const TRACKS = [ // from the spotify playlist "pyaru <3"
+  ["4k1Gg1MrXu0cmmTwEsGBdt","Ayi Bahaar","Kashmir"],["6pnSZHW0QYr6OYd3oXLXL5","Khushnaseebi","Abdul Hannan"],
+  ["2B4lvZL0abyWIpDyDb2GsF","Aankhen Milaney Waaley","Nazia Hassan, Zoheb Hassan"],["7MvqWEX8jOr68uebuOgpOF","Bolay","Uzair Jaswal, Rohail Hyatt"],
+  ["4Nu6be6Wgvqq60hFoRMqsc","Dooriyan","Pritam, Mohit Chauhan"],["4JkeZCRHUiB43GMdU4WaSC","Sajni","Strings"],
+  ["1WN4uNclrDuczTO3bCr8s1","Be My Baby","The Ronettes"],["78Lcy4BnXzj2nCj3CPSuWV","madham","Maanu, Annural Khalid"],
+  ["66PLKaormrIKFhtCQDLLEJ","Ankhon KO Ankhon Ne","Junaid Jamshaid"],["2fPWsvvLodVUKYCeFaQuA4","doriyaan","Maanu, Asim Azhar, Talal Qureshi"],
+  ["35PKfoynRpVFoAUE3D5Kc6","Work Song","Hozier"],["30SxaBvjxjuIzl6nnDJObx","NFWMB","Hozier"],
+  ["7uttm8Iurm5uK67Vr9G2Sp","Almost (Sweet Music)","Hozier"],["3pHkh7d0lzM2AldUtz2x37","The Archer","Taylor Swift"],
+  ["0KSOLEBixnBYIKNHF1VbzF","Hona Tha Pyar","Atif Aslam, Hadiqa Kiani"],["1HCdems7PQZRj42QDWLA0A","Timeless (Taylor's Version)","Taylor Swift"],
+  ["04J4SELey0LIRh0ckQunWV","Bewajah","Nabeel Shaukat Ali"],["1LFNOKVaFVBFCiLwz8Ay4O","Ahista Ahista","Kazinama, Musarrat Nazir"],
+  ["1w7QUlz2elKsMHZRQ7scxS","Cigarette","Alfie Jukes"],["3H43T5swYywvcdCBFiDgW6","Manwa Laage","Shreya Ghoshal, Arijit Singh"],
+  ["6fUu2yo2Mp09VFJ1znnbRv","Saathia","Omar Mukhtar"],["7qEUFOVcxRI19tbT68JcYK","Everything Has Changed (Taylor's Version)","Taylor Swift, Ed Sheeran"],
+  ["0q5e5KtUOhYQujmhLP0pKd","Dooron Dooron","Paresh Pahuja"],["4IOXp1xFiMh5FtSEGim4CO","Soul Mate","flora cash"],
+  ["4dCWlNirQcPRaLHMCJGeJT","Hisaar Mein","Umer Farooq"],["0ZGfGStyu8s02fzpmmOF2l","Pyaar Mein","Murtaza Qizilbash"],
+  ["3Dy4REq8O09IlgiwuHQ3sk","Waterloo","ABBA"],["1U2L6NW89IIy6Gw63C4eP2","Only You","The Flying Pickets"],
+  ["7Aobt67JnaF7qN8jCCKvHq","Do You Want To Know A Secret","The Beatles"],["43h4FonpCeaaURpFpiQsf9","Hold Me Now","Thompson Twins"],
+];
+/* ============================ */
+
+const $ = id => document.getElementById(id);
+
+/* list + strips */
+$("wins").innerHTML = WINS.map((w, i) => `<li style="--i:${i}"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0c.5 4.2 3.8 7.5 8 8-4.2.5-7.5 3.8-8 8-.5-4.2-3.8-7.5-8-8 4.2-.5 7.5-3.8 8-8z"/></svg><span></span></li>`).join("");
+[...$("wins").children].forEach((li, i) => { li.querySelector("span").textContent = WINS[i]; });
+document.querySelectorAll("[data-strip]").forEach(el => {
+  const urls = PHOTOS[el.dataset.strip] || ["", "", "", ""];
+  urls.forEach(u => {
+    const d = document.createElement("div");
+    d.className = "shot" + (u ? "" : " empty");
+    if (u) d.style.backgroundImage = `url("${u}")`; else d.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13.5" r="3.5"/></svg>';
+    el.appendChild(d);
+  });
+  const st = document.createElement("div"); st.className = "stamp"; st.textContent = STRIP_STAMP; el.appendChild(st);
+});
+
+/* views: #letter and #list, everything else is home. same page, so the music keeps going */
+function route() {
+  const v = (location.hash || "").replace("#", "");
+  const name = v === "letter" || v === "list" ? v : "home";
+  document.querySelectorAll(".view").forEach(m => { m.hidden = m.id !== name; });
+  document.title = name === "home" ? "for you" : name === "letter" ? "a letter" : "the list";
+  if (name === "list") document.querySelectorAll(".wins li").forEach(li => { li.style.animation = "none"; li.offsetHeight; li.style.animation = ""; });
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll(".back").forEach(a => a.addEventListener("click", e => { e.preventDefault(); history.pushState("", "", location.pathname); route(); }));
+window.addEventListener("hashchange", route);
+route();
+
+/* ---------- vinyl player ---------- */
+(function player() {
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const vinyl = $("vinyl"), label = $("vlabel");
+  label.style.backgroundImage = `url("${PLAYLIST_COVER}")`;
+  let idx = 0, playing = false, controller = null, pendingPlay = false, lastPos = 0, advanced = false, apiFailed = false;
+  let angle = 0, spin = 0, drag = null;  // spin: degrees per frame
+  const RPM = 360 / (60 * 1.8);          // one turn every ~1.8s while playing
+
+  function showTrack() {
+    const [, t, a] = TRACKS[idx];
+    $("npT").textContent = t; $("npA").textContent = a;
+    $("npT").title = `${t} · ${a}`;
+    $("spLink").href = `https://open.spotify.com/track/${TRACKS[idx][0]}`;
+  }
+  function setPlaying(p) {
+    playing = p;
+    $("pp").setAttribute("aria-label", p ? "pause" : "play");
+    $("ppIcon").innerHTML = p ? '<path fill="currentColor" d="M4 2.5h3v11H4zM9 2.5h3v11H9z"/>' : '<path fill="currentColor" d="M4.5 2.5v11l9-5.5z"/>';
+  }
+  function load(i, autoplay) {
+    idx = (i + TRACKS.length) % TRACKS.length; advanced = false; lastPos = 0;
+    showTrack();
+    if (!controller) { pendingPlay = autoplay; return; }
+    pendingPlay = autoplay;
+    controller.loadUri("spotify:track:" + TRACKS[idx][0]);
+    if (autoplay) setTimeout(() => { if (pendingPlay) { controller.play(); } }, 600);
+  }
+  function toggle() {
+    if (apiFailed) { $("npA").textContent = "music plays on the live site"; return; }
+    if (!controller) { pendingPlay = !pendingPlay; setPlaying(pendingPlay); $("npA").textContent = "loading…"; return; }
+    if (!loadedOnce) { loadedOnce = true; load(idx, true); setPlaying(true); return; }
+    controller.togglePlay(); setPlaying(!playing);
+  }
+  let loadedOnce = false;
+  $("pp").onclick = toggle;
+  $("prev").onclick = () => { loadedOnce = true; if (lastPos > 3000 && controller) { controller.seek(0); return; } load(idx - 1, true); setPlaying(true); };
+  $("next").onclick = () => { loadedOnce = true; load(idx + 1, true); setPlaying(true); };
+
+  // spotify embed, kept invisible: our buttons drive it
+  window.onSpotifyIframeApiReady = (IFrameAPI) => {
+    IFrameAPI.createController($("spotifyEmbed"), { uri: "spotify:track:" + TRACKS[0][0], width: 300, height: 80 }, (c) => {
+      controller = c;
+      c.addListener("ready", () => { if (pendingPlay) { pendingPlay = false; c.play(); } });
+      c.addListener("playback_update", (e) => {
+        const d = e.data || {};
+        if (typeof d.isPaused === "boolean" && !d.isBuffering) setPlaying(!d.isPaused);
+        if (typeof d.position === "number") lastPos = d.position;
+        if (d.duration && d.position >= d.duration - 400 && d.position > 0 && !advanced) { advanced = true; load(idx + 1, true); }
+      });
+      if (pendingPlay) { loadedOnce = true; load(idx, true); }
+      else showTrack();
+    });
+  };
+  const s = document.createElement("script");
+  s.src = "https://open.spotify.com/embed/iframe-api/v1"; s.async = true;
+  s.onerror = () => { apiFailed = true; };
+  document.head.appendChild(s);
+  setTimeout(() => { if (!controller) apiFailed = true; }, 12000);
+
+  // the record: spins while playing, tap to play/pause, drag to spin it yourself
+  const centre = () => { const r = vinyl.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+  const ang = (x, y) => { const [cx, cy] = centre(); return Math.atan2(y - cy, x - cx) * 180 / Math.PI; };
+  vinyl.addEventListener("pointerdown", e => {
+    vinyl.setPointerCapture(e.pointerId);
+    drag = { a: ang(e.clientX, e.clientY), moved: 0, t: performance.now(), v: 0 };
+  });
+  vinyl.addEventListener("pointermove", e => {
+    if (!drag) return;
+    const a = ang(e.clientX, e.clientY);
+    let d = a - drag.a; if (d > 180) d -= 360; if (d < -180) d += 360;
+    angle += d; drag.a = a; drag.moved += Math.abs(d); drag.v = d;
+  });
+  const end = () => {
+    if (!drag) return;
+    if (drag.moved < 6 && performance.now() - drag.t < 500) toggle();
+    else spin = Math.max(-25, Math.min(25, drag.v));   // let it coast
+    drag = null;
+  };
+  vinyl.addEventListener("pointerup", end);
+  vinyl.addEventListener("pointercancel", end);
+  vinyl.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
+
+  function tick() {
+    if (!drag) {
+      const target = playing && !reduce ? RPM : 0;
+      spin += (target - spin) * 0.04;
+      angle += spin;
+    }
+    vinyl.style.transform = `rotate(${angle}deg)`;
+    requestAnimationFrame(tick);
+  }
+  showTrack(); setPlaying(false); $("npT").textContent = "pyaru <3"; $("npA").textContent = "tap the record";
+  requestAnimationFrame(tick);
 })();
 </script>
 
