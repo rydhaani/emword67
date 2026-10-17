@@ -7,7 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Caveat:wght@500&display=swap">
 <style>
 /* Layout: one page, three views (home / letter / list) floating in a galaxy that drifts with the cursor.
    Home: title + three glass cards. Letter and list: a reading column with photobooth strips at the sides (below it on phones).
@@ -101,7 +101,7 @@ main.page { justify-content: flex-start; gap: 0; padding-block: calc(env(safe-ar
 .back svg { width: 14px; height: 14px; }
 .back:hover, .back:focus-visible { color: var(--ink); border-color: rgba(255,255,255,.3); outline: none; }
 .spread { width: 100%; max-width: 1080px; margin-top: 40px; display: grid; grid-template-columns: 1fr; gap: 40px; align-items: start; }
-@media (min-width: 980px) { .spread { grid-template-columns: 168px minmax(0, 1fr) 168px; gap: 56px; } .spread .strip-l { order: 0; } .spread .sheet { order: 1; } .spread .strip-r { order: 2; } }
+@media (min-width: 980px) { .spread { grid-template-columns: 168px minmax(0, 1fr) 168px; gap: 56px; } .spread .strip-l { grid-column: 1; grid-row: 1; } .spread .sheet { grid-column: 2; grid-row: 1; } }
 .strips-row { display: contents; }
 @media (max-width: 979px) {
   .strips-row { display: flex; gap: 20px; justify-content: center; order: 2; padding-top: 8px; }
@@ -118,13 +118,43 @@ main.page { justify-content: flex-start; gap: 0; padding-block: calc(env(safe-ar
 .wins li {
   display: grid; grid-template-columns: 22px 1fr; gap: 14px; align-items: baseline;
   padding: 16px 2px; border-bottom: 1px solid var(--line); font-size: 19px; line-height: 1.45; color: rgba(245,246,251,.9);
-  opacity: 0; transform: translateY(8px); animation: rise .6s cubic-bezier(.2,.8,.2,1) forwards; animation-delay: calc(var(--i) * 60ms);
+  position: relative; opacity: 0; transform: translateY(10px); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1);
+}
+.wins li.seen { opacity: 1; transform: none; }
+.wins li > span { min-width: 0; }
+.count { margin: 0 0 18px; font-size: 14px; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+.count b { color: var(--ink-soft); font-weight: 500; }
+
+/* polaroids that get tossed in next to their point */
+.pol {
+  --r: -4deg; --x: 0px;
+  width: min(230px, 66vw); box-sizing: border-box; padding: 10px 10px 12px; background: #fbfaf6; border-radius: 2px;
+  box-shadow: 0 22px 44px -16px rgba(0,0,0,.85), 0 3px 8px rgba(0,0,0,.35);
+  opacity: 0; transform: translate(var(--x), -36px) rotate(calc(var(--r) + 16deg)) scale(1.14);
+  pointer-events: none;
+}
+.pol.in { animation: toss .85s cubic-bezier(.2, 1.25, .35, 1) forwards; pointer-events: auto; }
+@keyframes toss { 60% { opacity: 1; } to { opacity: 1; transform: translate(var(--x), 0) rotate(var(--r)) scale(1); } }
+.pol .ph { aspect-ratio: 1 / 1; background: #1b1d27 center / cover no-repeat; }
+.pol .ph.empty { background: linear-gradient(150deg, #2b2440, #18303e); display: grid; place-items: center; }
+.pol .ph.empty svg { width: 26px; height: 26px; color: rgba(255,255,255,.35); }
+.pol .cap { font: 500 22px/1.1 "Caveat", "Bradley Hand", "Segoe Print", cursive; color: #3a3a40; text-align: center; padding-top: 10px; min-height: 18px; text-transform: none; }
+.pol .cap:empty { min-height: 26px; padding-top: 0; }
+/* narrow screens: the polaroid drops in right under its point */
+.wins li .pol { grid-column: 1 / -1; justify-self: center; margin: 18px 0 8px; }
+.wins li.l .pol { --x: -14px; }
+.wins li.r .pol { --x: 14px; --r: 4deg; }
+/* wide screens: it lands in the margin beside the point */
+@media (min-width: 1200px) {
+  .wins li .pol { position: absolute; top: -26px; margin: 0; width: 200px; z-index: 2; }
+  .wins li.l .pol { right: calc(100% + 64px); --x: 0px; }
+  .wins li.r .pol { left: calc(100% + 64px); --x: 0px; }
+  .wins li .pol:hover { z-index: 3; animation: none; opacity: 1; transform: rotate(0deg) scale(1.06); transition: transform .3s; }
 }
 .wins li:first-child { border-top: 1px solid var(--line); }
 .wins li svg { width: 14px; height: 14px; color: var(--green); transform: translateY(1px); }
 .wins li:nth-child(3n+2) svg { color: var(--pink); }
 .wins li:nth-child(3n) svg { color: var(--cyan); }
-@keyframes rise { to { opacity: 1; transform: none; } }
 
 /* photobooth strip */
 .strip {
@@ -282,8 +312,7 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
   <a class="back" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 8H3M7 4L3 8l4 4"/></svg>back</a>
   <div class="spread">
     <div class="strips-row">
-      <div class="strip strip-l" data-strip="letter-left"></div>
-      <div class="strip r strip-r" data-strip="letter-right"></div>
+      <div class="strip strip-l" data-strip="letter"></div>
     </div>
     <article class="sheet">
       <div class="kicker">a letter, for your birthday</div>
@@ -297,7 +326,7 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
       </div>
       <div class="dispense" id="dispense">
         <div class="bar" role="button" tabindex="0" aria-label="print the photo strip again"></div>
-        <div class="tray"><div class="strip" data-strip="letter-left"></div></div>
+        <div class="tray"><div class="strip" data-strip="letter"></div></div>
         <div class="hint">printing…</div>
       </div>
     </article>
@@ -307,13 +336,10 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
 <main id="list" class="view page" hidden>
   <a class="back" href="#"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 8H3M7 4L3 8l4 4"/></svg>back</a>
   <div class="spread">
-    <div class="strips-row">
-      <div class="strip strip-l" data-strip="list-left"></div>
-      <div class="strip r strip-r" data-strip="list-right"></div>
-    </div>
     <article class="sheet">
       <div class="kicker">this past year, you</div>
       <h1 class="title">look at everything you did</h1>
+      <p class="count" id="count"></p>
       <ul class="wins" id="wins"></ul>
     </article>
   </div>
@@ -478,22 +504,15 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
 
 <script>
 /* ======== edit these ======== */
-const WINS = [ // things they achieved this year, one per line
-  "achievement one goes here",
-  "a small win goes here",
-  "a big win goes here",
-  "another thing you did",
-  "something you're proud of",
-  "something i'm proud of you for",
-  "one more for the list",
-  "and the last one",
-];
-const PHOTOS = { // photo file names, four per strip. leave "" to show an empty frame.
-  "letter-left":  ["", "", "", ""],
-  "letter-right": ["", "", "", ""],
-  "list-left":    ["", "", "", ""],
-  "list-right":   ["", "", "", ""],
-};
+// the list. each point is either just text:
+//     "ran your first 10k",
+// or text with a polaroid that drops in beside it (caption is optional):
+//     ["ran your first 10k", "photos/list/12.jpg"],
+//     ["ran your first 10k", "photos/list/12.jpg", "mile 9 face"],
+// placeholder points for now: every fourth one shows an empty polaroid so you can see how it looks.
+const WINS = Array.from({ length: 80 }, (_, i) =>
+  i % 4 === 1 ? [`point ${i + 1} goes here`, "", i % 8 === 1 ? "a caption, if you want one" : ""] : `point ${i + 1} goes here`);
+const STRIP_PHOTOS = ["", "", "", ""]; // the letter's photobooth strip, four photos top to bottom
 const STRIP_STAMP = "oct 2026";
 const PLAYLIST_COVER = "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da844191b38f44c50481316df903";
 const TRACKS = [ // from the spotify playlist "pyaru <3"
@@ -517,15 +536,52 @@ const TRACKS = [ // from the spotify playlist "pyaru <3"
 
 const $ = id => document.getElementById(id);
 
-/* list + strips */
-$("wins").innerHTML = WINS.map((w, i) => `<li style="--i:${i}"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0c.5 4.2 3.8 7.5 8 8-4.2.5-7.5 3.8-8 8-.5-4.2-3.8-7.5-8-8 4.2-.5 7.5-3.8 8-8z"/></svg><span></span></li>`).join("");
-[...$("wins").children].forEach((li, i) => { li.querySelector("span").textContent = WINS[i]; });
+/* list */
+const SPARK = '<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0c.5 4.2 3.8 7.5 8 8-4.2.5-7.5 3.8-8 8-.5-4.2-3.8-7.5-8-8 4.2-.5 7.5-3.8 8-8z"/></svg>';
+const CAM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13.5" r="3.5"/></svg>';
+(function buildList() {
+  const ul = $("wins");
+  let side = 0, seen = 0;
+  WINS.forEach((w, i) => {
+    const [text, photo, cap] = Array.isArray(w) ? w : [w];
+    const li = document.createElement("li");
+    li.innerHTML = SPARK + "<span></span>";
+    li.querySelector("span").textContent = text;
+    if (Array.isArray(w)) {
+      li.classList.add(side++ % 2 ? "r" : "l");
+      const pol = document.createElement("figure");
+      pol.className = "pol"; pol.style.margin = "";
+      // a slightly different tilt for every photo, but the same every visit
+      const tilt = ((i * 37) % 9) - 4; pol.style.setProperty("--r", (li.classList.contains("r") ? Math.abs(tilt) + 2 : -Math.abs(tilt) - 2) + "deg");
+      const ph = document.createElement("div");
+      ph.className = "ph" + (photo ? "" : " empty");
+      if (photo) { ph.style.backgroundImage = `url("${photo}")`; ph.setAttribute("role", "img"); ph.setAttribute("aria-label", text); }
+      else ph.innerHTML = CAM;
+      const fc = document.createElement("figcaption"); fc.className = "cap"; fc.textContent = cap || "";
+      pol.append(ph, fc); li.appendChild(pol);
+    }
+    ul.appendChild(li);
+  });
+  const total = WINS.length, count = $("count");
+  const paint = () => { count.innerHTML = `<b>${seen}</b> / ${total}`; };
+  paint();
+  // points fade in as they scroll up; polaroids get tossed in when their point reaches the middle
+  const rowIO = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting && !e.target.classList.contains("seen")) { e.target.classList.add("seen"); seen++; paint(); rowIO.unobserve(e.target); }
+  }), { rootMargin: "0px 0px -8% 0px" });
+  const polIO = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.querySelector(".pol").classList.add("in"); polIO.unobserve(e.target); }
+  }), { rootMargin: "-30% 0px -30% 0px" });
+  [...ul.children].forEach(li => { rowIO.observe(li); if (li.querySelector(".pol")) polIO.observe(li); });
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) [...ul.children].forEach(li => { li.classList.add("seen"); const p = li.querySelector(".pol"); if (p) p.classList.add("in"); });
+})();
+
+/* the letter's photobooth strip */
 document.querySelectorAll("[data-strip]").forEach(el => {
-  const urls = PHOTOS[el.dataset.strip] || ["", "", "", ""];
-  urls.forEach(u => {
+  STRIP_PHOTOS.forEach(u => {
     const d = document.createElement("div");
     d.className = "shot" + (u ? "" : " empty");
-    if (u) d.style.backgroundImage = `url("${u}")`; else d.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13.5" r="3.5"/></svg>';
+    if (u) d.style.backgroundImage = `url("${u}")`; else d.innerHTML = CAM;
     el.appendChild(d);
   });
   const st = document.createElement("div"); st.className = "stamp"; st.textContent = STRIP_STAMP; el.appendChild(st);
@@ -537,7 +593,6 @@ function route() {
   const name = v === "letter" || v === "list" ? v : "home";
   document.querySelectorAll(".view").forEach(m => { m.hidden = m.id !== name; });
   document.title = name === "home" ? "for you" : name === "letter" ? "a letter" : "the list";
-  if (name === "list") document.querySelectorAll(".wins li").forEach(li => { li.style.animation = "none"; li.offsetHeight; li.style.animation = ""; });
   window.scrollTo(0, 0);
 }
 document.querySelectorAll(".back").forEach(a => a.addEventListener("click", e => { e.preventDefault(); history.pushState("", "", location.pathname); route(); }));
