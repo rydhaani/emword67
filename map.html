@@ -132,7 +132,7 @@ a.btn { text-decoration: none; display: inline-block; }
 
   <div class="hud">
     <div class="col">
-      <div class="bar"><span class="l">♥</span><span>LoveTap #1</span><span class="r" id="date"></span></div>
+      <div class="bar"><span class="l" id="homeBtn">♥</span><span>LoveTap #1</span><span class="r" id="date"></span></div>
       <div class="toprow">
         <div class="score"><div class="lab">SCORE</div><div class="num" id="score">000</div></div>
         <div class="clue" id="clue" hidden>
@@ -634,6 +634,17 @@ function newGame() {
 }
 $("again").onclick = newGame;
 $("letterBtn").href = LETTER_URL;
+// when the game is opened from the list (inside the main page), talk to the page instead of reloading it,
+// so the music keeps playing
+const framed = window.parent !== window;
+if (framed) {
+  $("letterBtn").addEventListener("click", e => { e.preventDefault(); window.parent.postMessage("lovetap:letter", "*"); });
+  const hb = $("homeBtn");
+  hb.innerHTML = "← list"; hb.setAttribute("role", "button"); hb.tabIndex = 0;
+  hb.style.cursor = "pointer"; hb.style.pointerEvents = "auto"; hb.style.fontSize = "15px";
+  const back = () => window.parent.postMessage("lovetap:close", "*");
+  hb.addEventListener("click", back); hb.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") back(); });
+}
 
 /* ---------- render loop ---------- */
 function loop(now) {
