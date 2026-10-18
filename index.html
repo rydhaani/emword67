@@ -949,13 +949,20 @@ route();
     $("pp").setAttribute("aria-label", p ? "pause" : "play");
     $("ppIcon").innerHTML = p ? '<path fill="currentColor" d="M4 2.5h3v11H4zM9 2.5h3v11H9z"/>' : '<path fill="currentColor" d="M4.5 2.5v11l9-5.5z"/>';
   }
+  let loadedUri = "spotify:track:" + TRACKS[0][0];   // what the spotify player currently has loaded
   function load(i, autoplay) {
     idx = (i + TRACKS.length) % TRACKS.length; advanced = false; lastPos = 0;
     showTrack();
+    const uri = "spotify:track:" + TRACKS[idx][0];
     if (!controller) { pendingPlay = autoplay; return; }
-    pendingPlay = autoplay;
-    controller.loadUri("spotify:track:" + TRACKS[idx][0]);
-    if (autoplay) setTimeout(() => { if (pendingPlay) { controller.play(); } }, 600);
+    if (uri === loadedUri) {                       // already loaded: play right away, inside the tap
+      pendingPlay = false;
+      if (autoplay) controller.play();
+      return;
+    }
+    pendingPlay = autoplay;                        // a new song: spotify reloads, then says "ready" and we press play
+    loadedUri = uri;
+    controller.loadUri(uri);
   }
   function toggle() {
     if (apiFailed) { $("npA").textContent = "music plays on the live site"; return; }
@@ -973,7 +980,7 @@ route();
   window.onSpotifyIframeApiReady = (IFrameAPI) => {
     IFrameAPI.createController($("spotifyEmbed"), { uri: "spotify:track:" + TRACKS[0][0], width: 300, height: 80 }, (c) => {
       controller = c;
-      c.addListener("ready", () => { if (pendingPlay) { pendingPlay = false; c.play(); } });
+      c.addListener("ready", () => { if (pendingPlay) { pendingPlay = false; setTimeout(() => c.play(), 50); } });
       c.addListener("playback_update", (e) => {
         const d = e.data || {};
         if (typeof d.isPaused === "boolean" && !d.isBuffering) setPlaying(!d.isPaused);
