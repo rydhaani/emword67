@@ -1,10 +1,24 @@
 # saintpatrick
 
-A little website made with love.
+the site lives at **https://rydhaani.github.io/saintpatrick/** (once github pages is turned on in settings → pages).
 
-- `index.html`: the landing page with three cards
-- `map.html`: LoveTap, the globe game (ten cities that make a heart; the ending button opens the letter)
-- `letter.html`: the letter (placeholder for now)
-- `list.html`: the list with photos and songs (placeholder for now)
+## changing the words and photos
 
-To change the game's cities, ending text or letter link, edit the block marked `Edit these to change the game` near the top of the script in `map.html`.
+everything you'd want to change is in two text files and one folder:
+
+| what | where |
+|---|---|
+| the list (80 points, polaroids, captions) | `content/list.txt` |
+| the letter, its heading, sign-off and the 4 photobooth photos | `content/letter.txt` |
+| every picture | `photos/` |
+
+each text file has short instructions at the top. lines starting with `#` are notes and never show on the site.
+
+**to edit a text file:** open it here on github → click the pencil icon (top right of the file) → make changes → click **commit changes**. the site updates about a minute later.
+
+**to add photos:** open the `photos` folder → **add file → upload files** → drag them in → **commit changes**. then type each file name into the text file where you want it. big photos are shrunk automatically and iphone `.heic` photos are turned into `.jpg`.
+
+## other pages
+
+- `index.html` — the landing page, letter, list and music player (one page, so the music keeps playing)
+- `map.html` — lovetap, the globe game

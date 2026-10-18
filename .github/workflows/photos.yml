@@ -1,0 +1,80 @@
+# Runs on its own whenever photos are uploaded to the photos folder:
+# turns iPhone .heic photos into .jpg and shrinks big photos so the site stays fast on phones.
+name: tidy photos
+
+on:
+  push:
+    branches: [main]
+    paths: ["photos/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tidy-photos
+  cancel-in-progress: false
+
+jobs:
+  tidy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install image tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq imagemagick libheif-examples >/dev/null
+
+      - name: Convert and shrink photos
+        shell: bash
+        run: |
+          set -u
+          shopt -s nocasematch
+          heifdec() { if command -v heif-dec >/dev/null; then heif-dec "$@"; else heif-convert "$@"; fi; }
+          find photos -type f -print0 | while IFS= read -r -d '' f; do
+            ext="${f##*.}"
+            case "$ext" in
+              heic|heif)
+                out="${f%.*}.jpg"
+                if heifdec -q 88 "$f" "$out" >/dev/null 2>&1 || convert "$f" "$out" >/dev/null 2>&1; then
+                  git rm -q --cached "$f" 2>/dev/null || true
+                  rm -f "$f"
+                  echo "converted $f -> $out"
+                  f="$out"; ext="jpg"
+                else
+                  echo "could not convert $f"; continue
+                fi
+                ;;
+            esac
+            case "$ext" in
+              jpg|jpeg|png|webp)
+                size=$(stat -c %s "$f")
+                dims=$(identify -format "%w %h" "$f[0]" 2>/dev/null || echo "0 0")
+                w=${dims% *}; h=${dims#* }
+                # only touch photos that are big, so nothing gets re-compressed over and over
+                if [ "$size" -gt 1500000 ] || [ "$w" -gt 1800 ] || [ "$h" -gt 1800 ]; then
+                  fmt=$(echo "$ext" | tr 'A-Z' 'a-z'); [ "$fmt" = "jpeg" ] && fmt=jpg
+                  if convert "$f" -auto-orient -resize '1600x1600>' -strip -quality 82 "$fmt:$f.tmp"; then
+                    mv "$f.tmp" "$f"
+                    echo "shrank $f ($size bytes -> $(stat -c %s "$f") bytes)"
+                  else
+                    rm -f "$f.tmp"; echo "could not shrink $f"
+                  fi
+                fi
+                ;;
+            esac
+          done
+
+      - name: Save changes
+        run: |
+          git config user.name "photo tidier"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A photos
+          if git diff --cached --quiet; then
+            echo "nothing to change"
+          else
+            git commit -m "Tidy photos (convert .heic, shrink large images)"
+            git pull --rebase -q origin main
+            git push
+          fi

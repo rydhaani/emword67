@@ -1,0 +1,100 @@
+# ─────────────────────────────────────────────────────────────
+# THE LIST
+# lines that start with # are notes for you. they never show on the site.
+#
+# one point per line:
+#     learned to drive
+#
+# to give a point a polaroid, add | and the photo's file name:
+#     learned to drive | car.jpg
+#
+# to also write a caption on the polaroid, add another |:
+#     learned to drive | car.jpg | first time on the motorway
+#
+# photos go in the "photos" folder. the name here must match the file
+# (spelling and spaces matter). iphone .heic photos are fine.
+#
+# you can also change the heading and the small line above it:
+title: look at everything you did
+kicker: this past year, you
+# ─────────────────────────────────────────────────────────────
+point 1 goes here
+point 2 goes here | | a caption, if you want one
+point 3 goes here
+point 4 goes here
+point 5 goes here
+point 6 goes here | 
+point 7 goes here
+point 8 goes here
+point 9 goes here
+point 10 goes here | | a caption, if you want one
+point 11 goes here
+point 12 goes here
+point 13 goes here
+point 14 goes here | 
+point 15 goes here
+point 16 goes here
+point 17 goes here
+point 18 goes here | | a caption, if you want one
+point 19 goes here
+point 20 goes here
+point 21 goes here
+point 22 goes here | 
+point 23 goes here
+point 24 goes here
+point 25 goes here
+point 26 goes here | | a caption, if you want one
+point 27 goes here
+point 28 goes here
+point 29 goes here
+point 30 goes here | 
+point 31 goes here
+point 32 goes here
+point 33 goes here
+point 34 goes here | | a caption, if you want one
+point 35 goes here
+point 36 goes here
+point 37 goes here
+point 38 goes here | 
+point 39 goes here
+point 40 goes here
+point 41 goes here
+point 42 goes here | | a caption, if you want one
+point 43 goes here
+point 44 goes here
+point 45 goes here
+point 46 goes here | 
+point 47 goes here
+point 48 goes here
+point 49 goes here
+point 50 goes here | | a caption, if you want one
+point 51 goes here
+point 52 goes here
+point 53 goes here
+point 54 goes here | 
+point 55 goes here
+point 56 goes here
+point 57 goes here
+point 58 goes here | | a caption, if you want one
+point 59 goes here
+point 60 goes here
+point 61 goes here
+point 62 goes here | 
+point 63 goes here
+point 64 goes here
+point 65 goes here
+point 66 goes here | | a caption, if you want one
+point 67 goes here
+point 68 goes here
+point 69 goes here
+point 70 goes here | 
+point 71 goes here
+point 72 goes here
+point 73 goes here
+point 74 goes here | | a caption, if you want one
+point 75 goes here
+point 76 goes here
+point 77 goes here
+point 78 goes here | 
+point 79 goes here
+point 80 goes here

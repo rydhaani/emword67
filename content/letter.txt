@@ -1,0 +1,26 @@
+# ─────────────────────────────────────────────────────────────
+# THE LETTER
+# lines that start with # are notes for you. they never show on the site.
+#
+# leave an empty line between paragraphs.
+# a single line break inside a paragraph is kept as a line break.
+#
+# the four photobooth photos, top to bottom (file names from the photos folder):
+photos: strip1.jpg, strip2.jpg, strip3.jpg, strip4.jpg
+#
+# the heading and the small line above it:
+title: happy birthday
+kicker: a letter, for your birthday
+#
+# how it's signed:
+sign-off: with all my love,
+from: me
+# ─────────────────────────────────────────────────────────────
+
+dear you,
+
+this is where your birthday letter goes. it's a placeholder for now, so the real words will replace these lines once they're ready.
+
+a second paragraph can sit here, about the year you've had and what you hope the next one holds.
+
+and a short last one, to close it off softly.
