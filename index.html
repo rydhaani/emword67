@@ -226,6 +226,44 @@ main.page { justify-content: flex-start; gap: 0; padding-block: calc(env(safe-ar
 #lock .heart { color: var(--pink); display: inline-block; width: .42em; height: .4em; margin-left: .08em; filter: drop-shadow(0 0 16px rgba(255,111,174,.6)); animation: beat 2.6s ease-in-out infinite; }
 #lock .heart svg { width: 100%; height: 100%; display: block; }
 
+
+/* ---------- the ginger cat on the lock screen ---------- */
+.cat-track { position: relative; width: min(520px, 92vw); height: 104px; margin-top: 22px; }
+.cat-track::after { content: ""; position: absolute; left: 0; right: 0; bottom: 6px; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,.22) 15%, rgba(255,255,255,.22) 85%, transparent); }
+.cat { position: absolute; left: 0; bottom: 6px; width: 122px; height: 87px; cursor: pointer; will-change: transform; -webkit-tap-highlight-color: transparent; }
+.cat .flip { width: 100%; height: 100%; transition: transform .25s ease; }
+.cat.left .flip { transform: scaleX(-1); }
+.cat svg { width: 100%; height: 100%; overflow: visible; display: block; }
+.cat .sit { display: none; }
+.cat.sitting .sit { display: inline; }
+.cat.sitting .stand { display: none; }
+.cat .leg { transform-box: fill-box; transform-origin: 50% 8%; }
+.cat.walking .leg.a { animation: stepA .56s ease-in-out infinite; }
+.cat.walking .leg.b { animation: stepB .56s ease-in-out infinite; }
+@keyframes stepA { 0%, 100% { transform: rotate(16deg); } 50% { transform: rotate(-16deg); } }
+@keyframes stepB { 0%, 100% { transform: rotate(-16deg); } 50% { transform: rotate(16deg); } }
+.cat.walking .torso { animation: bob .28s ease-in-out infinite alternate; }
+@keyframes bob { to { transform: translateY(-1.2px); } }
+.cat .tail { transform-box: fill-box; transform-origin: 100% 100%; animation: sway 2.6s ease-in-out infinite; }
+.cat.walking .tail { animation-duration: 1.2s; }
+@keyframes sway { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(7deg); } }
+.cat .tailtip { transform-box: fill-box; transform-origin: 0% 50%; animation: flick 3.4s ease-in-out infinite; }
+@keyframes flick { 0%, 70%, 100% { transform: rotate(0); } 78% { transform: rotate(-24deg); } 86% { transform: rotate(10deg); } }
+.cat .eye { transform-box: fill-box; transform-origin: 50% 50%; animation: catblink 4.5s infinite; }
+@keyframes catblink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
+.cat .head { transform-box: fill-box; transform-origin: 30% 80%; transition: transform .5s ease; }
+.cat.look .head { transform: rotate(-12deg); }
+.cat.down .head { transform: rotate(10deg); }
+.cat .bubble {
+  position: absolute; left: 50%; top: -30px; transform: translateX(-50%) scale(.6); opacity: 0;
+  font-size: 13px; font-weight: 600; color: #0b0b10; background: #fff; border-radius: 12px; padding: 4px 10px; white-space: nowrap;
+  transition: opacity .25s, transform .25s; pointer-events: none;
+}
+.cat .bubble.on { opacity: 1; transform: translateX(-50%) scale(1); }
+.cat .luv { position: absolute; left: 50%; top: 0; width: 16px; height: 15px; color: var(--pink); pointer-events: none; animation: luv 1.6s ease-out forwards; }
+@keyframes luv { from { opacity: 1; transform: translate(-50%, 0) scale(.6); } to { opacity: 0; transform: translate(-50%, -60px) scale(1.2); } }
+@media (max-width: 640px) { .cat { width: 104px; height: 74px; } }
+
 /* ---------- the cake ---------- */
 #cake { justify-content: center; gap: 6px; text-align: center; }
 .cake-head { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 104px; justify-content: flex-end; }
@@ -346,6 +384,37 @@ body.no-player .player { display: none; }
 .player a.sp:hover { color: var(--ink-soft); }
 .player a.sp svg { width: 10px; height: 10px; }
 #spotifyHost { position: fixed; left: 0; bottom: 0; width: 300px; height: 80px; opacity: 0; pointer-events: none; z-index: -1; overflow: hidden; }
+
+/* the playlist inside the music card */
+.plist { width: 100%; margin-top: 2px; border-top: 1px solid var(--line); padding-top: 10px; }
+.plist-head { display: flex; gap: 10px; align-items: center; padding: 0 2px 8px; }
+.plist-head img { width: 38px; height: 38px; border-radius: 6px; object-fit: cover; background: #222; flex: none; }
+.pl-name { font-size: 14px; font-weight: 600; letter-spacing: -.01em; }
+.pl-sub { font-size: 11px; color: var(--ink-faint); }
+#plItems { list-style: none; margin: 0; padding: 0; max-height: min(52vh, 420px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+#plItems button {
+  width: 100%; display: grid; grid-template-columns: 20px minmax(0, 1fr) 14px; gap: 8px; align-items: center; text-align: left;
+  padding: 7px 6px; border: 0; border-radius: 9px; background: transparent; color: var(--ink); cursor: pointer; font: inherit;
+}
+#plItems button:hover, #plItems button:focus-visible { background: rgba(255,255,255,.07); outline: none; }
+#plItems .n { font-size: 11px; color: var(--ink-faint); text-align: right; font-variant-numeric: tabular-nums; }
+#plItems .tt { min-width: 0; }
+#plItems .tt b { display: block; font-size: 12.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -.01em; }
+#plItems .tt i { display: block; font-style: normal; font-size: 11px; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#plItems .now b { color: var(--pink); }
+#plItems .eq { display: flex; gap: 2px; align-items: flex-end; height: 11px; opacity: 0; }
+#plItems .now .eq { opacity: 1; }
+#plItems .eq span { width: 3px; background: var(--pink); border-radius: 1px; height: 40%; }
+.player.playing #plItems .now .eq span { animation: eq .9s ease-in-out infinite; }
+#plItems .eq span:nth-child(2) { animation-delay: -.3s !important; }
+#plItems .eq span:nth-child(3) { animation-delay: -.6s !important; }
+@keyframes eq { 0%, 100% { height: 30%; } 50% { height: 100%; } }
+.player.open { width: 250px; background: rgba(12, 13, 24, .96); }
+#listBtn[aria-expanded="true"] { color: var(--ink); background: rgba(255,255,255,.1); }
+@media (max-width: 640px) {
+  .player.open { flex-direction: row; flex-wrap: wrap; border-radius: 22px; width: min(320px, calc(100vw - 32px)); }
+  .player.open .plist { flex-basis: 100%; }
+}
 @media (max-width: 640px) {
   .player { flex-direction: row; width: auto; max-width: calc(100vw - 32px); padding: 8px 10px 8px 8px; border-radius: 999px; gap: 8px; }
   .vinyl-wrap { width: 46px; height: 46px; }
@@ -365,6 +434,60 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
 <main id="lock" class="view" hidden>
   <h1>come back later!<span class="heart"><svg viewBox="0 0 24 22" aria-hidden="true"><path fill="currentColor" d="M12 21.5C5.6 16.6 1 12.5 1 7.4 1 3.9 3.7 1.2 7.1 1.2c2 0 3.8 1 4.9 2.6 1.1-1.6 2.9-2.6 4.9-2.6 3.4 0 6.1 2.7 6.1 6.2 0 5.1-4.6 9.2-11 14.1z"/></svg></span></h1>
   <p>this isn't ready for you yet.</p>
+  <div class="cat-track" id="catTrack" aria-hidden="false">
+    <div class="cat" id="cat" role="button" tabindex="0" aria-label="a ginger cat. tap to say hi.">
+      <div class="bubble" id="catBubble">mrrp!</div>
+      <div class="flip"><svg viewBox="0 0 140 100" aria-hidden="true">
+        <ellipse cx="68" cy="96" rx="40" ry="3.5" fill="#000" opacity=".35"/>
+        <g class="stand">
+          <g class="tail"><path d="M36 54C22 50 13 38 17 24" fill="none" stroke="#ef9a45" stroke-width="8" stroke-linecap="round"/>
+            <g class="tailtip"><path d="M17 24C18 18 23 15 27 18" fill="none" stroke="#c8692a" stroke-width="8" stroke-linecap="round"/></g></g>
+          <rect class="leg b" x="41" y="60" width="8.5" height="31" rx="4.2" fill="#d47f34"/>
+          <rect class="leg a" x="86" y="60" width="8.5" height="31" rx="4.2" fill="#d47f34"/>
+          <g class="torso">
+            <ellipse cx="65" cy="58" rx="33" ry="15.5" fill="#ef9a45"/>
+            <ellipse cx="68" cy="67" rx="22" ry="5.5" fill="#fbe6c8" opacity=".85"/>
+            <path d="M48 45q4 6 0 12M57 43.5q4 7 0 14M66 43q4 7 0 14M75 44q3.5 6 0 12" fill="none" stroke="#c8692a" stroke-width="2.6" stroke-linecap="round"/>
+            <g class="head" transform="translate(103 40)">
+      <path d="M-11-6L-9-21L-1-10Z" fill="#e48d3c"/><path d="M-9.5-8L-8.3-17L-3.5-10Z" fill="#f4a7a9"/>
+      <path d="M2-11L11-22L13-5Z" fill="#ef9a45"/><path d="M4-10L10.5-18L11.5-7Z" fill="#f4a7a9"/>
+      <ellipse cx="0" cy="0" rx="15" ry="13.5" fill="#ef9a45"/>
+      <path d="M-4-13q2 4 0 8M1-13.5q2 4 0 8M6-12q1.5 3.5 0 7" fill="none" stroke="#c8692a" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="9" cy="6" rx="8" ry="6" fill="#fbe6c8"/>
+      <g class="eye"><ellipse cx="6" cy="-2" rx="2.3" ry="3.1" fill="#2b1a10"/><circle cx="6.8" cy="-3" r=".8" fill="#fff"/></g>
+      <path d="M14 2.6l2.6-.4-1 2.2z" fill="#e9858f"/>
+      <path d="M14.6 5.8q-1.4 1.8-3.4.6" fill="none" stroke="#7a4a2a" stroke-width=".9" stroke-linecap="round"/>
+      <path d="M12 6l14-3M12 7.5l14 1.5" stroke="rgba(255,255,255,.75)" stroke-width=".7" stroke-linecap="round"/>
+    </g>
+          </g>
+          <g class="leg a"><rect x="47" y="62" width="9" height="30" rx="4.5" fill="#ef9a45"/><ellipse cx="51.5" cy="91" rx="5.6" ry="3" fill="#fbe6c8"/></g>
+          <g class="leg b"><rect x="80" y="62" width="9" height="30" rx="4.5" fill="#ef9a45"/><ellipse cx="84.5" cy="91" rx="5.6" ry="3" fill="#fbe6c8"/></g>
+        </g>
+        <g class="sit">
+          <g class="tail"><path d="M44 90C58 97 88 96 98 90" fill="none" stroke="#ef9a45" stroke-width="8" stroke-linecap="round"/>
+            <g class="tailtip"><path d="M98 90C103 87 104 82 100 80" fill="none" stroke="#c8692a" stroke-width="8" stroke-linecap="round"/></g></g>
+          <ellipse cx="56" cy="76" rx="21" ry="17" fill="#ef9a45"/>
+          <path d="M45 66q5 6 0 13M54 62q5 7 0 15" fill="none" stroke="#c8692a" stroke-width="2.6" stroke-linecap="round"/>
+          <ellipse cx="72" cy="62" rx="15.5" ry="24" transform="rotate(-12 72 62)" fill="#ef9a45"/>
+          <ellipse cx="79" cy="66" rx="7.5" ry="14" fill="#fbe6c8"/>
+          <rect x="71" y="72" width="8" height="20" rx="4" fill="#ef9a45"/><rect x="80" y="72" width="8" height="20" rx="4" fill="#ef9a45"/>
+          <ellipse cx="75" cy="91.5" rx="5" ry="2.6" fill="#fbe6c8"/><ellipse cx="84" cy="91.5" rx="5" ry="2.6" fill="#fbe6c8"/>
+          <ellipse cx="46" cy="91" rx="10" ry="3.5" fill="#fbe6c8"/>
+          <g class="head" transform="translate(80 30)">
+      <path d="M-11-6L-9-21L-1-10Z" fill="#e48d3c"/><path d="M-9.5-8L-8.3-17L-3.5-10Z" fill="#f4a7a9"/>
+      <path d="M2-11L11-22L13-5Z" fill="#ef9a45"/><path d="M4-10L10.5-18L11.5-7Z" fill="#f4a7a9"/>
+      <ellipse cx="0" cy="0" rx="15" ry="13.5" fill="#ef9a45"/>
+      <path d="M-4-13q2 4 0 8M1-13.5q2 4 0 8M6-12q1.5 3.5 0 7" fill="none" stroke="#c8692a" stroke-width="2" stroke-linecap="round"/>
+      <ellipse cx="9" cy="6" rx="8" ry="6" fill="#fbe6c8"/>
+      <g class="eye"><ellipse cx="6" cy="-2" rx="2.3" ry="3.1" fill="#2b1a10"/><circle cx="6.8" cy="-3" r=".8" fill="#fff"/></g>
+      <path d="M14 2.6l2.6-.4-1 2.2z" fill="#e9858f"/>
+      <path d="M14.6 5.8q-1.4 1.8-3.4.6" fill="none" stroke="#7a4a2a" stroke-width=".9" stroke-linecap="round"/>
+      <path d="M12 6l14-3M12 7.5l14 1.5" stroke="rgba(255,255,255,.75)" stroke-width=".7" stroke-linecap="round"/>
+    </g>
+        </g>
+      </svg></div>
+    </div>
+  </div>
 </main>
 
 <main id="cake" class="view" hidden>
@@ -484,9 +607,15 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
   <div class="ctrls">
     <button id="prev" aria-label="previous song"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M3 2.5h1.6v11H3zM13.5 2.8v10.4L5.6 8z"/></svg></button>
     <button id="pp" class="pp" aria-label="play"><svg id="ppIcon" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M4.5 2.5v11l9-5.5z"/></svg></button>
+    
     <button id="next" aria-label="next song"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M11.4 2.5H13v11h-1.6zM2.5 2.8v10.4L10.4 8z"/></svg></button>
+    <button id="listBtn" aria-label="show the playlist" aria-expanded="false" aria-controls="plist"><svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M2 3.2h8.5v1.6H2zM2 7.2h8.5v1.6H2zM2 11.2h5.5v1.6H2zM12 6.4v5.2a2 2 0 1 0 1.5 1.9V8.2l1.5-.5V6z"/></svg></button>
   </div>
   <div class="foot"><a class="sp" id="spLink" href="https://open.spotify.com/playlist/5yFl03PWSwDg5IioamWvBj" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8" fill="currentColor"/><path d="M4 6.2c2.7-.8 5.6-.6 8 .7M4.5 8.4c2.2-.6 4.5-.4 6.5.6M5 10.5c1.7-.4 3.4-.3 5 .5" stroke="#0b0b10" stroke-width="1.1" fill="none" stroke-linecap="round"/></svg>on spotify</a></div>
+  <div class="plist" id="plist" hidden>
+    <div class="plist-head"><img id="plCover" alt=""><div><div class="pl-name">pyaru &lt;3</div><div class="pl-sub" id="plSub">30 songs · tap one to play</div></div></div>
+    <ol id="plItems"></ol>
+  </div>
 </aside>
 <button class="gamecard" id="gamecard" aria-label="play the little map game"><div class="win"><div class="globe"></div></div><div class="cap">a little game →</div></button>
 <div id="gameLayer" hidden></div>
@@ -903,7 +1032,7 @@ route();
       confetti();
       $("cakeHead").innerHTML = '<div class="eyebrow">made with love, for mutahar &lt;3</div><h1 class="fade-in">happy birthday</h1><p class="fade-in" style="animation-delay:.2s">i hope all your wishes come true</p>';
       $("cakeActions").innerHTML = '<button class="pill solid fade-in" style="animation-delay:.6s" id="startBtn">let\'s begin →</button>';
-      $("startBtn").addEventListener("click", () => { if (window.startMusic) window.startMusic(); location.hash = "#list"; });
+      $("startBtn").addEventListener("click", () => { location.hash = "#list"; });
     }, 700);
   }
   function confetti() {
@@ -939,14 +1068,35 @@ route();
   let angle = 0, spin = 0, drag = null;  // spin: degrees per frame
   const RPM = 360 / (60 * 1.8);          // one turn every ~1.8s while playing
 
+  // the playlist panel
+  const items = $("plItems");
+  $("plCover").src = PLAYLIST_COVER;
+  $("plSub").textContent = `${TRACKS.length} songs · tap one to play`;
+  TRACKS.forEach(([, t, a], i) => {
+    const li = document.createElement("li"), b = document.createElement("button");
+    b.innerHTML = '<span class="n"></span><span class="tt"><b></b><i></i></span><span class="eq"><span></span><span></span><span></span></span>';
+    b.querySelector(".n").textContent = i + 1; b.querySelector("b").textContent = t; b.querySelector("i").textContent = a;
+    b.setAttribute("aria-label", `play ${t} by ${a}`);
+    b.addEventListener("click", () => { loadedOnce = true; load(i, true); setPlaying(true); });
+    li.appendChild(b); items.appendChild(li);
+  });
+  $("listBtn").addEventListener("click", () => {
+    const open = $("plist").hidden;
+    $("plist").hidden = !open; $("player").classList.toggle("open", open);
+    $("listBtn").setAttribute("aria-expanded", String(open));
+    if (open) { const cur = items.children[idx]; if (cur) cur.scrollIntoView({ block: "nearest" }); }
+  });
+  function markCurrent() { [...items.children].forEach((li, i) => li.firstChild.classList.toggle("now", i === idx && loadedOnce)); }
+
   function showTrack() {
+    markCurrent();
     const [, t, a] = TRACKS[idx];
     $("npT").textContent = t; $("npA").textContent = a;
     $("npT").title = `${t} · ${a}`;
     $("spLink").href = `https://open.spotify.com/track/${TRACKS[idx][0]}`;
   }
   function setPlaying(p) {
-    playing = p;
+    playing = p; $("player").classList.toggle("playing", p); markCurrent();
     $("pp").setAttribute("aria-label", p ? "pause" : "play");
     $("ppIcon").innerHTML = p ? '<path fill="currentColor" d="M4 2.5h3v11H4zM9 2.5h3v11H9z"/>' : '<path fill="currentColor" d="M4.5 2.5v11l9-5.5z"/>';
   }
@@ -973,7 +1123,6 @@ route();
   }
   let loadedOnce = false;
   $("pp").onclick = toggle;
-  window.startMusic = () => { if (!playing && !pendingPlay) toggle(); };
   $("prev").onclick = () => { loadedOnce = true; if (lastPos > 3000 && controller) { controller.seek(0); return; } load(idx - 1, true); setPlaying(true); };
   $("next").onclick = () => { loadedOnce = true; load(idx + 1, true); setPlaying(true); };
 
@@ -989,7 +1138,6 @@ route();
         if (d.duration && d.position >= d.duration - 400 && d.position > 0 && !advanced) { advanced = true; load(idx + 1, true); }
       });
       if (pendingPlay) { loadedOnce = true; load(idx, true); }
-      else showTrack();
     });
   };
   const s = document.createElement("script");
@@ -1030,7 +1178,7 @@ route();
     vinyl.style.transform = `rotate(${angle}deg)`;
     requestAnimationFrame(tick);
   }
-  showTrack(); setPlaying(false); $("npT").textContent = "pyaru <3"; $("npA").textContent = "tap the record";
+  showTrack(); setPlaying(false); $("npT").textContent = "pyaru <3"; $("npA").textContent = "pick a song";
   requestAnimationFrame(tick);
 })();
 
@@ -1056,6 +1204,67 @@ route();
   bar.addEventListener("click", print);
   bar.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); print(); } });
   window.addEventListener("hashchange", () => { if (location.hash === "#letter" && !busy) box.classList.remove("done", "out"); });
+})();
+
+/* ---------- the ginger cat, dawdling about on the lock screen ---------- */
+(function cat() {
+  const el = $("cat"), track = $("catTrack");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let x = 40, target = 40, dir = 1, mode = "stand", until = 0, last = performance.now(), mouse = null;
+  const W = () => track.clientWidth - el.offsetWidth;
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  function set(m, ms) {
+    mode = m; until = performance.now() + ms;
+    el.classList.toggle("walking", m === "walk");
+    el.classList.toggle("sitting", m === "sit");
+    el.classList.toggle("look", m === "look");
+    el.classList.toggle("down", m === "sniff");
+  }
+  function decide() {
+    const r = Math.random();
+    if (mode === "walk") {               // arrived somewhere
+      if (r < .35) set("sit", rnd(4000, 9000));
+      else if (r < .6) set("sniff", rnd(1200, 2200));
+      else if (r < .8) set("look", rnd(1200, 2600));
+      else walk();
+    } else if (mode === "sit") { set("stand", rnd(500, 900)); }
+    else walk();
+  }
+  function walk() {
+    const w = W(); if (w <= 0) return set("sit", 5000);
+    let t = rnd(0, w); if (Math.abs(t - x) < 60) t = x > w / 2 ? rnd(0, w * .35) : rnd(w * .65, w);
+    target = t; dir = target > x ? 1 : -1; el.classList.toggle("left", dir < 0);
+    set("walk", 60000);
+  }
+  function tick(now) {
+    const dt = Math.min(60, now - last); last = now;
+    if (!track.offsetParent) { requestAnimationFrame(tick); return; }       // lock screen not showing
+    if (mode === "walk") {
+      // stop to look when the cursor/finger comes close
+      if (mouse && Math.abs(mouse - (x + el.offsetWidth / 2)) < 90) { set("look", 1800); el.classList.toggle("left", mouse < x + el.offsetWidth / 2); }
+      else {
+        x += dir * 0.036 * dt;
+        if ((dir > 0 && x >= target) || (dir < 0 && x <= target)) { x = target; decide(); }
+      }
+    } else if (now > until) decide();
+    x = Math.max(0, Math.min(W(), x));
+    el.style.transform = `translateX(${x.toFixed(1)}px)`;
+    requestAnimationFrame(tick);
+  }
+  track.parentElement.addEventListener("pointermove", e => { const r = track.getBoundingClientRect(); mouse = (e.clientY > r.top - 140 && e.clientY < r.bottom + 60) ? e.clientX - r.left : null; });
+  track.parentElement.addEventListener("pointerleave", () => { mouse = null; });
+  function hello() {
+    const b = $("catBubble"); b.classList.add("on"); setTimeout(() => b.classList.remove("on"), 1300);
+    const h = document.createElement("div"); h.className = "luv";
+    h.innerHTML = '<svg viewBox="0 0 24 22"><path fill="currentColor" d="M12 21.5C5.6 16.6 1 12.5 1 7.4 1 3.9 3.7 1.2 7.1 1.2c2 0 3.8 1 4.9 2.6 1.1-1.6 2.9-2.6 4.9-2.6 3.4 0 6.1 2.7 6.1 6.2 0 5.1-4.6 9.2-11 14.1z"/></svg>';
+    el.appendChild(h); setTimeout(() => h.remove(), 1700);
+    set("sit", rnd(3000, 5000));
+  }
+  el.addEventListener("click", hello);
+  el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); hello(); } });
+  if (reduce) { set("sit", 1e12); x = 40; el.style.transform = `translateX(${x}px)`; return; }
+  x = rnd(20, 120); set("stand", 900);
+  requestAnimationFrame(tick);
 })();
 </script>
 
