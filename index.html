@@ -790,13 +790,14 @@ function buildLetter(text) {
    before midnight on 10 november 2026 (her own clock) the live site only says "come back later!".
    to look at it early yourself, add ?peek to the address: rydhaani.github.io/saintpatrick/?peek */
 const UNLOCK = new Date(2026, 10, 10, 0, 0, 0);
+const LIVE_HOSTS = []; // add your own web address here if you ever give the site one, e.g. "mutahar.com"
 const params = new URLSearchParams(location.search);
 try { if (params.has("peek")) sessionStorage.setItem("peek", "1"); } catch (e) {}
 function isLocked() {
   if (params.has("lock")) return true;                               // force the lock screen, for checking it
   let peek = params.has("peek"); try { peek = peek || sessionStorage.getItem("peek") === "1"; } catch (e) {}
   if (peek) return false;
-  if (!/github\.io$/.test(location.hostname)) return false;          // previews and local copies stay open
+  if (!/(github\.io|netlify\.app)$/.test(location.hostname) && !LIVE_HOSTS.includes(location.hostname)) return false; // previews and local copies stay open
   return Date.now() < UNLOCK.getTime();
 }
 if (isLocked()) setInterval(() => { if (!isLocked()) location.reload(); }, 30000);
