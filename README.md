@@ -18,7 +18,16 @@ each text file has short instructions at the top. lines starting with `#` are no
 
 **to add photos:** open the `photos` folder → **add file → upload files** → drag them in → **commit changes**. then type each file name into the text file where you want it. big photos are shrunk automatically and iphone `.heic` photos are turned into `.jpg`.
 
+## the countdown (nov 1–9)
+
+`countdown.html` is the ten-candle countdown. from **nov 1** the locked site sends people there instead of the "come back later!" page. he blows one candle a day, each one opens that day's game, and candle 10 opens the cake on **nov 10**.
+
+- **to change the words, his name or the messages:** open `countdown.html`, find the `EDIT HERE` block near the top of the script, change the text between the quotes, commit.
+- **to try any day early:** add `#day-1` … `#day-10` to the address, e.g. `rydhaani.github.io/saintpatrick/countdown.html#day-3`. this pretends it's that date and never touches his real progress.
+- his pixel buddy and game progress are saved in his own browser.
+
 ## other pages
 
 - `index.html` — the landing page, letter, list and music player (one page, so the music keeps playing)
 - `map.html` — lovetap, the globe game
+- `countdown.html` — the ten-candle countdown and daily games

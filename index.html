@@ -919,6 +919,7 @@ function buildLetter(text) {
    before midnight on 10 november 2026 (her own clock) the live site only says "come back later!".
    to look at it early yourself, add ?peek to the address: rydhaani.github.io/saintpatrick/?peek */
 const UNLOCK = new Date(2026, 10, 10, 0, 0, 0);
+const COUNTDOWN = new Date(2026, 10, 1, 0, 0, 0); // from nov 1, the lock screen hands over to the candle countdown (countdown.html)
 const LIVE_HOSTS = []; // add your own web address here if you ever give the site one, e.g. "mutahar.com"
 const params = new URLSearchParams(location.search);
 try { if (params.has("peek")) sessionStorage.setItem("peek", "1"); } catch (e) {}
@@ -935,6 +936,7 @@ if (isLocked()) setInterval(() => { if (!isLocked()) location.reload(); }, 30000
 const TITLES = { lock: "come back later!", cake: "happy birthday", list: "the list", letter: "a letter", game: "lovetap" };
 function route() {
   let name = (location.hash || "").replace("#", "");
+  if (isLocked() && Date.now() >= COUNTDOWN.getTime() && !params.has("lock")) { location.replace("countdown.html"); return; }
   if (isLocked()) name = "lock";
   else if (!["list", "letter", "game"].includes(name)) name = "cake";
   const page = name === "game" ? "list" : name;
