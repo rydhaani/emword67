@@ -180,6 +180,25 @@ body {
 .reveal b { background: var(--hit); color: #fff; border-radius: 8px; padding: 4px 10px; letter-spacing: .1em; }
 .btn { border: 0; border-radius: 999px; padding: 10px 18px; font: 800 14px var(--body); background: var(--accent); color: #fff; cursor: pointer; }
 .btn.ghost { background: #fff; color: var(--ink); border: 2px solid var(--line); }
+/* final cut */
+.fc { display: grid; gap: 16px; justify-items: center; text-align: center; }
+.fc-meta { display: flex; justify-content: space-between; width: 100%; max-width: 460px; color: var(--soft); font-weight: 700; }
+.fc-clock { font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 800; }
+.fc-dots { display: flex; gap: 6px; }
+.fc-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
+.fc-dots i.ok { background: var(--hit); } .fc-dots i.skip { background: var(--accent); } .fc-dots i.now { background: var(--ink); }
+.fc-cut { font-family: var(--display); font-size: clamp(34px, 8vw, 60px); letter-spacing: .12em; line-height: 1.1; word-break: break-all; max-width: 100%; padding: 18px 10px; }
+.fc-cut.shake { animation: shake .35s; }
+.fc-form { display: grid; gap: 10px; justify-items: center; width: 100%; }
+.fc-in { max-width: 420px; text-align: center; font-size: 18px; }
+.fc-example { display: grid; gap: 2px; justify-items: center; padding: 10px 0; }
+.fc-example .fc-cut { font-size: clamp(28px, 6vw, 44px); padding: 0; }
+.fc-arrow { color: var(--soft); } .fc-title { font-family: var(--display); font-size: 24px; color: var(--soft); }
+.fc-small { font-size: 14px; }
+.fc-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; width: 100%; max-width: 440px; text-align: left; }
+.fc-list li { display: grid; grid-template-columns: 22px minmax(0, 1fr) minmax(0, 1fr); gap: 10px; align-items: baseline; padding: 6px 10px; border-radius: 10px; background: var(--tint); }
+.fc-list li.ok span:first-child { color: var(--hit); font-weight: 800; } .fc-list li.skip span:first-child { color: var(--accent); font-weight: 800; }
+.fc-sk { font-family: var(--display); letter-spacing: .08em; color: var(--soft); overflow-wrap: anywhere; }
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 20; }
 
 @media (max-width: 700px) {
@@ -623,11 +642,12 @@ function candleSVG([fill, dy, tilt]) {
 
 function route() {
   const view = $("#view");
-  view.innerHTML = ""; stopClock(); buddy?.destroy(); buddy = null; document.onkeydown = null;
+  view.innerHTML = ""; stopClock(); clearInterval(fcTimer); buddy?.destroy(); buddy = null; document.onkeydown = null;
   if (viewing == null) return renderHome(view);
   if (!loadBuddy()) return renderMaker(view, route);          // buddy is made before any game
   if (viewing === 10) { location.href = PV() ? "index.html?peek" : "index.html"; return; }   // the cake page that's already built
   if (viewing === 1) return renderDay1(view, PV());
+  if (viewing === 2) return renderDay2(view, PV());
   return renderPlaceholder(view, viewing, PV());
 }
 
@@ -870,6 +890,105 @@ function renderDay1(view, pv) {
     else if (/^[a-z]$/i.test(e.key)) type(e.key.toUpperCase());
   };
   if (!over()) buddy.say("idle", st.guesses.length ? "Welcome back! Let's finish this." : "Let's find those words!");
+  draw();
+}
+
+/* ---------- Day 2: Final Cut ---------- */
+const MOVIES = [ // the pool; 10 are dealt at random each time the page opens
+  "The Godfather", "Titanic", "Inception", "Jurassic Park", "The Dark Knight", "Forrest Gump", "Toy Story", "Interstellar",
+  "Pulp Fiction", "The Lion King", "Finding Nemo", "Back to the Future", "The Matrix", "Gladiator", "Frozen", "Shrek",
+  "Avatar", "Jaws", "Rocky", "Home Alone", "Ratatouille", "La La Land", "The Social Network", "Parasite",
+  "Spirited Away", "The Truman Show", "Fight Club", "Goodfellas", "Inside Out", "Black Panther", "Oppenheimer",
+  "Barbie", "Joker", "Whiplash", "The Shining", "Casablanca", "Star Wars", "Spider-Man", "Harry Potter", "The Notebook",
+  "Mean Girls", "The Avengers", "Iron Man", "Top Gun", "Grease", "Twilight", "Zootopia", "Pirates of the Caribbean",
+];
+const skeleton = t => t.toUpperCase().replace(/[^A-Z0-9]/g, "").replace(/[AEIOU]/g, "");
+const norm = t => t.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]/g, "");
+function lev(a, b) {
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++)
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+const fmtTime = ms => { const t = Math.floor(ms / 100); return `${String(Math.floor(t / 600)).padStart(2, "0")}:${String(Math.floor(t / 10) % 60).padStart(2, "0")}.${t % 10}`; };
+let finalCutGame = null;
+let fcTimer = null;
+
+function renderDay2(view, pv) {
+  if (!finalCutGame) {
+    const pool = MOVIES.slice(); for (let i = pool.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [pool[i], pool[j]] = [pool[j], pool[i]]; }
+    finalCutGame = { movies: pool.slice(0, 10), i: 0, results: [], start: null, end: null };
+  }
+  const st = finalCutGame;
+  const game = stage(view, pv, "Day 2 · Final Cut",
+    "Ten movie titles with every vowel and space cut out. Type the full title. The clock runs until the last one.",
+    ` · <a href="#" id="reset">new movies</a>`);
+  if (pv) $("#reset").onclick = e => { e.preventDefault(); finalCutGame = null; clearInterval(fcTimer); route(); };
+  clearInterval(fcTimer);
+
+  const draw = () => {
+    if (st.end) return finish();
+    if (!st.start) {
+      game.innerHTML = `<div class="fc">
+        <div class="fc-meta"><span>10 movies</span><span class="fc-clock">00:00.0</span></div>
+        <div class="fc-example"><div class="fc-cut">THGDFTHR</div><div class="fc-arrow">↓</div><div class="fc-title">The Godfather</div></div>
+        <div class="row-btns" style="justify-content:center"><button class="btn" id="fc-start" type="button">Start game</button></div>
+        <p class="fc-small">You can skip a movie, but you can't go back.</p></div>`;
+      $("#fc-start").onclick = () => { st.start = Date.now(); draw(); };
+      buddy.say("idle", "Movie night! Ready?");
+      return;
+    }
+    const movie = st.movies[st.i];
+    game.innerHTML = `<div class="fc">
+      <div class="fc-meta"><span>Movie <b>${st.i + 1}</b> of 10</span><span class="fc-clock" id="fc-clock">${fmtTime(Date.now() - st.start)}</span></div>
+      <div class="fc-dots">${st.movies.map((_, k) => `<i class="${k < st.results.length ? (st.results[k].ok ? "ok" : "skip") : k === st.i ? "now" : ""}"></i>`).join("")}</div>
+      <div class="fc-cut" id="fc-cut" aria-label="Title with vowels and spaces removed">${skeleton(movie)}</div>
+      <form class="fc-form" id="fc-form" autocomplete="off">
+        <input class="text-in fc-in" id="fc-in" placeholder="Type the movie title" aria-label="Your guess" autocapitalize="words" spellcheck="false">
+        <div class="row-btns"><button class="btn" type="submit">Guess</button><button class="btn ghost" type="button" id="fc-skip">Skip movie</button></div>
+      </form>
+      <div class="status" id="fc-status" aria-live="polite"></div></div>`;
+    const input = $("#fc-in"); input.focus({ preventScroll: true });
+    fcTimer = setInterval(() => { const c = $("#fc-clock"); if (c) c.textContent = fmtTime(Date.now() - st.start); else clearInterval(fcTimer); }, 100);
+    $("#fc-form").onsubmit = e => {
+      e.preventDefault();
+      const g = norm(input.value); if (!g) return;
+      const answers = [norm(movie), norm(movie.replace(/^the\s+/i, ""))];
+      if (answers.includes(g) || answers.includes(g.replace(/^the/, ""))) return next(true);
+      const dist = Math.min(...answers.map(a => lev(g, a)));
+      const cut = $("#fc-cut"); cut.classList.remove("shake"); void cut.offsetWidth; cut.classList.add("shake");
+      if (dist <= Math.max(1, Math.floor(answers[0].length * .2))) { $("#fc-status").textContent = "So close. Check the spelling."; buddy.say("think", "Ooh… nearly! Spelling?"); }
+      else { $("#fc-status").textContent = "Not that one."; buddy.say("sad", "Hmm… not that one."); }
+      input.select();
+    };
+    $("#fc-skip").onclick = () => next(false);
+  };
+
+  function next(ok) {
+    clearInterval(fcTimer);
+    const movie = st.movies[st.i];
+    st.results.push({ movie, ok }); st.i++;
+    if (st.i >= st.movies.length) { st.end = Date.now(); }
+    const got = st.results.filter(r => r.ok).length;
+    if (ok) buddy.say("joy", st.end ? "That's a wrap! 🎬" : `Yes! ${movie}!`, { hold: !!st.end, burst: st.end && got >= 7 ? "big" : true });
+    else buddy.say("sad", `It was ${movie}…`, { hold: !!st.end });
+    if (!st.end) { draw(); $("#fc-status").textContent = ok ? `✓ ${movie}` : `Skipped: it was ${movie}`; }
+    else finish(true);
+  }
+
+  function finish(fresh) {
+    const got = st.results.filter(r => r.ok).length, time = fmtTime(st.end - st.start);
+    game.innerHTML = `<div class="fc"><div class="win">
+      <h3>${got} of 10</h3>
+      <p class="msg">in <b class="fc-clock">${time}</b></p>
+      <ol class="fc-list">${st.results.map(r => `<li class="${r.ok ? "ok" : "skip"}"><span>${r.ok ? "✓" : "✕"}</span><span class="fc-sk">${skeleton(r.movie)}</span><span>${escapeHtml(r.movie)}</span></li>`).join("")}</ol>
+      <div class="row-btns" style="justify-content:center"><button class="btn" id="fc-again" type="button">Play again</button></div>
+      <p class="msg"><strong>Tomorrow's candle lights at midnight.</strong></p></div></div>`;
+    $("#fc-again").onclick = () => { finalCutGame = null; route(); };
+    if (!fresh) buddy.say(got >= 5 ? "joy" : "sad", got >= 5 ? `${got} out of 10! Nice!` : `${got} out of 10… rematch?`);
+    else if (got < 5 && !st.results[st.results.length - 1].ok) buddy.say("sad", `${got} out of 10… rematch?`);
+  }
   draw();
 }
 
