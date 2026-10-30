@@ -228,7 +228,6 @@ const CONFIG = {
   name: "Mutahar",
   age: "27th",
   year: 2026, month: 11,          // November 2026 (normal 1–12 numbering)
-  quordle: ["GREEN", "WHARF", "INDEX", "CUTIE"],   // day 1's four words. "play again" after that deals random ones
   days: { 1: "Quordle", 2: "Final Cut", 3: "Pop the Balloons", 4: "Name That Tune", 5: "Connections",
           6: "Whack-a-Mole", 7: "Sliding Puzzle", 8: "Word Search", 9: "Light the Candles", 10: "The Big Day" },
 };
@@ -729,7 +728,7 @@ function score(guess, answer) {
 const chunk5 = s => s.match(/.{5}/g);
 let WORDS = null;
 function words() {
-  if (!WORDS) { const a = chunk5(ANSWERS_RAW); WORDS = { answers: a, valid: new Set([...a, ...chunk5(GUESSES_RAW), ...CONFIG.quordle.map(w => w.toLowerCase())]) }; }
+  if (!WORDS) { const a = chunk5(ANSWERS_RAW); WORDS = { answers: a, valid: new Set([...a, ...chunk5(GUESSES_RAW)]) }; }
   return WORDS;
 }
 function freshAnswers() {
@@ -738,20 +737,22 @@ function freshAnswers() {
   return [...pick];
 }
 
+let quordleGame = null;
 function renderDay1(view, pv) {
-  const MAX = 9, KEY = "bday-quordle-v2";
-  let st = store.get(KEY);
-  if (!st || !Array.isArray(st.answers) || st.answers.length !== 4) { st = { answers: CONFIG.quordle.map(w => w.toUpperCase()), guesses: [] }; store.set(KEY, st); }
+  // four random words, new every time the page is opened (kept while he moves around the site, never saved)
+  const MAX = 9;
+  if (!quordleGame) quordleGame = { answers: freshAnswers(), guesses: [] };
+  const st = quordleGame;
   const W = st.answers;
   let cur = "", lastFlip = -1;
 
   const game = stage(view, pv, "Day 1 · Quordle", "Guess all four words in 9 tries. Every guess goes into all four boards.",
-    ` · <a href="#" id="reset">restart with the real words</a>`);
+    ` · <a href="#" id="reset">new words</a>`);
   game.innerHTML = `<div style="display:grid;gap:14px">
     <div class="tally" id="tally" aria-label="Boards solved"></div>
     <div class="boards" id="boards"></div>
     <div class="status" id="status" aria-live="polite"></div><div id="end"></div><div class="keyboard" id="kb"></div></div>`;
-  if (pv) $("#reset").onclick = e => { e.preventDefault(); store.del(KEY); route(); };
+  if (pv) $("#reset").onclick = e => { e.preventDefault(); quordleGame = null; route(); };
 
   const solvedAt = () => W.map(w => st.guesses.indexOf(w));
   const won = () => solvedAt().every(i => i >= 0);
@@ -831,7 +832,7 @@ function renderDay1(view, pv) {
     const before = solvedAt().filter(i => i >= 0).length;
     const guess = cur;
     st.guesses.push(guess); lastFlip = st.guesses.length - 1; cur = "";
-    store.set(KEY, st); draw();
+    draw();
     react(guess, before);
   }
 
@@ -857,7 +858,7 @@ function renderDay1(view, pv) {
       <div class="row-btns" style="justify-content:center"><button class="btn" id="again" type="button">Play again</button></div>
       <p class="msg"><strong>Tomorrow's candle lights at midnight.</strong></p>
     </div>`;
-    $("#again").onclick = () => { store.set(KEY, { answers: freshAnswers(), guesses: [] }); route(); };
+    $("#again").onclick = () => { quordleGame = null; route(); };
     if (w) buddy.say("joy", "WE DID IT!! 🎉", { burst: lastFlip >= 0 ? "big" : false });
     else buddy.say("sad", n ? `${n} out of 4… next time!` : "Aww… next time!");
   }
