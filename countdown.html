@@ -93,18 +93,18 @@ body {
 /* buddy */
 #buddy-slot { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); z-index: 5; align-self: start; }
 .buddy { display: grid; justify-items: center; gap: 10px; padding: 14px 10px; border-radius: 18px; background: #fff; border: 2px solid var(--line); z-index: 5; }
-.spritebox { position: relative; width: 140px; height: 168px; display: grid; place-items: end center; }
-.sprite { width: 140px; height: 168px; image-rendering: pixelated; image-rendering: crisp-edges; display: block; transition: filter .3s; }
+.spritebox { position: relative; width: 130px; height: 240px; display: grid; place-items: end center; }
+.sprite { width: 130px; height: 240px; image-rendering: pixelated; image-rendering: crisp-edges; display: block; transition: filter .3s; }
 .bubble { position: relative; background: var(--tint); border-radius: 14px; padding: 8px 12px; font-weight: 800; font-size: 14px; text-align: center; color: var(--ink); min-height: 2.6em; display: grid; place-items: center; width: 100%; }
 .bubble::before { content: ""; position: absolute; top: -8px; left: 50%; margin-left: -8px; border: 8px solid transparent; border-top: 0; border-bottom-color: var(--tint); }
 .bname { font-family: var(--display); font-size: 18px; color: var(--accent); line-height: 1; }
 .edit-buddy { font: 700 12px var(--body); color: var(--soft); background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 0; }
 
 .fx > * { position: absolute; opacity: 0; transition: opacity .25s; pointer-events: none; }
-.cloud { top: -6px; left: 50%; transform: translateX(-50%); width: 96px; height: 40px; image-rendering: pixelated; }
-.rain { top: 30px; left: 50%; transform: translateX(-50%); width: 80px; height: 40px; }
+.cloud { top: -22px; left: 50%; transform: translateX(-50%); width: 96px; height: 40px; image-rendering: pixelated; }
+.rain { top: 14px; left: 50%; transform: translateX(-50%); width: 80px; height: 40px; }
 .rain i { position: absolute; top: 0; width: 3px; height: 8px; background: #7fa7e8; border-radius: 2px; animation: drop .9s linear infinite; }
-.think { top: 6px; right: -2px; display: flex; gap: 4px; background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 6px 8px; }
+.think { top: 2px; right: -14px; display: flex; gap: 4px; background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 6px 8px; }
 .think::after { content: ""; position: absolute; bottom: -12px; left: 8px; width: 8px; height: 8px; border: 3px solid var(--ink); border-radius: 50%; background: #fff; }
 .think i { width: 6px; height: 6px; background: var(--ink); border-radius: 50%; animation: dots 1s infinite; }
 .think i:nth-child(2) { animation-delay: .15s; } .think i:nth-child(3) { animation-delay: .3s; }
@@ -124,7 +124,7 @@ body {
 /* buddy maker */
 .maker { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 24px; align-items: start; }
 .maker .preview { display: grid; justify-items: center; gap: 10px; background: #fff; border: 2px solid var(--line); border-radius: 18px; padding: 16px; }
-.maker .preview canvas { width: 160px; height: 192px; image-rendering: pixelated; }
+.maker .preview canvas { width: 156px; height: 288px; image-rendering: pixelated; }
 .opts { display: grid; gap: 14px; min-width: 0; }
 .opt { display: grid; gap: 6px; }
 .opt > label, .opt > span { font-weight: 800; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--soft); }
@@ -178,12 +178,12 @@ body {
   .stage { grid-template-columns: minmax(0, 1fr); gap: 14px; }
   #buddy-slot { top: env(safe-area-inset-top, 0px); }
   .buddy { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "s b" "s n"; justify-items: start; align-items: center; padding: 8px 12px; gap: 4px 12px; box-shadow: 0 8px 20px -14px rgba(35,28,32,.4); }
-  .spritebox { grid-area: s; width: 72px; height: 86px; }
-  .sprite { width: 72px; height: 86px; }
+  .spritebox { grid-area: s; width: 52px; height: 96px; }
+  .sprite { width: 52px; height: 96px; }
   .bubble { grid-area: b; text-align: left; place-items: center start; min-height: 0; }
   .bubble::before { top: 50%; left: -8px; margin: -8px 0 0; border: 8px solid transparent; border-left: 0; border-right-color: var(--tint); }
   .namebar { grid-area: n; display: flex; gap: 10px; align-items: baseline; }
-  .cloud { width: 60px; height: 25px; top: -10px; } .rain { top: 10px; width: 50px; }
+  .cloud { width: 60px; height: 25px; top: -14px; } .rain { top: 6px; width: 50px; }
   .think { top: -4px; right: -14px; padding: 4px 6px; } .think i { width: 4px; height: 4px; }
   .maker { grid-template-columns: minmax(0, 1fr); }
 }
@@ -244,64 +244,247 @@ const store = {
    PIXEL BUDDY
    ============================================================ */
 const BUDDY_OPTS = {
-  skin:   ["#ffe0c7", "#f6c9a4", "#e0a77f", "#c68657", "#8d5a3b", "#5e3b28"],
-  hair:   ["#3b2a2a", "#7a4a2b", "#e8c26b", "#d9603b", "#f29cc0", "#8a7cf0"],
-  outfit: ["#e2457a", "#5fbf95", "#6aa3f5", "#f2c14e", "#b39cf5", "#fdfdfd"],
-  style:  [["short", "Short"], ["long", "Long"], ["buns", "Buns"], ["curly", "Curly"], ["buzz", "Buzz"]],
-  extra:  [["none", "Nothing"], ["bow", "Bow"], ["hat", "Party hat"], ["ears", "Cat ears"], ["glasses", "Glasses"], ["crown", "Crown"]],
+  skin:   ["#ffe3cc", "#f3cba5", "#e0a77f", "#c68657", "#8d5a3b", "#5e3b28"],
+  hair:   ["#1e1a1d", "#4a3226", "#8a5a36", "#e8c26b", "#d9603b", "#8a7cf0"],
+  outfit: ["#a9c79a", "#9fc3e6", "#e7a9b8", "#f2d27a", "#c3aee6", "#f4f1ea"],
+  style:  [["fluffy", "Fluffy"], ["neat", "Neat"], ["curly", "Curly"], ["long", "Long"], ["buzz", "Buzz"]],
+  glasses:[["yes", "Glasses"], ["no", "No glasses"]],
+  extra:  [["none", "Nothing"], ["hat", "Party hat"], ["crown", "Crown"], ["bow", "Bow"], ["ears", "Cat ears"]],
 };
-const BW = 20, BH = 24, OUT = "#3a2340";
+const BUDDY_DEFAULT = { skin: "#f3cba5", hair: "#1e1a1d", outfit: "#a9c79a", style: "fluffy", glasses: "yes", extra: "none" };
 const BUDDY_KEY = "bday-buddy";
-
+// ===== new buddy sprite (26 x 48), drawn as text, recoloured from the maker's choices =====
+const BUDDY_W = 26, BUDDY_H = 48;
+const BODY = [ // S skin s skin-shade | W shirt w shirt-shade | G sweater g sweater-shade L sweater-light | P trousers p trousers-shade | B shoes
+"..........................",
+"..........................",
+"..........................",
+"..........................",
+"..........................",
+"..........................",
+"..........................",
+"..........................",
+"........SSSSSSSSSS........",
+"......SSSSSSSSSSSSSS......",
+".....SSSSSSSSSSSSSSSS.....",
+".....SSSSSSSSSSSSSSSS.....",
+".....SSSSSSSSSSSSSSSS.....",
+".....SSSSSSSSSSSSSSSS.....",
+".....SSSSSSSSSSSSSSSS.....",
+".....SSSSSSSSSSSSSSSS.....",
+"....sSSSSSSSSSSSSSSSSs....",
+"....sSSSSSSSSSSSSSSSSs....",
+".....SSSSSSSSSSSSSSSS.....",
+"......sSSSSSSSSSSSSs......",
+"........sSSSSSSSSs........",
+"..........sSSSSs..........",
+"..........sSSSSs..........",
+".........WWssssWW.........",
+"......GGGWWWssWWWGGG......",
+"....GGGGGGWWWWWWGGGGGG....",
+"...GLLGGGGGgWWgGGGGGLLG...",
+"...GLGGgGGGGGGGGGGgGGLG...",
+"...GGGGgGGGGGGGGGGgGGGG...",
+"...GGGGgGGGGGGGGGGgGGGG...",
+"...gGGGgGGGGGGGGGGgGGGg...",
+"...gGGGgGGGGGGGGGGgGGGg...",
+"...gGGGgGGGGgGGGGGgGGGg...",
+"...gGGGgGGGGGgGGGGgGGGg...",
+"...gGGgggGGGGGGGGgggGGg...",
+"....gg.gggggggggggg.gg....",
+"......PPPPPPPPPPPPPP......",
+"......PPPPPPPPPPPPPP......",
+"......PPPPPPpPPPPPPP......",
+"......PPPPPp..pPPPPP......",
+"......pPPPPp..pPPPPp......",
+"......pPPPPp..pPPPPp......",
+"......pPPPPp..pPPPPp......",
+"......pPPPPp..pPPPPp......",
+".....BBBBBBB..BBBBBBB.....",
+".....BBBBBBB..BBBBBBB.....",
+"..........................",
+"..........................",
+];
+const HAIR = { // H hair h highlight k shade; '.' leaves the body alone
+fluffy: [
+"..........................",
+"..........................",
+"..........................",
+"..........HH..H...........",
+".......H.HHHHHHH.HH.......",
+"......HHHHHHhhHHHHHH......",
+".....HHHHHhhHHHHHHHHHH....",
+"....HHHHHHHHHHHHHHHHHHH...",
+"...HHHHHHHHHHHHHHHHHHHHH..",
+"...HHHHHHHHkHHHHHkHHHHHH..",
+"...HHHHHkHHkHHHkHHkHHHHH..",
+"...HHHHkHHHkHHHkHHkHHHHH..",
+"...HHHkHHk..Hk.kH.kHkHHH..",
+"...HHH...k..........HHHH..",
+"...HHH...............HHH..",
+"....HH...............HH...",
+"....H.................H...",
+],
+neat: [
+"..........................",
+"..........................",
+"..........................",
+"..........................",
+"..........................",
+"........HHHHHHHHHH........",
+"......HHHHHhhhHHHHHH......",
+".....HHHHhhHHHHHHHHHH.....",
+"....HHHHHHHHHHHHHHHHHH....",
+"....HHHHHHHHHHHHHHHHHH....",
+"....HHHHHHHHHkHHHHHHHH....",
+"....HHHHHHHHk..kkHHHHH....",
+"....HHHk...........HHH....",
+"....HH..............HH....",
+"....H................H....",
+],
+curly: [
+"..........................",
+"..........................",
+"..........................",
+"........HH.HH.HH..........",
+"......HHHHHHHHHHHHH.......",
+".....HhHHHhHHHhHHHHHH.....",
+"....HHHHHHHHHHHHHHHHHH....",
+"...HHhHHHHhHHHHhHHHHhHH...",
+"...HHHHHHHHHHHHHHHHHHHH...",
+"..HHHHHHHHHHHHHHHHHHHHHH..",
+"..HHHHkHHkHHHkHHkHHHkHHH..",
+"..HHHH..k...k...k...HHHH..",
+"..HHH...............HHHH..",
+"..HHH................HHH..",
+"...HH................HH...",
+"...H..................H...",
+],
+long: [
+"..........................",
+"..........................",
+"..........................",
+"..........................",
+"........HHHHHHHHHH........",
+"......HHHHHhhhHHHHHH......",
+".....HHHHhhHHHHHHHHHH.....",
+"....HHHHHHHHHHHHHHHHHH....",
+"...HHHHHHHHHHHHHHHHHHHH...",
+"...HHHHHHHHHHHHHHHHHHHH...",
+"...HHHHHHkHHHHHHkHHHHHH...",
+"...HHHHHk.kk..kk.kHHHHH...",
+"...HHHH............HHHH...",
+"...HHH..............HHH...",
+"...HHH..............HHH...",
+"...HHH..............HHH...",
+"...HHH..............HHH...",
+"...HHH..............HHH...",
+"...HHH..............HHH...",
+"...HHHH............HHHH...",
+"...HHHHH..........HHHHH...",
+"....HHHH..........HHHH....",
+"....HHH............HHH....",
+],
+buzz: [
+"..........................",
+"..........................",
+"..........................",
+"..........................",
+"..........................",
+"..........................",
+"..........................",
+"........kHHHHHHHHk........",
+"......kHHHHHHHHHHHHk......",
+".....kHHHHHHHHHHHHHHk.....",
+".....kHHHHHHHHHHHHHHk.....",
+".....k..............k.....",
+],
+};
+const ARMS = { // overlays for moods; '_' clears a pixel
+joy: [
+[14, "..GG..................GG.."],
+[15, ".GGG..................GGG."],
+[13, ".SS....................SS."],
+[12, ".SS....................SS."],
+[16, ".GGG..................GGG."],
+[17, ".gGG..................GGg."],
+[18, "..gGG................GGg.."],
+[19, "..gGG................GGg.."],
+[20, "...gGG..............GGg..."],
+[21, "...gGG..............GGg..."],
+[22, "....GG..............GG...."],
+[23, "....GG..............GG...."],
+[24, "....GG..............GG...."],
+[25, "....GG..............GG...."],
+[26, "...____............____..."],
+[27, "...____............____..."],
+[28, "...____............____..."],
+[29, "...____............____..."],
+[30, "...____............____..."],
+[31, "...____............____..."],
+[32, "...____............____..."],
+[33, "...____............____..."],
+[34, "...____............____..."],
+[35, "...____............____..."],
+],
+think: [
+],
+};
+function shade(hex, f) { // f<0 darker, f>0 lighter
+  const n = parseInt(hex.slice(1), 16); let r = n >> 16, g = n >> 8 & 255, b = n & 255;
+  const t = f < 0 ? 0 : 255, a = Math.abs(f);
+  r = Math.round(r + (t - r) * a); g = Math.round(g + (t - g) * a); b = Math.round(b + (t - b) * a);
+  return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
+}
 function buddyGrid(c, mood, blink) {
-  const m = Array.from({ length: BH }, () => Array(BW).fill(null));
-  const set = (g, x, y, col) => { y += 1; if (x >= 0 && x < BW && y >= 0 && y < BH) g[y][x] = col; };
-  const rect = (g, x0, y0, x1, y1, col) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) set(g, x, y, col); };
-  const S = c.skin, H = c.hair, T = c.outfit;
+  const pal = {
+    S: c.skin, s: shade(c.skin, -.14),
+    H: c.hair, h: shade(c.hair, .28), k: shade(c.hair, -.35),
+    G: c.outfit, g: shade(c.outfit, -.2), L: shade(c.outfit, .3),
+    W: "#fbfaf7", w: "#d9d6d2",
+    P: c.pants || "#2a2630", p: shade(c.pants || "#2a2630", -.25), B: "#1d1a20",
+  };
+  const g = BODY.map(r => [...r].map(ch => ch === "." ? null : ch));
+  const over = (rows, y0 = 0) => rows.forEach((r, j) => [...r].forEach((ch, i) => { if (ch === "_") g[y0 + j][i] = null; else if (ch !== ".") g[y0 + j][i] = ch; }));
+  over(HAIR[c.style] || HAIR.fluffy);
+  (ARMS[mood] || []).forEach(([y, r]) => over([r], y));
+  // extras on top of the hair
+  const put = (x, y, col) => { if (g[y] && x >= 0 && x < BUDDY_W) g[y][x] = col; };
+  if (c.extra === "hat") { put(13, 0, "#fff"); [[12, 1, 13], [12, 2, 14], [11, 3, 14], [11, 4, 15]].forEach(([a, y, b], k) => { for (let x = a; x <= b; x++) put(x, y, k % 2 ? "#e2457a" : "#f2c14e"); }); }
+  if (c.extra === "crown") { [10, 13, 16].forEach(x => put(x, 2, "#f2c14e")); for (let x = 10; x <= 16; x++) { put(x, 3, "#f2c14e"); put(x, 4, "#e9b23a"); } put(13, 3, "#e2457a"); }
+  if (c.extra === "bow") { [[16, 4], [16, 5], [16, 6], [17, 5], [19, 4], [19, 5], [19, 6], [18, 5]].forEach(([x, y]) => put(x, y, "#ff6fa0")); put(17.5 | 0, 5, "#d93f74"); }
+  if (c.extra === "ears") { [[5, 3], [5, 4], [6, 4], [6, 5], [20, 3], [20, 4], [19, 4], [19, 5]].forEach(([x, y]) => put(x, y, "H")); put(6, 5, "#ffb3c7"); put(19, 5, "#ffb3c7"); }
 
-  // body, sleeves, arms
-  rect(m, 7, 14, 12, 19, T); set(m, 6, 14, T); set(m, 13, 14, T);
-  if (mood === "joy") { rect(m, 5, 10, 5, 14, S); rect(m, 14, 10, 14, 14, S); }
-  else if (mood === "think") { rect(m, 6, 15, 6, 17, S); rect(m, 14, 11, 14, 14, S); }
-  else { rect(m, 6, 15, 6, 17, S); rect(m, 13, 15, 13, 17, S); }
-  rect(m, 8, 20, 8, 21, "#5b3d63"); rect(m, 11, 20, 11, 21, "#5b3d63");
-  // head
-  rect(m, 6, 6, 13, 13, S); [[6, 6], [13, 6], [6, 13], [13, 13]].forEach(([x, y]) => set(m, x, y, null));
-  // hair
-  const top = () => { rect(m, 7, 5, 12, 5, H); rect(m, 6, 6, 13, 6, H); rect(m, 6, 7, 8, 7, H); rect(m, 11, 7, 13, 7, H); set(m, 6, 8, H); set(m, 13, 8, H); };
-  switch (c.style) {
-    case "long": top(); rect(m, 5, 7, 5, 15, H); rect(m, 14, 7, 14, 15, H); set(m, 6, 9, H); set(m, 13, 9, H); break;
-    case "buns": top(); rect(m, 5, 3, 6, 4, H); rect(m, 13, 3, 14, 4, H); set(m, 6, 5, H); set(m, 13, 5, H); break;
-    case "curly": [7, 9, 11].forEach(x => set(m, x, 4, H)); rect(m, 6, 5, 13, 5, H); rect(m, 5, 6, 14, 7, H); [8, 9, 10].forEach(y => { set(m, 5, y, H); set(m, 14, y, H); }); set(m, 9, 7, S); set(m, 10, 7, S); break;
-    case "buzz": rect(m, 7, 5, 12, 5, H); rect(m, 6, 6, 13, 6, H); break;
-    default: top();
-  }
-  // shaped extras (get outlined)
-  if (c.extra === "hat") { set(m, 10, 0, "#fff"); rect(m, 9, 1, 10, 1, "#f2c14e"); rect(m, 9, 2, 11, 2, "#e2457a"); rect(m, 8, 3, 11, 3, "#f2c14e"); rect(m, 8, 4, 12, 4, "#e2457a"); }
-  if (c.extra === "ears") { set(m, 6, 3, H); rect(m, 6, 4, 7, 4, H); set(m, 13, 3, H); rect(m, 12, 4, 13, 4, H); set(m, 6, 4, "#ffb3c7"); set(m, 13, 4, "#ffb3c7"); }
-  if (c.extra === "bow") { rect(m, 11, 3, 11, 5, "#ff6fa0"); rect(m, 13, 3, 13, 5, "#ff6fa0"); set(m, 12, 4, "#d93f74"); }
-  if (c.extra === "crown") { [8, 10, 12].forEach(x => set(m, x, 3, "#f2c14e")); rect(m, 8, 4, 12, 4, "#f2c14e"); set(m, 10, 4, "#e2457a"); }
-
-  // outline pass
-  const g = m.map(r => r.slice());
-  for (let y = 0; y < BH; y++) for (let x = 0; x < BW; x++) {
+  // resolve palette, then a soft dark outline around everything
+  const m = g.map(r => r.map(ch => ch == null ? null : (pal[ch] || ch)));
+  const OUT = "#2b2027";
+  const o = m.map(r => r.slice());
+  for (let y = 0; y < BUDDY_H; y++) for (let x = 0; x < BUDDY_W; x++) {
     if (m[y][x]) continue;
-    if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => m[y + dy]?.[x + dx])) g[y][x] = OUT;
+    if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => m[y + dy]?.[x + dx])) o[y][x] = OUT;
   }
-  // face
-  const E = OUT, blush = "#ff9fb8";
-  if (c.extra === "glasses") { rect(g, 7, 9, 9, 10, "#d6e8ff"); rect(g, 10, 9, 12, 10, "#d6e8ff"); rect(g, 7, 8, 9, 8, E); rect(g, 10, 8, 12, 8, E); }
-  if (mood === "joy") { [[7, 10], [8, 9], [9, 10], [10, 10], [11, 9], [12, 10]].forEach(([x, y]) => set(g, x, y, E)); }
-  else if (mood === "sad") { set(g, 8, 10, E); set(g, 11, 10, E); set(g, 7, 9, E); set(g, 12, 9, E); set(g, 12, 11, "#7fa7e8"); set(g, 12, 12, "#7fa7e8"); }
-  else if (mood === "think") { rect(g, 9, 9, 9, 10, E); rect(g, 12, 9, 12, 10, E); set(g, 9, 9, "#fff"); }
-  else if (blink) { set(g, 8, 10, E); set(g, 11, 10, E); }
-  else { rect(g, 8, 9, 8, 10, E); rect(g, 11, 9, 11, 10, E); set(g, 8, 9, "#fff"); set(g, 11, 9, "#fff"); }
-  set(g, 7, 11, blush); if (mood !== "sad") set(g, 12, 11, blush);
-  if (mood === "joy") { rect(g, 8, 12, 11, 12, E); rect(g, 9, 13, 10, 13, "#e2457a"); }
-  else if (mood === "sad") { rect(g, 9, 12, 10, 12, E); set(g, 8, 13, E); set(g, 11, 13, E); }
-  else if (mood === "think") { rect(g, 10, 12, 11, 12, E); }
-  else { set(g, 8, 11, E); rect(g, 9, 12, 10, 12, E); set(g, 11, 11, E); }
-  return g;
+  // face (eyes sit at rows 13–14, mouth at 18)
+  const E = "#2b2027", set = (x, y, col) => { o[y][x] = col; };
+  const blush = shade(c.skin, -.02) === c.skin ? "#f4a3a3" : "#f4a3a3";
+  if (c.glasses === "yes" || c.glasses === true) {
+    const fr = "#b46a2c";
+    [[7, 12], [8, 12], [9, 12], [10, 12], [6, 13], [11, 13], [6, 14], [11, 14], [7, 15], [8, 15], [9, 15], [10, 15],
+     [15, 12], [16, 12], [17, 12], [18, 12], [14, 13], [19, 13], [14, 14], [19, 14], [15, 15], [16, 15], [17, 15], [18, 15],
+     [12, 13], [13, 13]].forEach(([x, y]) => set(x, y, fr));
+    for (let y = 13; y <= 14; y++) for (let x = 7; x <= 10; x++) { set(x, y, "#f6efe6"); set(x + 8, y, "#f6efe6"); }
+  }
+  if (mood === "joy") { [[7, 14], [8, 13], [9, 13], [10, 14], [15, 14], [16, 13], [17, 13], [18, 14]].forEach(([x, y]) => set(x, y, E)); }
+  else if (mood === "sad") { set(8, 14, E); set(9, 14, E); set(16, 14, E); set(17, 14, E); set(7, 13, E); set(18, 13, E); set(18, 16, "#7fa7e8"); set(18, 17, "#7fa7e8"); }
+  else if (mood === "think") { set(9, 13, E); set(10, 13, E); set(17, 13, E); set(18, 13, E); set(9, 14, E); set(17, 14, E); }
+  else if (blink) { set(8, 14, E); set(9, 14, E); set(16, 14, E); set(17, 14, E); }
+  else { set(8, 13, E); set(8, 14, E); set(9, 14, E); set(9, 13, "#fff"); set(16, 13, E); set(16, 14, E); set(17, 14, E); set(17, 13, "#fff"); }
+  set(7, 16, blush); set(8, 16, blush); set(17, 16, blush); if (mood !== "sad") set(18, 16, blush);
+  set(13, 16, shade(c.skin, -.16));                                      // nose
+  if (mood === "joy") { for (let x = 11; x <= 14; x++) set(x, 18, E); set(12, 19, "#e2627a"); set(13, 19, "#e2627a"); }
+  else if (mood === "sad") { set(12, 18, E); set(13, 18, E); set(11, 19, E); set(14, 19, E); }
+  else if (mood === "think") { set(13, 18, E); set(14, 18, E); }
+  else { set(11, 18, E); set(12, 19, E); set(13, 19, E); set(14, 18, E); }
+  return o;
 }
 
 function paintGrid(canvas, grid, scale = 8) {
@@ -344,7 +527,7 @@ function mountBuddy(host, onEdit) {
   paintGrid($(".cloud", el), cloudGrid(), 6);
   $(".edit-buddy", el).onclick = onEdit;
   let mood = "idle", revert = null;
-  const draw = (blink = false) => paintGrid(sprite, buddyGrid(cfg, mood, blink), 7);
+  const draw = (blink = false) => paintGrid(sprite, buddyGrid(cfg, mood, blink), 5);
   draw();
   const blinker = setInterval(() => { if (mood === "idle") { draw(true); setTimeout(() => draw(), 140); } }, 3600);
   return {
@@ -364,8 +547,10 @@ function mountBuddy(host, onEdit) {
 function renderMaker(view, onDone, onCancel) {
   const existing = loadBuddy();
   const pick = a => a[Math.random() * a.length | 0];
-  const randomCfg = () => ({ skin: pick(BUDDY_OPTS.skin), hair: pick(BUDDY_OPTS.hair), outfit: pick(BUDDY_OPTS.outfit), style: pick(BUDDY_OPTS.style)[0], extra: pick(BUDDY_OPTS.extra)[0] });
-  const cfg = Object.assign({ name: "" }, randomCfg(), existing || {});
+  const randomCfg = () => ({ skin: pick(BUDDY_OPTS.skin), hair: pick(BUDDY_OPTS.hair), outfit: pick(BUDDY_OPTS.outfit), style: pick(BUDDY_OPTS.style)[0], glasses: pick(BUDDY_OPTS.glasses)[0], extra: pick(BUDDY_OPTS.extra)[0] });
+  const cfg = Object.assign({ name: "" }, BUDDY_DEFAULT, existing || {});
+  if (!BUDDY_OPTS.style.some(([v]) => v === cfg.style)) cfg.style = "fluffy";
+  if (typeof cfg.glasses !== "string") cfg.glasses = "yes";
   view.innerHTML = `<section class="card">
     <h2>${existing ? "Edit your buddy" : "First, make your buddy"}</h2>
     <p>${existing ? "Change anything you like." : `This little one will play every game with you for the next ten days, ${escapeHtml(CONFIG.name)}. It gets sad when you miss, thinks hard when you're close, and celebrates when you get it.`}</p>
@@ -373,7 +558,7 @@ function renderMaker(view, onDone, onCancel) {
       <div class="preview"><canvas id="mk-canvas"></canvas><button class="btn ghost" id="mk-rand" type="button">Shuffle</button></div>
       <div class="opts">
         <div class="opt"><label for="mk-name">Name</label><input class="text-in" id="mk-name" maxlength="14" placeholder="e.g. Bean" value="${escapeHtml(cfg.name)}"></div>
-        ${swatchGroup("Skin", "skin")}${chipGroup("Hair", "style")}${swatchGroup("Hair colour", "hair")}${swatchGroup("Outfit", "outfit")}${chipGroup("Extra", "extra")}
+        ${swatchGroup("Skin", "skin")}${chipGroup("Hair", "style")}${chipGroup("Glasses", "glasses")}${swatchGroup("Hair colour", "hair")}${swatchGroup("Outfit", "outfit")}${chipGroup("Extra", "extra")}
         <div class="row-btns"><button class="btn" id="mk-save" type="button">That's me!</button>${existing ? `<button class="btn ghost" id="mk-cancel" type="button">Cancel</button>` : ""}</div>
       </div>
     </div></section>`;
@@ -385,7 +570,7 @@ function renderMaker(view, onDone, onCancel) {
   }
   const sync = () => {
     view.querySelectorAll(".choices").forEach(g => g.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === cfg[g.dataset.key])));
-    paintGrid($("#mk-canvas"), buddyGrid(cfg, "joy"), 8);
+    paintGrid($("#mk-canvas"), buddyGrid(cfg, "idle"), 6);
   };
   view.querySelectorAll(".choices").forEach(g => g.onclick = e => { const b = e.target.closest("button"); if (b) { cfg[g.dataset.key] = b.dataset.v; sync(); } });
   $("#mk-rand").onclick = () => { Object.assign(cfg, randomCfg()); sync(); };
