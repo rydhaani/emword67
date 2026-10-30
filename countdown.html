@@ -228,6 +228,7 @@ const CONFIG = {
   name: "Mutahar",
   age: "27th",
   year: 2026, month: 11,          // November 2026 (normal 1–12 numbering)
+  quordle: ["GREEN", "WHARF", "INDEX", "CUTIE"],   // day 1's four words. "play again" after that deals random ones
   days: { 1: "Quordle", 2: "Final Cut", 3: "Pop the Balloons", 4: "Name That Tune", 5: "Connections",
           6: "Whack-a-Mole", 7: "Sliding Puzzle", 8: "Word Search", 9: "Light the Candles", 10: "The Big Day" },
 };
@@ -728,7 +729,7 @@ function score(guess, answer) {
 const chunk5 = s => s.match(/.{5}/g);
 let WORDS = null;
 function words() {
-  if (!WORDS) { const a = chunk5(ANSWERS_RAW); WORDS = { answers: a, valid: new Set([...a, ...chunk5(GUESSES_RAW)]) }; }
+  if (!WORDS) { const a = chunk5(ANSWERS_RAW); WORDS = { answers: a, valid: new Set([...a, ...chunk5(GUESSES_RAW), ...CONFIG.quordle.map(w => w.toLowerCase())]) }; }
   return WORDS;
 }
 function freshAnswers() {
@@ -738,14 +739,14 @@ function freshAnswers() {
 }
 
 function renderDay1(view, pv) {
-  const MAX = 9, KEY = "bday-quordle";
+  const MAX = 9, KEY = "bday-quordle-v2";
   let st = store.get(KEY);
-  if (!st || !Array.isArray(st.answers) || st.answers.length !== 4) { st = { answers: freshAnswers(), guesses: [] }; store.set(KEY, st); }
+  if (!st || !Array.isArray(st.answers) || st.answers.length !== 4) { st = { answers: CONFIG.quordle.map(w => w.toUpperCase()), guesses: [] }; store.set(KEY, st); }
   const W = st.answers;
   let cur = "", lastFlip = -1;
 
   const game = stage(view, pv, "Day 1 · Quordle", "Guess all four words in 9 tries. Every guess goes into all four boards.",
-    ` · <a href="#" id="reset">new game</a>`);
+    ` · <a href="#" id="reset">restart with the real words</a>`);
   game.innerHTML = `<div style="display:grid;gap:14px">
     <div class="tally" id="tally" aria-label="Boards solved"></div>
     <div class="boards" id="boards"></div>
