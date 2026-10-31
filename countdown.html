@@ -232,6 +232,46 @@ body {
 .nt-list li { grid-template-columns: 22px minmax(0, 1fr) auto; }
 .nt-li { display: grid; color: var(--ink); } .nt-li b { font-weight: 700; } .nt-li small { color: var(--soft); font-size: 13px; }
 @media (max-width: 520px) { .nt-form { grid-template-columns: minmax(0, 1fr); } }
+/* pet theo */
+.pt { display: grid; gap: 12px; width: 100%; max-width: 480px; justify-self: center; }
+.pt-legend { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 8px; }
+.pt-leg { display: grid; justify-items: center; text-align: center; gap: 2px; font-size: 12px; color: var(--soft); }
+.pt-leg img { width: 56px; height: auto; image-rendering: pixelated; }
+.pt-leg b { color: var(--ink); font-size: 13px; }
+.pt-small { font-size: 14px; }
+.pt-hud { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-variant-numeric: tabular-nums; }
+.pt-hearts { color: var(--accent); font-size: 22px; letter-spacing: 2px; }
+.pt-score { font-size: 28px; } .pt-time { color: var(--soft); font-size: 20px; min-width: 2ch; text-align: right; }
+.pt-time::after { content: "s"; font-size: 14px; }
+.pt-meter { position: relative; height: 18px; border-radius: 999px; background: var(--tint); overflow: hidden; border: 1.5px solid var(--line); }
+.pt-meter i { position: absolute; inset: 0 auto 0 0; width: 0; background: linear-gradient(90deg, #f2c58f, #e89a9a); transition: width .2s; }
+.pt-meter span { position: relative; display: block; text-align: center; font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; line-height: 15px; color: var(--ink); }
+.pt-board { position: relative; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+.pt-top { position: relative; height: 60px; overflow: hidden; border-bottom: 10px solid #7a4e2d; border-radius: 6px 6px 0 0; }
+.pt-zoom { position: absolute; bottom: -6px; left: 0; width: 76px; image-rendering: pixelated; cursor: pointer; }
+.pt-cab { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 12px; background: #9a6638; border-radius: 0 0 14px 14px;
+  box-shadow: inset 0 0 0 4px #7a4e2d, 0 12px 24px -16px rgba(60,30,10,.6); perspective: 600px; }
+.pt-cubby { position: relative; aspect-ratio: 1; border: 0; padding: 0; border-radius: 6px; overflow: hidden; cursor: pointer;
+  background: radial-gradient(ellipse at 50% 120%, #4a2e1c, #2a170d 70%); box-shadow: inset 0 6px 10px rgba(0,0,0,.5); }
+.pt-cubby img { position: absolute; left: 50%; bottom: 0; width: 84%; image-rendering: pixelated; transform: translate(-50%, 100%); transition: transform .16s ease-out; pointer-events: none; }
+.pt-cubby.open img { transform: translate(-50%, 6%); }
+.pt-door { position: absolute; inset: 0; background: linear-gradient(135deg, #c48a52, #a8703f); border: 3px solid #7a4e2d; border-radius: 6px;
+  transform-origin: 0 50%; transition: transform .16s ease-out; pointer-events: none; box-shadow: inset 0 0 0 5px rgba(255,255,255,.08); }
+.pt-door i { position: absolute; right: 12%; top: 46%; width: 9px; height: 9px; border-radius: 50%; background: #f2d27a; box-shadow: 0 1px 0 #7a4e2d; }
+.pt-cubby.open .pt-door { transform: rotateY(-112deg); }
+.pt-cubby.stir img { animation: stir .35s; }
+@keyframes stir { 25% { transform: translate(-54%, 6%) rotate(-4deg); } 75% { transform: translate(-46%, 6%) rotate(4deg); } }
+.pt-board.purring .pt-cab { box-shadow: inset 0 0 0 4px #e89a9a, 0 0 0 4px #ffd3d3, 0 12px 24px -16px rgba(60,30,10,.6); }
+.pt-board.slowmo .pt-cab { filter: saturate(1.15) hue-rotate(-8deg); }
+.pt-float { position: absolute; transform: translate(-50%, 0); font-weight: 800; font-size: 18px; pointer-events: none; animation: floatup .9s ease-out forwards; white-space: nowrap; text-shadow: 0 1px 0 #fff, 0 0 6px #fff; }
+.pt-float.good { color: #d9536e; } .pt-float.bad { color: #6b4b8a; } .pt-float.soft { color: var(--soft); }
+@keyframes floatup { to { transform: translate(-50%, -46px); opacity: 0; } }
+.pt-banner { position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%); font-family: var(--display); font-size: clamp(30px, 8vw, 48px); color: #fff;
+  text-shadow: 0 2px 0 #d9536e, 0 0 18px rgba(217,83,110,.6); pointer-events: none; white-space: nowrap; }
+.pt-banner.pop { animation: bannerpop 1.3s ease-out forwards; }
+@keyframes bannerpop { 0% { transform: translate(-50%, -50%) scale(.6); opacity: 0; } 20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } 80% { opacity: 1; } 100% { transform: translate(-50%, -70%) scale(1); opacity: 0; } }
+.pt-sleep { width: 120px; image-rendering: pixelated; }
+@media (max-width: 420px) { .pt-legend { grid-template-columns: repeat(4, minmax(0, 1fr)); } .pt-leg img { width: 44px; } .pt-cab { gap: 7px; padding: 9px; } }
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 20; }
 
 @media (max-width: 700px) {
@@ -281,7 +321,7 @@ const CONFIG = {
   age: "27th",
   year: 2026, month: 11,          // November 2026 (normal 1–12 numbering)
   days: { 1: "Quordle", 2: "Final Cut", 3: "Pop the Balloons", 4: "Name That Tune", 5: "Connections",
-          6: "Whack-a-Mole", 7: "Sliding Puzzle", 8: "Word Search", 9: "Light the Candles", 10: "The Big Day" },
+          6: "Pet Theo", 7: "Sliding Puzzle", 8: "Word Search", 9: "Light the Candles", 10: "The Big Day" },
 };
 /* ============================================================ */
 
@@ -675,13 +715,14 @@ function candleSVG([fill, dy, tilt]) {
 
 function route() {
   const view = $("#view");
-  view.innerHTML = ""; stopClock(); clearInterval(fcTimer); stopTune(); buddy?.destroy(); buddy = null; document.onkeydown = null;
+  view.innerHTML = ""; stopClock(); clearInterval(fcTimer); stopTune(); stopPetTheo(); buddy?.destroy(); buddy = null; document.onkeydown = null;
   if (viewing == null) return renderHome(view);
   if (!loadBuddy()) return renderMaker(view, route);          // buddy is made before any game
   if (viewing === 10) { location.href = PV() ? "index.html?peek" : "index.html"; return; }   // the cake page that's already built
   if (viewing === 1) return renderDay1(view, PV());
   if (viewing === 2) return renderDay2(view, PV());
   if (viewing === 4) return renderDay4(view, PV());
+  if (viewing === 6) return renderDay6(view, PV());
   return renderPlaceholder(view, viewing, PV());
 }
 
@@ -1161,6 +1202,282 @@ function renderDay4(view, pv) {
 }
 
 const TUNE_PEAKS = {"ode-to-the-mets":[0.65,0.64,0.43,0.45,0.44,0.33,0.54,0.42,0.31,0.53,0.41,0.31,0.53,0.37,0.47,0.45,0.36,0.51,0.52,0.33,0.53,0.46,0.36,0.59,0.55,0.44,0.51,0.45,0.31,0.45,0.39,0.4,0.53,0.45,0.53,0.49,0.4,0.49,0.43,0.37,0.55,0.4,0.36,0.56,0.46,0.33,0.58,0.55,0.37,0.5,0.39,0.48,0.48,0.33,0.53,0.44,0.33,0.53,0.41,0.32,0.52,0.43,0.32,0.46,0.36,0.41,0.56,0.41,0.32,0.68,0.53,0.53,0.47,0.35,0.35,0.49,0.33,0.47,0.49,0.39,0.47,0.48,0.35,0.53,0.43,0.31,0.5,0.36,0.31,0.51,0.38,0.3,0.71,0.58,0.5,0.59,0.63,0.71,0.69,0.6,0.75,0.61,0.59,0.67,0.61,0.57,0.69,0.73,0.69,0.65,0.64,0.7,0.79,0.65,0.68,0.77,0.72,0.75,0.74,0.66,0.7,0.63,0.63,0.75,0.71,0.81,0.69,0.68,0.69,0.77,0.64,0.65,0.71,0.67,0.7,0.71,0.71,0.69,0.6,0.86,0.72,0.65,0.81,0.7,0.75,0.7,0.6,0.91,1.0,0.82,0.76,0.75,0.72,0.82,0.63,0.86,0.77,0.68,0.8,0.78,0.66,0.71,0.74,0.88,0.77,0.75,0.72,0.74,0.74,0.69,0.69,0.66,0.7,0.6,0.55,0.46,0.4,0.34,0.29,0.21],"khushnaseebi":[0.16,0.18,0.18,0.18,0.19,0.19,0.19,0.19,0.21,0.19,0.19,0.19,0.18,0.18,0.21,0.2,0.2,0.23,0.23,0.23,0.21,0.2,0.2,0.24,0.24,0.22,0.21,0.27,0.26,0.35,0.34,0.32,0.28,0.37,0.29,0.28,0.3,0.24,0.22,0.25,0.3,0.26,0.42,0.27,0.24,0.28,0.48,0.32,0.28,0.26,0.24,0.23,0.33,0.3,0.4,0.52,0.36,0.25,0.27,0.48,0.3,0.28,0.24,0.21,0.29,0.65,0.42,0.38,0.33,0.31,0.25,0.38,0.31,0.69,0.49,0.42,0.37,0.66,0.49,0.57,0.54,0.5,0.42,0.32,0.45,0.29,0.43,0.35,0.27,0.26,0.42,0.42,0.62,0.55,0.41,0.4,0.86,0.67,0.32,0.57,0.58,0.57,0.52,0.53,0.45,0.54,0.48,0.45,0.43,0.49,0.38,0.26,0.24,0.22,0.21,0.43,0.39,0.32,0.65,0.54,0.38,0.4,0.59,0.36,0.44,0.53,0.51,0.52,0.55,0.6,1.0,0.63,0.79,0.62,0.58,0.53,0.39,0.37,0.27,0.25,0.24,0.45,0.31,0.5,0.44,0.38,0.41,0.58,0.52,0.49,0.52,0.43,0.22,0.38,0.48,0.69,0.7,0.56,0.5,0.38,0.48,0.34,0.26,0.23,0.22,0.25,0.62,0.51,0.52,0.57,0.57,0.52,0.53,0.51,0.45,0.42,0.39,0.29,0.24,0.2],"aankhen-milaney-waaley":[0.22,0.26,1.0,0.7,0.45,0.4,0.33,0.81,0.51,0.73,0.36,0.44,0.79,0.55,0.4,0.28,0.68,0.3,0.25,0.35,0.24,0.66,0.75,0.57,0.33,0.24,0.65,0.42,0.27,0.76,0.47,0.43,0.36,0.27,0.63,0.44,0.66,0.42,0.38,0.56,0.48,0.47,0.51,0.74,0.35,0.27,0.31,0.38,0.55,0.82,0.54,0.32,0.3,0.59,0.43,0.29,0.86,0.61,0.49,0.43,0.39,0.67,0.49,0.7,0.49,0.49,0.75,0.64,0.51,0.71,0.54,0.48,0.37,0.42,0.62,0.53,0.7,0.43,0.44,0.62,0.68,0.42,0.44,0.7,0.52,0.49,0.41,0.39,0.74,0.57,0.75,0.43,0.4,0.74,0.56,0.4,0.67,0.45,0.35,0.26,0.48,0.64,0.51,0.76,0.37,0.44,0.64,0.7,0.52,0.5,0.74,0.56,0.49,0.46,0.42,0.7,0.64,0.78,0.46,0.45,0.78,0.49,0.46,0.74,0.52,0.45,0.42,0.39,0.66,0.38,0.68,0.43,0.4,0.76,0.54,0.46,0.77,0.85,0.54,0.54,0.47,0.65,0.71,0.64,0.49,0.46,0.63,0.64,0.43,0.4,0.73,0.31,0.32,0.28,0.26,0.64,0.6,0.73,0.36,0.29,0.66,0.44,0.57,0.91,0.8,0.54,0.5,0.52,0.9,0.57,0.79,0.57,0.55,0.54,0.51,0.4,0.26,0.4,0.21,0.19],"champagne-problems":[0.87,0.82,0.67,0.63,0.63,0.72,0.57,0.5,0.47,0.38,0.36,0.35,0.69,0.76,0.59,0.55,0.44,0.4,0.41,0.37,0.37,0.84,0.73,0.59,0.46,0.58,0.55,0.48,0.43,0.56,0.53,0.4,0.41,0.86,0.87,0.66,0.55,0.67,0.73,0.55,0.58,0.5,0.53,0.5,0.46,0.34,0.68,0.71,0.68,0.61,0.63,0.59,0.48,0.43,0.63,0.59,0.59,0.59,0.54,0.59,0.49,0.44,0.4,0.5,0.53,0.59,0.54,1.0,0.86,0.6,0.54,0.78,0.68,0.62,0.52,0.5,0.52,0.46,0.45,0.6,0.82,0.61,0.49,0.5,0.49,0.46,0.49,0.44,0.77,0.81,0.53,0.44,0.52,0.51,0.5,0.46,0.57,0.58,0.52,0.48,0.6,0.85,0.61,0.65,0.83,0.75,0.63,0.68,0.61,0.66,0.63,0.5,0.5,0.84,0.72,0.59,0.5,0.47,0.54,0.48,0.43,0.76,0.77,0.54,0.46,0.4,0.67,0.66,0.5,0.5,0.71,0.55,0.42,0.44,0.96,0.82,0.72,0.68,0.84,0.72,0.62,0.48,0.49,0.57,0.45,0.39,0.49,0.82,0.69,0.6,0.46,0.47,0.47,0.4,0.36,0.75,0.81,0.58,0.51,0.5,0.46,0.44,0.43,0.71,0.72,0.63,0.45,0.54,0.98,0.74,0.58,0.51,0.64,0.65,0.6,0.49,0.38,0.27,0.22,0.18],"almost-sweet-music":[0.39,0.5,0.49,0.46,0.39,0.41,0.4,0.52,0.57,0.42,0.2,0.17,0.5,0.51,0.55,0.51,0.37,0.28,0.23,0.18,0.39,0.39,0.35,0.36,0.49,0.37,0.22,0.17,0.45,0.51,0.52,0.46,0.4,0.38,0.43,0.46,0.45,0.35,0.17,0.16,0.56,0.56,0.58,0.44,0.3,0.28,0.24,0.37,0.33,0.29,0.17,0.16,0.46,0.4,0.33,0.37,0.54,0.48,0.19,0.17,0.4,0.38,0.37,0.31,0.32,0.3,0.43,0.56,0.53,0.25,0.17,0.17,0.5,0.54,0.47,0.47,0.35,0.19,0.39,0.5,0.51,0.26,0.2,0.16,0.39,0.38,0.37,0.35,0.49,0.38,0.33,0.31,0.28,0.32,0.31,0.3,0.4,0.43,0.36,0.21,0.2,0.18,0.37,0.42,0.41,0.32,0.21,0.18,0.46,0.47,0.45,0.48,0.45,0.26,0.2,0.19,0.28,0.3,0.39,0.5,0.53,0.52,0.2,0.17,0.18,0.29,0.29,0.32,0.95,0.94,0.77,0.68,0.84,0.5,0.97,0.98,0.9,0.52,0.67,0.38,0.97,0.93,0.86,0.6,0.63,0.44,0.39,0.32,0.84,0.47,0.44,0.46,0.46,0.37,0.86,0.38,0.54,0.51,0.52,0.49,1.0,0.96,0.89,0.64,0.93,0.51,0.95,0.95,0.8,0.6,0.76,0.6,0.84,0.81,0.56,0.49,0.36,0.26,0.19,0.16]};
+
+/* ===== Theo & friends, drawn as text (20 x 18), outlined in code ===== */
+const THEO_BASE = [
+"...c............c...",
+"..cCc..........cCc..",
+"..cpCc........cCpc..",
+"..cppCcllllllcCppc..",
+".cCCCCCClllllCCCCCc.",
+".CCCCCCCCCCCCCCCCCC.",
+"cCCCCCCCCCCCCCCCCCCc",
+"CCCCCCCCCCCCCCCCCCCC",
+"CCCCCCCCCCCCCCCCCCCC",
+"lCCCCCClllllCCCCCCCl",
+"llCCCCllllllllCCCCll",
+"lllCCCCllllllCCCClll",
+".lllcCCCCCCCCCCclll.",
+"l.llllcCCCCCCclll.l.",
+".llllllllllllllllll.",
+"..lllllllllllllllll.",
+"..llllllllllllllll..",
+"..llllllllllllllll..",
+];
+const PAL_THEO = { C: "#f0d6b2", c: "#dcb88f", l: "#fbefdf", p: "#f2a9a6", E: "#c4782e", K: "#2a1d1a", W: "#ffffff", P: "#e98f93", m: "#9a6b4f", O: "#7a5236" };
+const PAL_GREY = { C: "#8c8f9c", c: "#6e717d", l: "#b4b7c2", p: "#b07f88", E: "#f3d23c", K: "#1c1b22", W: "#ffffff", P: "#4e4b55", m: "#2c2a31", O: "#2b2930" };
+const SPRITES = {
+  cucumber: { pal: { G: "#5fa44a", g: "#3f7f35", L: "#9fd47e", O: "#24461f" }, rows: [
+"........gg..........",
+".......gGGg.........",
+"......gGGGGg........",
+"......gGLGGg........",
+"......gGGGGg........",
+"......gGGLGg........",
+"......gGGGGg........",
+"......gGLGGg........",
+"......gGGGGg........",
+"......gGGGLg........",
+"......gGGGGg........",
+"......gGLGGg........",
+"......gGGGGg........",
+"......gGGLGg........",
+"......gGGGGg........",
+".......gGGg.........",
+"........gg..........",
+"...................."] },
+  lily: { pal: { W: "#ffffff", w: "#e3dfe8", Y: "#f7d54a", y: "#e6873a", G: "#4f9a46", g: "#367332", R: "#e98fae", O: "#5b4a5e" }, rows: [
+".........W..........",
+"...W....WWw....W....",
+"...WW...WRw...WW....",
+"....WWw.WRw..wWW....",
+"....wWWwWRwwWWw.....",
+".WWw.wWWyYyWWw.wWW..",
+"..wWWWRWYyYWRWWWw...",
+"....wwwWyYyWwww.....",
+"....wWWWWwWWWWw.....",
+"...WWw.wWwWw.wWW....",
+"..WW....GgW....WW...",
+".........Gg.........",
+"...gg....Gg.........",
+"..gGGg...Gg..gg.....",
+"...gGGg..Gg.gGGg....",
+".....gGg.GggGGg.....",
+"........gGGg........",
+".........Gg........."] },
+  treats: { pal: { R: "#e2554e", r: "#b83c38", Y: "#ffd56a", B: "#5aa9e6", b: "#3a7fb8", W: "#fff6e6", O: "#5b2c22" }, rows: [
+"....................",
+"....rrrrrrrrrrr.....",
+"....RrRrRrRrRrR.....",
+"....RRRRRRRRRRR.....",
+"...RRRRRRRRRRRRR....",
+"...RRRWWWWWWWRRR....",
+"...RRWWWWWWWWWRR....",
+"...RRWWBBBWWBWRR....",
+"...RRWBBbBBBBWRR....",
+"...RRWBBBBBBBWRR....",
+"...RRWWBBBWWBWRR....",
+"...RRWWWWWWWWWRR....",
+"...RRRWWWWWWWRRR....",
+"...RRRRYYRYYRRRR....",
+"...RRRRRRRRRRRRR....",
+"...rRRRRRRRRRRRr....",
+"....rrrrrrrrrrr.....",
+"...................."] },
+};
+function theoGrid(kind) {
+  const grey = kind === "evil";
+  const pal = grey ? PAL_GREY : PAL_THEO;
+  let g = THEO_BASE.map(r => [...r].map(ch => ch === "." ? null : ch));
+  const set = (x, y, ch) => { if (g[y] && x >= 0 && x < 20) g[y][x] = ch; };
+  const eyes = { normal: [[5, 7, "E"], [6, 7, "E"], [5, 8, "E"], [6, 8, "K"], [13, 7, "E"], [14, 7, "E"], [13, 8, "K"], [14, 8, "E"], [5, 7, "W"], [13, 7, "W"]],
+    happy: [[4, 8, "O"], [5, 7, "O"], [6, 7, "O"], [7, 8, "O"], [12, 8, "O"], [13, 7, "O"], [14, 7, "O"], [15, 8, "O"]],
+    sleep: [[4, 7, "O"], [5, 8, "O"], [6, 8, "O"], [7, 7, "O"], [12, 7, "O"], [13, 8, "O"], [14, 8, "O"], [15, 7, "O"]],
+    wide: [[5, 6, "E"], [6, 6, "E"], [5, 7, "K"], [6, 7, "K"], [5, 8, "E"], [6, 8, "E"], [13, 6, "E"], [14, 6, "E"], [13, 7, "K"], [14, 7, "K"], [13, 8, "E"], [14, 8, "E"], [5, 6, "W"], [13, 6, "W"]],
+    angry: [[5, 7, "E"], [6, 7, "E"], [5, 8, "E"], [6, 8, "E"], [13, 7, "E"], [14, 7, "E"], [13, 8, "E"], [14, 8, "E"], [6, 7, "K"], [6, 8, "K"], [13, 7, "K"], [13, 8, "K"],
+            [3, 5, "O"], [4, 5, "O"], [5, 6, "O"], [6, 6, "O"], [16, 5, "O"], [15, 5, "O"], [14, 6, "O"], [13, 6, "O"]] };
+  const face = { theo: "normal", petted: "happy", sleepy: "sleep", zoom: "wide", evil: "angry", belly: "happy", hiss: "angry" }[kind] || "normal";
+  eyes[face].forEach(([x, y, c]) => set(x, y, c));
+  set(9, 9, "P"); set(10, 9, "P");
+  if (kind === "hiss" || kind === "evil") { set(8, 11, "O"); set(9, 10, "O"); set(10, 10, "O"); set(11, 11, "O"); set(9, 11, "W"); set(10, 11, "W"); }
+  else if (kind === "zoom") { set(9, 10, "m"); set(10, 10, "m"); set(9, 11, "m"); set(10, 11, "m"); }
+  else { set(9, 10, "m"); set(8, 11, "m"); set(10, 10, "m"); set(11, 11, "m"); }
+  if (grey) { set(2, 2, null); set(2, 3, "C"); }           // a nicked ear
+  if (kind === "belly") {                                    // belly up: flip him over, paws in the air
+    g = g.reverse();
+    [[3, 0], [4, 0], [5, 0], [3, 1], [4, 1], [5, 1], [14, 0], [15, 0], [16, 0], [14, 1], [15, 1], [16, 1]].forEach(([x, y]) => set(x, y, "C"));
+    set(4, 0, "p"); set(15, 0, "p");
+  }
+  return { rows: g, pal };
+}
+function spriteGrid(name) {
+  if (SPRITES[name]) { const s = SPRITES[name]; return outlined(s.rows.map(r => [...r].map(ch => ch === "." ? null : ch)), s.pal); }
+  const t = theoGrid(name); return outlined(t.rows, t.pal);
+}
+function outlined(rows, pal) {
+  const H = rows.length + 2, W = 22, OUT = pal.O || "#6b4f3a";
+  const m = Array.from({ length: H }, (_, y) => Array.from({ length: W }, (_, x) => { const ch = rows[y - 1]?.[x - 1]; return ch ? (pal[ch] || ch) : null; }));
+  const o = m.map(r => r.slice());
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (!m[y][x] && [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => m[y + dy]?.[x + dx])) o[y][x] = OUT;
+  return o;
+}
+
+/* ---------- Day 6: Pet Theo ---------- */
+const THEO_SPRITE_URLS = {};
+function theoSprite(name) {
+  if (!THEO_SPRITE_URLS[name]) { const c = document.createElement("canvas"); paintGrid(c, spriteGrid(name), 6); THEO_SPRITE_URLS[name] = c.toDataURL(); }
+  return THEO_SPRITE_URLS[name];
+}
+const PET = {
+  round: 45000, hearts: 3, purrNeed: 8, purrFor: 4000, treatFor: 5000,
+  points: { theo: 10, sleepy: 25, zoom: 20, belly: -20 },
+  weights: [["theo", 52], ["sleepy", 11], ["belly", 12], ["evil", 8], ["cucumber", 7], ["lily", 7], ["treats", 3]],
+  bad: { evil: "Not that cat! 😾", cucumber: "Eek, a cucumber!", lily: "No lilies! They're toxic to cats." },
+};
+let petTheoRaf = 0;
+function stopPetTheo() { cancelAnimationFrame(petTheoRaf); }
+
+function renderDay6(view, pv) {
+  const game = stage(view, pv, "Day 6 · Pet Theo", "Theo's hiding in his favourite cabinet. Pet him as fast as you can, and watch out for the troublemakers.");
+  const legend = [["theo", "Theo", "pet him: +10"], ["sleepy", "Sleepy Theo", "tap twice: +25"], ["zoom", "Zoomies", "catch him: +20"],
+    ["belly", "Belly up", "it's a trap: −20"], ["evil", "Grey cat", "don't! −1 ♥"], ["cucumber", "Cucumber", "don't! −1 ♥"], ["lily", "Lily", "don't! −1 ♥"], ["treats", "Treats", "slow-mo for 5s"]];
+  const intro = () => {
+    game.innerHTML = `<div class="pt"><div class="pt-legend">${legend.map(([s, n, d]) => `<div class="pt-leg"><img src="${theoSprite(s)}" alt=""><b>${n}</b><span>${d}</span></div>`).join("")}</div>
+      <p class="pt-small">Pet ${PET.purrNeed} in a row to fill the purr meter for a few seconds of Purr-fect mode. 45 seconds, 3 hearts.</p>
+      <div class="row-btns" style="justify-content:center"><button class="btn" id="pt-start" type="button">Start petting</button></div></div>`;
+    $("#pt-start").onclick = play;
+    buddy.say("idle", "Theo! Here, kitty kitty…");
+  };
+
+  const introText = game.parentElement.querySelector(":scope > p");
+  function play() {
+    if (introText) introText.hidden = true;
+    game.innerHTML = `<div class="pt">
+      <div class="pt-hud"><span class="pt-hearts" id="pt-hearts"></span><span class="pt-score" id="pt-score">0</span><span class="pt-time" id="pt-time">45</span></div>
+      <div class="pt-meter" aria-label="Purr meter"><i id="pt-purr"></i><span id="pt-purr-l">purr meter</span></div>
+      <div class="pt-board" id="pt-board">
+        <div class="pt-top" id="pt-top"><img class="pt-zoom" id="pt-zoom" src="${theoSprite("zoom")}" alt="Zoomies Theo" hidden></div>
+        <div class="pt-cab">${Array.from({ length: 9 }, (_, i) => `<button class="pt-cubby" type="button" data-i="${i}" aria-label="Cubby ${i + 1}"><img alt=""><span class="pt-door"><i></i></span></button>`).join("")}</div>
+        <div class="pt-banner" id="pt-banner" hidden></div>
+      </div></div>`;
+    const cubbies = [...game.querySelectorAll(".pt-cubby")];
+    const S = { score: 0, hearts: PET.hearts, combo: 0, gt: 0, real: 0, next: 400, nextZoom: 6000 + Math.random() * 3000, zoom: null,
+      treatUntil: -1, purrUntil: -1, lastTreat: -99999, slots: cubbies.map(() => null), emptied: [], over: false };
+    let last = performance.now();
+    const hud = () => {
+      $("#pt-hearts").textContent = "♥".repeat(S.hearts) + "♡".repeat(PET.hearts - S.hearts);
+      $("#pt-score").textContent = S.score;
+      $("#pt-time").textContent = Math.max(0, Math.ceil((PET.round - S.real) / 1000));
+      const purring = S.gt < S.purrUntil;
+      $("#pt-purr").style.width = (purring ? 100 : Math.min(100, S.combo / PET.purrNeed * 100)) + "%";
+      $("#pt-purr-l").textContent = purring ? "PURR-FECT!" : S.real < S.treatUntil ? "treat time · slow-mo" : "purr meter";
+      $("#pt-board").classList.toggle("purring", purring);
+      $("#pt-board").classList.toggle("slowmo", S.real < S.treatUntil);
+    };
+    const pick = () => {
+      const pool = PET.weights.filter(([t]) => t !== "treats" || S.gt - S.lastTreat > 12000);
+      let r = Math.random() * pool.reduce((a, [, w]) => a + w, 0);
+      for (const [t, w] of pool) { if ((r -= w) <= 0) return t; } return "theo";
+    };
+    const show = (i, type, stay) => {
+      S.slots[i] = { type, until: S.gt + stay, taps: 0, done: false };
+      const c = cubbies[i]; c.querySelector("img").src = theoSprite(type); c.classList.add("open"); c.dataset.type = type;
+    };
+    const hide = (i, missed) => {
+      const s = S.slots[i]; if (!s) return;
+      if (missed && !s.done && (s.type === "theo" || s.type === "sleepy")) S.combo = 0;
+      S.slots[i] = null; S.emptied[i] = S.gt; cubbies[i].classList.remove("open", "stir"); delete cubbies[i].dataset.type;
+    };
+    const float = (el, text, cls) => {
+      const b = $("#pt-board").getBoundingClientRect(), r = el.getBoundingClientRect();
+      const f = document.createElement("span"); f.className = "pt-float " + (cls || ""); f.textContent = text;
+      f.style.left = (r.left - b.left + r.width / 2) + "px"; f.style.top = (r.top - b.top + r.height * .25) + "px";
+      $("#pt-board").appendChild(f); setTimeout(() => f.remove(), 900);
+    };
+    const banner = (t) => { const el = $("#pt-banner"); el.textContent = t; el.hidden = false; el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); setTimeout(() => el.hidden = true, 1300); };
+    const pet = (pts, el) => {
+      S.score += pts; float(el, "+" + pts + " ♥", "good");
+      if (S.gt < S.purrUntil) return;                          // pets during purr-fect mode don't build the next one
+      S.combo++;
+      if (S.combo >= PET.purrNeed && S.gt >= S.purrUntil) {
+        S.purrUntil = S.gt + PET.purrFor; S.combo = 0; banner("PURR-FECT!");
+        buddy.say("joy", "Purr-fect mode!! 💕", { hold: false, burst: true });
+        cubbies.forEach((_, i) => { if (!S.slots[i] || !["theo", "sleepy"].includes(S.slots[i].type)) { hide(i); show(i, "theo", PET.purrFor); } });
+      } else if (S.combo && S.combo % 5 === 0 && S.gt >= S.purrUntil) buddy.say("joy", `${S.combo} in a row! Theo's purring!`, { hold: false });
+    };
+    const ouch = (text) => { S.combo = 0; buddy.say("sad", text, { hold: false }); };
+
+    cubbies.forEach((c, i) => c.addEventListener("pointerdown", e => {
+      e.preventDefault(); if (S.over) return;
+      const s = S.slots[i]; if (!s || s.done) return;
+      if (s.type === "theo") { s.done = true; c.querySelector("img").src = theoSprite("petted"); pet(PET.points.theo, c); s.until = S.gt + 380; }
+      else if (s.type === "sleepy") {
+        s.taps++;
+        if (s.taps === 1) { c.classList.remove("stir"); void c.offsetWidth; c.classList.add("stir"); float(c, "zz…", "soft"); s.until += 500; }
+        else { s.done = true; c.querySelector("img").src = theoSprite("petted"); pet(PET.points.sleepy, c); s.until = S.gt + 420; }
+      }
+      else if (s.type === "belly") { s.done = true; c.querySelector("img").src = theoSprite("hiss"); S.score = Math.max(0, S.score + PET.points.belly); float(c, "hiss! −20", "bad"); ouch("Belly trap!! Every time…"); s.until = S.gt + 500; }
+      else if (s.type === "treats") { s.done = true; S.treatUntil = S.real + PET.treatFor; S.lastTreat = S.gt; float(c, "treats! 🐟", "good"); banner("Treat time!"); buddy.say("joy", "Treats! Everything's slow-mo 🐟", { hold: false }); hide(i); }
+      else if (PET.bad[s.type]) {
+        s.done = true; S.hearts--; float(c, "−1 ♥", "bad"); ouch(PET.bad[s.type]);
+        S.slots.forEach((t, k) => { if (t && ["theo", "sleepy"].includes(t.type) && !t.done) hide(k); });   // Theo runs off
+        s.until = S.gt + 450;
+        if (S.hearts <= 0) return end();
+      }
+      hud();
+    }));
+    const zoomEl = $("#pt-zoom");
+    zoomEl.addEventListener("pointerdown", e => {
+      e.preventDefault(); if (!S.zoom || S.zoom.caught || S.over) return;
+      S.zoom.caught = true; zoomEl.src = theoSprite("petted"); S.score += PET.points.zoom; if (S.gt >= S.purrUntil) S.combo++; float(zoomEl, "+20 zoom!", "good");
+      buddy.say("joy", "Caught him mid-zoomies!", { hold: false, burst: true }); hud();
+    });
+
+    const loop = now => {
+      const dt = Math.min(64, now - last); last = now;
+      S.real += dt; const slow = S.real < S.treatUntil ? .45 : 1; S.gt += dt * slow;
+      const prog = Math.min(1, S.real / PET.round), purring = S.gt < S.purrUntil;
+      S.slots.forEach((s, i) => { if (s && S.gt >= s.until) hide(i, true); });
+      if (purring) { S.slots.forEach((s, i) => { if (!s && S.gt - (S.emptied[i] || 0) > 350) show(i, "theo", 1400); }); }
+      else if (S.gt >= S.next) {
+        const free = S.slots.map((s, i) => s ? -1 : i).filter(i => i >= 0);
+        if (free.length) {
+          const t = pick(), base = 1450 - 650 * prog;
+          show(free[Math.random() * free.length | 0], t, t === "sleepy" ? base + 700 : t === "treats" ? 1100 : base);
+          if (Math.random() < .25 + .35 * prog && free.length > 1) { const f2 = free.filter(x => !S.slots[x]); if (f2.length) { const t2 = pick(); show(f2[Math.random() * f2.length | 0], t2, base); } }
+        }
+        S.next = S.gt + (900 - 420 * prog) * (.7 + Math.random() * .6);
+      }
+      // zoomies: Theo dashes along the top of the cabinet
+      if (!S.zoom && S.gt >= S.nextZoom && !purring) { S.zoom = { start: S.gt, dur: 1500 - 400 * prog, dir: Math.random() < .5 ? 1 : -1, caught: false }; zoomEl.src = theoSprite("zoom"); zoomEl.hidden = false; }
+      if (S.zoom) {
+        const k = (S.gt - S.zoom.start) / S.zoom.dur, w = $("#pt-top").clientWidth;
+        if (k >= 1 || (S.zoom.caught && k > .15 && S.gt - S.zoom.start > 500)) { if (!S.zoom.caught) S.combo = 0; S.zoom = null; zoomEl.hidden = true; S.nextZoom = S.gt + 7000 + Math.random() * 5000; }
+        else { const x = S.zoom.dir > 0 ? -80 + k * (w + 160) : w + 80 - k * (w + 160); zoomEl.style.transform = `translateX(${x}px) scaleX(${S.zoom.dir})`; }
+      }
+      hud();
+      if (S.real >= PET.round) return end();
+      petTheoRaf = requestAnimationFrame(loop);
+    };
+    function end() {
+      if (S.over) return; S.over = true; stopPetTheo(); if (introText) introText.hidden = false;
+      const sc = S.score, rating = sc >= 900 ? "Theo has chosen you as his human." : sc >= 450 ? "Theo approves." : "Theo tolerated you.";
+      game.innerHTML = `<div class="pt"><div class="win">
+        <img class="pt-sleep" src="${theoSprite("sleepy")}" alt="Theo, curled up asleep">
+        <h3>${sc.toLocaleString("en-US")} points</h3>
+        <p class="msg"><strong>${rating}</strong></p>
+        <p class="msg">${S.hearts <= 0 ? "Too many troublemakers. Theo's gone to sulk in his cabinet." : "Theo has curled up for a nap."}</p>
+        <div class="row-btns" style="justify-content:center"><button class="btn" id="pt-again" type="button">Pet him again</button></div>
+        <p class="msg"><strong>Tomorrow's candle lights at midnight.</strong></p></div></div>`;
+      $("#pt-again").onclick = play;
+      buddy.say(sc >= 450 ? "joy" : "sad", sc >= 900 ? "Theo LOVES you!! 🧡" : sc >= 450 ? "Theo's happy! 🐾" : "Theo wants more pets…", { burst: sc >= 450 ? "big" : false });
+    }
+    hud(); buddy.say("idle", "Go go go! 🐾");
+    const box = $("#pt-board").getBoundingClientRect(); if (box.bottom > innerHeight) scrollBy({ top: box.bottom - innerHeight + 16, behavior: "smooth" });
+    petTheoRaf = requestAnimationFrame(loop);
+  }
+  intro();
+}
 
 /* ---------- confetti ---------- */
 function confetti(ox = innerWidth / 2, oy = innerHeight / 3, n = 140) {
