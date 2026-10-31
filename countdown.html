@@ -199,6 +199,39 @@ body {
 .fc-list li { display: grid; grid-template-columns: 22px minmax(0, 1fr) minmax(0, 1fr); gap: 10px; align-items: baseline; padding: 6px 10px; border-radius: 10px; background: var(--tint); }
 .fc-list li.ok span:first-child { color: var(--hit); font-weight: 800; } .fc-list li.skip span:first-child { color: var(--accent); font-weight: 800; }
 .fc-sk { font-family: var(--display); letter-spacing: .08em; color: var(--soft); overflow-wrap: anywhere; }
+/* name that tune */
+.nt { display: grid; gap: 14px; width: 100%; max-width: 560px; justify-self: center; }
+.nt-top { display: flex; justify-content: space-between; align-items: baseline; color: var(--soft); font-weight: 700; font-variant-numeric: tabular-nums; }
+.nt-score b { color: var(--ink); font-size: 18px; }
+.nt-worth { text-align: center; display: grid; gap: 2px; }
+.nt-lbl { font-size: 12px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--soft); }
+.nt-big { font-size: clamp(40px, 9vw, 56px); font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1.05; }
+.nt-wave { position: relative; height: 84px; display: flex; align-items: center; gap: 2px; padding: 0 2px; border-left: 2px solid var(--line); }
+.nt-wave i { flex: 1 1 0; min-width: 0; background: var(--line); border-radius: 1px; transition: background .15s; }
+.nt-wave i.on { background: #b9b0b5; }
+.nt-wave i.now { background: var(--hit); }
+.nt-head { position: absolute; top: -6px; bottom: -6px; left: 0; width: 2px; background: var(--ink); border-radius: 2px; }
+.nt-head::before { content: ""; position: absolute; top: -4px; left: -3px; width: 8px; height: 8px; border-radius: 50%; background: var(--ink); }
+.nt-times { display: flex; justify-content: space-between; color: var(--soft); font-weight: 700; font-variant-numeric: tabular-nums; }
+.nt-times b { color: var(--ink); }
+.nt-chips { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.nt-chip { border: 1.5px solid var(--line); background: #fff; border-radius: 12px; padding: 10px 14px; font: 800 15px var(--body); color: var(--soft); cursor: pointer; font-variant-numeric: tabular-nums; }
+.nt-chip[aria-pressed="true"] { background: var(--tint); color: var(--ink); border-color: var(--ink); }
+.nt-chip:disabled { opacity: .35; cursor: default; }
+.nt-row { display: flex; gap: 10px; }
+.nt-play { flex: 1 1 auto; border: 0; border-radius: 14px; padding: 18px; font: 800 17px var(--body); background: var(--hit); color: #fff; cursor: pointer; }
+.nt-play.playing { background: #5f9b45; }
+.nt-side { flex: 0 0 auto; min-width: 64px; border: 1.5px solid var(--line); background: #fff; border-radius: 14px; padding: 0 16px; font: 800 16px var(--body); color: var(--ink); cursor: pointer; }
+.nt-side:disabled { opacity: .35; cursor: default; }
+.nt-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px; }
+.nt-form .text-in { max-width: none; }
+.nt-form.shake { animation: shake .35s; }
+.nt-reveal { text-align: center; display: grid; gap: 2px; padding: 14px; border-radius: 16px; background: var(--tint); }
+.nt-rt { font-family: var(--display); font-size: 28px; } .nt-ra { color: var(--soft); font-weight: 700; } .nt-rnote { margin-top: 6px; }
+.nt-chip:focus-visible, .nt-play:focus-visible, .nt-side:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.nt-list li { grid-template-columns: 22px minmax(0, 1fr) auto; }
+.nt-li { display: grid; color: var(--ink); } .nt-li b { font-weight: 700; } .nt-li small { color: var(--soft); font-size: 13px; }
+@media (max-width: 520px) { .nt-form { grid-template-columns: minmax(0, 1fr); } }
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 20; }
 
 @media (max-width: 700px) {
@@ -642,12 +675,13 @@ function candleSVG([fill, dy, tilt]) {
 
 function route() {
   const view = $("#view");
-  view.innerHTML = ""; stopClock(); clearInterval(fcTimer); buddy?.destroy(); buddy = null; document.onkeydown = null;
+  view.innerHTML = ""; stopClock(); clearInterval(fcTimer); stopTune(); buddy?.destroy(); buddy = null; document.onkeydown = null;
   if (viewing == null) return renderHome(view);
   if (!loadBuddy()) return renderMaker(view, route);          // buddy is made before any game
   if (viewing === 10) { location.href = PV() ? "index.html?peek" : "index.html"; return; }   // the cake page that's already built
   if (viewing === 1) return renderDay1(view, PV());
   if (viewing === 2) return renderDay2(view, PV());
+  if (viewing === 4) return renderDay4(view, PV());
   return renderPlaceholder(view, viewing, PV());
 }
 
@@ -989,6 +1023,144 @@ function renderDay2(view, pv) {
   }
   draw();
 }
+
+/* ---------- Day 4: Name That Tune ---------- */
+const SONGS = [ // file in audio/, title, artist, extra spellings that also count
+  { file: "ode-to-the-mets", title: "Ode to the Mets", artist: "The Strokes", titleAlts: [], artistAlts: ["Strokes"] },
+  { file: "khushnaseebi", title: "Khushnaseebi", artist: "Abdul Hannan", titleAlts: ["Khush Naseebi"], artistAlts: ["Hannan"] },
+  { file: "aankhen-milaney-waaley", title: "Aankhen Milaney Waaley", artist: "Nazia Hassan & Zoheb Hassan", titleAlts: ["Aankhen Milane Wale", "Ankhen Milaney Waley", "Aankhein Milane Waale"], artistAlts: ["Nazia Hassan", "Zoheb Hassan", "Nazia and Zoheb", "Nazia & Zoheb", "Nazia Zoheb Hassan"] },
+  { file: "champagne-problems", title: "champagne problems", artist: "Taylor Swift", titleAlts: [], artistAlts: ["Taylor"] },
+  { file: "almost-sweet-music", title: "Almost (Sweet Music)", artist: "Hozier", titleAlts: ["Almost", "Sweet Music", "Almost Sweet Music"], artistAlts: [] },
+];
+const CLIP_STEPS = [0.5, 1, 2, 5];        // what he can hear before guessing (never more than 5s)
+const CLIP_FULL = 15;                     // the whole clip plays once the song is revealed
+const MAX_LISTEN = 5;
+const worthFor = len => Math.max(2000, Math.round((10000 - (len - CLIP_STEPS[0]) / (MAX_LISTEN - CLIP_STEPS[0]) * 8000) / 100) * 100);
+const fmtN = n => n.toLocaleString("en-US");
+const fmtS = s => (s < 1 ? s.toFixed(2) : s % 1 ? s.toFixed(1) : s.toFixed(1)) + "s";
+function matches(guess, options) {
+  const g = norm(guess.replace(/\(.*?\)/g, " ")); if (!g) return false;
+  return options.some(o => { const a = norm(o.replace(/\(.*?\)/g, " ")) || norm(o); const b = norm(o);
+    return [a, b].some(x => x === g || (x.length > 4 && lev(g, x) <= Math.max(1, Math.floor(x.length * .2)))); });
+}
+let tuneGame = null;
+let tuneAudio = null, tuneStop = null, tuneRaf = 0;
+function stopTune() { if (tuneAudio) { tuneAudio.pause(); } clearTimeout(tuneStop); cancelAnimationFrame(tuneRaf); }
+
+function renderDay4(view, pv) {
+  if (!tuneGame) {
+    const order = SONGS.map((_, i) => i); for (let i = order.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [order[i], order[j]] = [order[j], order[i]]; }
+    tuneGame = { order, i: 0, len: CLIP_STEPS[0], score: 0, results: [], phase: "guess" };
+  }
+  const st = tuneGame;
+  const game = stage(view, pv, "Day 4 · Name That Tune", "Five songs. Listen to as little as you dare, then name the song and the artist. The less you hear, the more it's worth.",
+    ` · <a href="#" id="reset">restart</a>`);
+  if (pv) $("#reset").onclick = e => { e.preventDefault(); stopTune(); tuneGame = null; route(); };
+
+  function audioFor(song) {
+    if (!tuneAudio || tuneAudio.dataset.file !== song.file) {
+      stopTune(); tuneAudio = new Audio(`audio/${song.file}.mp3`); tuneAudio.preload = "auto"; tuneAudio.dataset.file = song.file;
+    }
+    return tuneAudio;
+  }
+
+  function draw() {
+    if (st.i >= st.order.length) return finish();
+    const song = SONGS[st.order[st.i]], all = (TUNE_PEAKS[song.file] || []);
+    const reveal = st.phase !== "guess", worth = worthFor(st.len);
+    const span = reveal ? CLIP_FULL : MAX_LISTEN;
+    const per = all.length / CLIP_FULL;
+    const peaks = reveal ? Array.from({ length: Math.ceil(all.length / 3) }, (_, k) => Math.max(...all.slice(k * 3, k * 3 + 3)))
+                         : (pk => { const m = Math.max(...pk, .01); return pk.map(p => .15 + .85 * p / m); })(all.slice(0, Math.round(per * MAX_LISTEN)));
+    game.innerHTML = `<div class="nt">
+      <div class="nt-top"><span class="nt-score"><b>${fmtN(st.score)}</b> / ${fmtN(SONGS.length * 10000)}</span><span class="nt-count">${st.i + 1} / ${SONGS.length}</span></div>
+      <div class="nt-worth"><div class="nt-lbl">${reveal ? "You scored" : "Worth now"}</div><div class="nt-big">${reveal ? "+" + fmtN(st.results[st.i]?.pts || 0) : fmtN(worth)}</div></div>
+      <div class="nt-wave" id="nt-wave" aria-hidden="true">
+        ${peaks.map((p, k) => { const t = (k + .5) / peaks.length * span; return `<i style="height:${Math.round(p * 100)}%" class="${t <= (reveal ? CLIP_FULL : st.len) ? "on" : ""}" data-t="${t.toFixed(2)}"></i>`; }).join("")}
+        <span class="nt-head" id="nt-head"></span>
+      </div>
+      <div class="nt-times"><span>0s</span><b>${reveal ? fmtS(CLIP_FULL) : fmtS(st.len)}</b><span>${fmtS(span)}</span></div>
+      ${reveal ? "" : `<div class="nt-chips" role="group" aria-label="How much to hear">${CLIP_STEPS.map(s => `<button type="button" class="nt-chip" data-s="${s}" aria-pressed="${s === st.len}" ${s < st.len ? "disabled" : ""}>${fmtS(s)}</button>`).join("")}</div>`}
+      <div class="nt-row">
+        <button class="nt-play" id="nt-play" type="button">▶ Play ${reveal ? "the song" : fmtS(st.len)}</button>
+        ${reveal ? `<button class="nt-side" id="nt-next" type="button">${st.i + 1 < SONGS.length ? "Next song →" : "See score →"}</button>`
+                 : `<button class="nt-side" id="nt-more" type="button" ${st.len >= MAX_LISTEN ? "disabled" : ""}>+ 1s</button><button class="nt-side" id="nt-skip" type="button" aria-label="Give up and reveal">⏭</button>`}
+      </div>
+      ${reveal ? `<div class="nt-reveal"><div class="nt-rt">${escapeHtml(song.title)}</div><div class="nt-ra">${escapeHtml(song.artist)}</div>
+          <div class="nt-rnote">${st.results[st.i].note}</div></div>`
+        : `<form class="nt-form" id="nt-form" autocomplete="off">
+          <input class="text-in" id="nt-title" placeholder="Song name" aria-label="Song name" spellcheck="false">
+          <input class="text-in" id="nt-artist" placeholder="Artist" aria-label="Artist" spellcheck="false">
+          <button class="btn" type="submit">Guess</button></form>`}
+      <div class="status" id="nt-status" aria-live="polite"></div></div>`;
+
+    $("#nt-play").onclick = () => play(reveal ? CLIP_FULL : st.len);
+    if (reveal) { $("#nt-next").onclick = () => { stopTune(); st.i++; st.len = CLIP_STEPS[0]; st.phase = "guess"; draw(); }; return; }
+    game.querySelectorAll(".nt-chip").forEach(c => c.onclick = () => { st.len = +c.dataset.s; draw(); });
+    $("#nt-more").onclick = () => { st.len = Math.min(MAX_LISTEN, +(st.len + 1).toFixed(1)); draw(); play(st.len); };
+    $("#nt-skip").onclick = () => done(0, "Skipped. It was this one.", false);
+    $("#nt-form").onsubmit = e => {
+      e.preventDefault();
+      const t = $("#nt-title").value, a = $("#nt-artist").value;
+      if (!t.trim() && !a.trim()) { $("#nt-status").textContent = "Type a song name first."; return; }
+      const okT = matches(t, [song.title, ...song.titleAlts]), okA = matches(a, [song.artist, ...song.artistAlts]);
+      if (okT) {
+        const pts = okA ? worth : Math.round(worth * .6 / 100) * 100;
+        return done(pts, okA ? "Song and artist, both right!" : `Right song! (The artist is ${escapeHtml(song.artist)}, so 60% of the points.)`, true);
+      }
+      const form = $("#nt-form"); form.classList.remove("shake"); void form.offsetWidth; form.classList.add("shake");
+      if (okA) { $("#nt-status").textContent = "Right artist! Which song?"; buddy.say("think", "Right artist… which song?"); }
+      else { $("#nt-status").textContent = st.len < MAX_LISTEN ? "Not that one. Here's a little more." : "Not that one."; buddy.say("sad", "Hmm… not that one."); }
+      if (st.len < MAX_LISTEN) { const nx = CLIP_STEPS.find(s => s > st.len) || MAX_LISTEN; st.len = nx; const keepT = t, keepA = a, msg = $("#nt-status").textContent; draw(); $("#nt-title").value = keepT; $("#nt-artist").value = keepA; $("#nt-status").textContent = msg; }
+    };
+  }
+
+  function play(len) {
+    const song = SONGS[st.order[st.i]], a = audioFor(song);
+    stopTune();
+    try { a.currentTime = 0; } catch (e) {}
+    const btn = $("#nt-play");
+    const p = a.play(); if (p && p.catch) p.catch(() => { const s = $("#nt-status"); if (s) s.textContent = "Couldn't play the clip. Tap play again."; });
+    btn?.classList.add("playing");
+    const head = $("#nt-head"), wave = $("#nt-wave"), span = st.phase === "guess" ? MAX_LISTEN : CLIP_FULL;
+    const tick = () => {
+      const t = a.currentTime;
+      if (head) head.style.left = Math.min(100, t / span * 100) + "%";
+      wave?.querySelectorAll("i").forEach(b => b.classList.toggle("now", +b.dataset.t <= t));
+      if (t >= len || a.paused || a.ended) { a.pause(); btn?.classList.remove("playing"); wave?.querySelectorAll("i.now").forEach(b => b.classList.remove("now")); return; }
+      tuneRaf = requestAnimationFrame(tick);
+    };
+    tuneRaf = requestAnimationFrame(tick);
+    // hard stop once sound has actually started, in case animation frames are paused (background tab)
+    const arm = () => { clearTimeout(tuneStop); tuneStop = setTimeout(() => { if (a.currentTime >= len - .05 || !a.paused) a.pause(); }, (len - a.currentTime) * 1000 + 150); };
+    if (!a.paused && a.currentTime > 0) arm(); else a.addEventListener("playing", arm, { once: true });
+  }
+
+  function done(pts, note, ok) {
+    stopTune();
+    st.score += pts; st.results[st.i] = { pts, note, ok, song: SONGS[st.order[st.i]] };
+    st.phase = "reveal"; draw();
+    if (ok) buddy.say("joy", pts >= 8000 ? "WHAT?! That fast?!" : `Yes! +${fmtN(pts)}`, { hold: false, burst: true });
+    else buddy.say("sad", `Aww… it was ${SONGS[st.order[st.i]].title}.`);
+    play(CLIP_FULL);
+  }
+
+  function finish() {
+    stopTune();
+    game.innerHTML = `<div class="nt"><div class="win">
+      <h3>${fmtN(st.score)} / ${fmtN(SONGS.length * 10000)}</h3>
+      <ol class="fc-list nt-list">${st.results.map(r => `<li class="${r.ok ? "ok" : "skip"}"><span>${r.ok ? "✓" : "✕"}</span><span class="nt-li"><b>${escapeHtml(r.song.title)}</b><small>${escapeHtml(r.song.artist)}</small></span><span style="text-align:right;font-variant-numeric:tabular-nums">${fmtN(r.pts)}</span></li>`).join("")}</ol>
+      <div class="row-btns" style="justify-content:center"><button class="btn" id="nt-again" type="button">Play again</button></div>
+      <p class="msg"><strong>Tomorrow's candle lights at midnight.</strong></p></div></div>`;
+    $("#nt-again").onclick = () => { tuneGame = null; route(); };
+    const good = st.score >= SONGS.length * 10000 * .5;
+    buddy.say(good ? "joy" : "sad", good ? "What a music brain! 🎶" : "Rematch? I'll hum along.", { burst: good ? "big" : false });
+  }
+  if (st.i < st.order.length && st.phase === "guess" && st.i === 0 && !st.results.length) buddy.say("idle", "Ears ready? 🎧");
+  draw();
+}
+
+const TUNE_PEAKS = {"ode-to-the-mets":[0.65,0.64,0.43,0.45,0.44,0.33,0.54,0.42,0.31,0.53,0.41,0.31,0.53,0.37,0.47,0.45,0.36,0.51,0.52,0.33,0.53,0.46,0.36,0.59,0.55,0.44,0.51,0.45,0.31,0.45,0.39,0.4,0.53,0.45,0.53,0.49,0.4,0.49,0.43,0.37,0.55,0.4,0.36,0.56,0.46,0.33,0.58,0.55,0.37,0.5,0.39,0.48,0.48,0.33,0.53,0.44,0.33,0.53,0.41,0.32,0.52,0.43,0.32,0.46,0.36,0.41,0.56,0.41,0.32,0.68,0.53,0.53,0.47,0.35,0.35,0.49,0.33,0.47,0.49,0.39,0.47,0.48,0.35,0.53,0.43,0.31,0.5,0.36,0.31,0.51,0.38,0.3,0.71,0.58,0.5,0.59,0.63,0.71,0.69,0.6,0.75,0.61,0.59,0.67,0.61,0.57,0.69,0.73,0.69,0.65,0.64,0.7,0.79,0.65,0.68,0.77,0.72,0.75,0.74,0.66,0.7,0.63,0.63,0.75,0.71,0.81,0.69,0.68,0.69,0.77,0.64,0.65,0.71,0.67,0.7,0.71,0.71,0.69,0.6,0.86,0.72,0.65,0.81,0.7,0.75,0.7,0.6,0.91,1.0,0.82,0.76,0.75,0.72,0.82,0.63,0.86,0.77,0.68,0.8,0.78,0.66,0.71,0.74,0.88,0.77,0.75,0.72,0.74,0.74,0.69,0.69,0.66,0.7,0.6,0.55,0.46,0.4,0.34,0.29,0.21],"khushnaseebi":[0.16,0.16,0.16,0.16,0.16,0.17,0.17,0.17,0.17,0.17,0.16,0.16,0.16,0.15,0.15,0.16,0.16,0.16,0.16,0.18,0.15,0.15,0.15,0.16,0.16,0.16,0.16,0.16,0.16,0.16,0.16,0.16,0.19,0.17,0.31,0.18,0.15,0.16,0.2,0.22,0.16,0.15,0.16,0.15,0.16,0.16,0.16,0.15,0.18,0.17,0.19,0.18,0.15,0.17,0.16,0.16,0.16,0.16,0.17,0.2,0.16,0.16,0.15,0.16,0.15,0.23,0.22,0.23,0.19,0.16,0.16,0.22,0.19,0.17,0.2,0.19,0.16,0.17,0.16,0.15,0.15,0.15,0.15,0.15,0.15,0.16,0.16,0.15,0.15,0.16,0.19,0.18,0.17,0.17,0.19,0.18,0.21,0.2,0.19,0.18,0.21,0.22,0.2,0.2,0.19,0.19,0.2,0.2,0.2,0.22,0.21,0.2,0.22,0.25,0.22,0.22,0.21,0.21,0.21,0.26,0.25,0.21,0.29,0.29,0.28,0.25,0.23,0.2,0.31,0.3,0.26,0.26,0.36,0.34,0.5,0.48,0.44,0.43,0.53,0.46,0.32,0.4,0.31,0.27,0.3,0.41,0.32,0.62,0.38,0.32,0.3,0.71,0.46,0.4,0.33,0.33,0.29,0.41,0.45,0.56,0.8,0.51,0.33,0.32,0.72,0.43,0.4,0.32,0.26,0.27,1.0,0.79,0.5,0.41,0.34,0.24,0.3,0.29,0.3,0.24],"aankhen-milaney-waaley":[0.22,0.26,1.0,0.7,0.45,0.4,0.33,0.81,0.51,0.73,0.36,0.44,0.79,0.55,0.4,0.28,0.68,0.3,0.25,0.35,0.24,0.66,0.75,0.57,0.33,0.24,0.65,0.42,0.27,0.76,0.47,0.43,0.36,0.27,0.63,0.44,0.66,0.42,0.38,0.56,0.48,0.47,0.51,0.74,0.35,0.27,0.31,0.38,0.55,0.82,0.54,0.32,0.3,0.59,0.43,0.29,0.86,0.61,0.49,0.43,0.39,0.67,0.49,0.7,0.49,0.49,0.75,0.64,0.51,0.71,0.54,0.48,0.37,0.42,0.62,0.53,0.7,0.43,0.44,0.62,0.68,0.42,0.44,0.7,0.52,0.49,0.41,0.39,0.74,0.57,0.75,0.43,0.4,0.74,0.56,0.4,0.67,0.45,0.35,0.26,0.48,0.64,0.51,0.76,0.37,0.44,0.64,0.7,0.52,0.5,0.74,0.56,0.49,0.46,0.42,0.7,0.64,0.78,0.46,0.45,0.78,0.49,0.46,0.74,0.52,0.45,0.42,0.39,0.66,0.38,0.68,0.43,0.4,0.76,0.54,0.46,0.77,0.85,0.54,0.54,0.47,0.65,0.71,0.64,0.49,0.46,0.63,0.64,0.43,0.4,0.73,0.31,0.32,0.28,0.26,0.64,0.6,0.73,0.36,0.29,0.66,0.44,0.57,0.91,0.8,0.54,0.5,0.52,0.9,0.57,0.79,0.57,0.55,0.54,0.51,0.4,0.26,0.4,0.21,0.19],"champagne-problems":[0.87,0.82,0.67,0.63,0.63,0.72,0.57,0.5,0.47,0.38,0.36,0.35,0.69,0.76,0.59,0.55,0.44,0.4,0.41,0.37,0.37,0.84,0.73,0.59,0.46,0.58,0.55,0.48,0.43,0.56,0.53,0.4,0.41,0.86,0.87,0.66,0.55,0.67,0.73,0.55,0.58,0.5,0.53,0.5,0.46,0.34,0.68,0.71,0.68,0.61,0.63,0.59,0.48,0.43,0.63,0.59,0.59,0.59,0.54,0.59,0.49,0.44,0.4,0.5,0.53,0.59,0.54,1.0,0.86,0.6,0.54,0.78,0.68,0.62,0.52,0.5,0.52,0.46,0.45,0.6,0.82,0.61,0.49,0.5,0.49,0.46,0.49,0.44,0.77,0.81,0.53,0.44,0.52,0.51,0.5,0.46,0.57,0.58,0.52,0.48,0.6,0.85,0.61,0.65,0.83,0.75,0.63,0.68,0.61,0.66,0.63,0.5,0.5,0.84,0.72,0.59,0.5,0.47,0.54,0.48,0.43,0.76,0.77,0.54,0.46,0.4,0.67,0.66,0.5,0.5,0.71,0.55,0.42,0.44,0.96,0.82,0.72,0.68,0.84,0.72,0.62,0.48,0.49,0.57,0.45,0.39,0.49,0.82,0.69,0.6,0.46,0.47,0.47,0.4,0.36,0.75,0.81,0.58,0.51,0.5,0.46,0.44,0.43,0.71,0.72,0.63,0.45,0.54,0.98,0.74,0.58,0.51,0.64,0.65,0.6,0.49,0.38,0.27,0.22,0.18],"almost-sweet-music":[0.39,0.5,0.49,0.46,0.39,0.41,0.4,0.52,0.57,0.42,0.2,0.17,0.5,0.51,0.55,0.51,0.37,0.28,0.23,0.18,0.39,0.39,0.35,0.36,0.49,0.37,0.22,0.17,0.45,0.51,0.52,0.46,0.4,0.38,0.43,0.46,0.45,0.35,0.17,0.16,0.56,0.56,0.58,0.44,0.3,0.28,0.24,0.37,0.33,0.29,0.17,0.16,0.46,0.4,0.33,0.37,0.54,0.48,0.19,0.17,0.4,0.38,0.37,0.31,0.32,0.3,0.43,0.56,0.53,0.25,0.17,0.17,0.5,0.54,0.47,0.47,0.35,0.19,0.39,0.5,0.51,0.26,0.2,0.16,0.39,0.38,0.37,0.35,0.49,0.38,0.33,0.31,0.28,0.32,0.31,0.3,0.4,0.43,0.36,0.21,0.2,0.18,0.37,0.42,0.41,0.32,0.21,0.18,0.46,0.47,0.45,0.48,0.45,0.26,0.2,0.19,0.28,0.3,0.39,0.5,0.53,0.52,0.2,0.17,0.18,0.29,0.29,0.32,0.95,0.94,0.77,0.68,0.84,0.5,0.97,0.98,0.9,0.52,0.67,0.38,0.97,0.93,0.86,0.6,0.63,0.44,0.39,0.32,0.84,0.47,0.44,0.46,0.46,0.37,0.86,0.38,0.54,0.51,0.52,0.49,1.0,0.96,0.89,0.64,0.93,0.51,0.95,0.95,0.8,0.6,0.76,0.6,0.84,0.81,0.56,0.49,0.36,0.26,0.19,0.16]};
 
 /* ---------- confetti ---------- */
 function confetti(ox = innerWidth / 2, oy = innerHeight / 3, n = 140) {
