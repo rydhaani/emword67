@@ -97,6 +97,8 @@ body {
 .sprite { width: 130px; height: 240px; image-rendering: pixelated; image-rendering: crisp-edges; display: block; transition: filter .3s; }
 .bubble { position: relative; background: var(--tint); border-radius: 14px; padding: 8px 12px; font-weight: 800; font-size: 14px; text-align: center; color: var(--ink); min-height: 2.6em; display: grid; place-items: center; width: 100%; }
 .bubble::before { content: ""; position: absolute; top: -8px; left: 50%; margin-left: -8px; border: 8px solid transparent; border-top: 0; border-bottom-color: var(--tint); }
+.spritebox.bop { animation: bop .24s ease-out; }
+@keyframes bop { 40% { transform: translateY(-7px) scale(1.03, .97); } }
 .bname { font-family: var(--display); font-size: 18px; color: var(--accent); line-height: 1; }
 .edit-buddy { font: 700 12px var(--body); color: var(--soft); background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 0; }
 
@@ -624,13 +626,19 @@ function mountBuddy(host, onEdit) {
   const blinker = setInterval(() => { if (mood === "idle") { draw(true); setTimeout(() => draw(), 140); } }, 3600);
   return {
     el,
-    say(m, text, { hold = true, burst = false } = {}) {
+    say(m, text, { hold = true, burst = false, ms = 2800, after = "Keep going, you've got this!" } = {}) {
       clearTimeout(revert);
       mood = m; el.dataset.mood = m; draw();
       $(".bubble", el).textContent = text;
       if (m === "joy") { el.dataset.mood = "idle"; void sprite.offsetWidth; el.dataset.mood = "joy"; }
       if (burst) { const r = sprite.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 3, burst === "big" ? 160 : 60); }
-      if (!hold) revert = setTimeout(() => this.say("idle", "Keep going, you've got this!"), 2800);
+      if (!hold) revert = setTimeout(() => this.say("idle", after), ms);
+      this.bop();
+    },
+    bop(text) {                                               // a little hop for every tap that isn't a big moment
+      if (text && mood !== "idle") { clearTimeout(revert); mood = "idle"; el.dataset.mood = "idle"; draw(); }   // back to normal once they carry on
+      const box = $(".spritebox", el); box.classList.remove("bop"); void box.offsetWidth; box.classList.add("bop");
+      if (text) $(".bubble", el).textContent = text;
     },
     destroy() { clearInterval(blinker); clearTimeout(revert); },
   };
@@ -918,11 +926,12 @@ function renderDay1(view, pv) {
     $("#status").textContent = msg;
     document.querySelectorAll("[data-typing]").forEach(r => { r.classList.remove("shake"); void r.offsetWidth; r.classList.add("shake"); });
   }
-  function type(ch) { if (over() || cur.length >= 5) return; cur += ch; lastFlip = -1; draw(); }
-  function back() { if (over()) return; cur = cur.slice(0, -1); lastFlip = -1; draw(); }
+  const typingLines = ["Ooh, good start…", "Hmm hmm…", "Keep typing…", "I like it…", "Ooh!"];
+  function type(ch) { if (over() || cur.length >= 5) return; cur += ch; lastFlip = -1; draw(); buddy.bop(cur.length === 5 ? "Press enter!" : typingLines[cur.length - 1]); }
+  function back() { if (over()) return; cur = cur.slice(0, -1); lastFlip = -1; draw(); buddy.bop("Changed your mind?"); }
   function submit() {
     if (over()) return;
-    if (cur.length < 5) return shake("Not enough letters");
+    if (cur.length < 5) { buddy.say("think", "Five letters, please!", { hold: false, ms: 1600 }); return shake("Not enough letters"); }
     if (!words().valid.has(cur.toLowerCase())) { shake("Not in word list"); buddy.say("think", "Hmm… is that a word?", { hold: false }); return; }
     const before = solvedAt().filter(i => i >= 0).length;
     const guess = cur;
@@ -941,7 +950,7 @@ function renderDay1(view, pv) {
       best = Math.max(best, h + n * .5); anyHit += h; anyNear += n; });
     if (best >= 3.5) return buddy.say("think", left === 1 ? "Last guess… so, so close!" : "Ooh… so close. Thinking…");
     if (anyHit === 0 && anyNear <= 1) return buddy.say("sad", "Oh no… nothing there.");
-    buddy.say("idle", left <= 2 ? `${left} left… we can do this!` : "Some clues! Keep going.");
+    buddy.say("idle", left <= 2 ? `${left} left… we can do this!` : "Some clues! Keep going.", { hold: false });
   }
 
   function finish() {
@@ -1007,7 +1016,7 @@ function renderDay2(view, pv) {
         <div class="fc-example"><div class="fc-cut">THGDFTHR</div><div class="fc-arrow">↓</div><div class="fc-title">The Godfather</div></div>
         <div class="row-btns" style="justify-content:center"><button class="btn" id="fc-start" type="button">Start game</button></div>
         <p class="fc-small">You can skip a movie, but you can't go back.</p></div>`;
-      $("#fc-start").onclick = () => { st.start = Date.now(); draw(); };
+      $("#fc-start").onclick = () => { st.start = Date.now(); draw(); buddy.say("joy", "Action! 🎬", { hold: false, ms: 1500, after: "What movie is it…?" }); };
       buddy.say("idle", "Movie night! Ready?");
       return;
     }
@@ -1022,6 +1031,8 @@ function renderDay2(view, pv) {
       </form>
       <div class="status" id="fc-status" aria-live="polite"></div></div>`;
     const input = $("#fc-in"); input.focus({ preventScroll: true });
+    let lastBop = 0;
+    input.addEventListener("input", () => { const now = Date.now(); if (now - lastBop > 250) { lastBop = now; buddy.bop(input.value.length > 6 ? "Ooh, I think I know…" : "Typing typing…"); } });
     fcTimer = setInterval(() => { const c = $("#fc-clock"); if (c) c.textContent = fmtTime(Date.now() - st.start); else clearInterval(fcTimer); }, 100);
     $("#fc-form").onsubmit = e => {
       e.preventDefault();
@@ -1036,6 +1047,7 @@ function renderDay2(view, pv) {
       input.select();
     };
     $("#fc-skip").onclick = () => next(false);
+    $("#fc-skip").addEventListener("pointerdown", () => buddy.bop("Skip it?"));
   };
 
   function next(ok) {
@@ -1135,15 +1147,15 @@ function renderDay4(view, pv) {
           <button class="btn" type="submit">Guess</button></form>`}
       <div class="status" id="nt-status" aria-live="polite"></div></div>`;
 
-    $("#nt-play").onclick = () => play(reveal ? CLIP_FULL : st.len);
-    if (reveal) { $("#nt-next").onclick = () => { stopTune(); st.i++; st.len = CLIP_STEPS[0]; st.phase = "guess"; draw(); }; return; }
-    game.querySelectorAll(".nt-chip").forEach(c => c.onclick = () => { st.len = +c.dataset.s; draw(); });
-    $("#nt-more").onclick = () => { st.len = Math.min(MAX_LISTEN, +(st.len + 1).toFixed(1)); draw(); play(st.len); };
+    $("#nt-play").onclick = () => { const l = reveal ? CLIP_FULL : st.len; play(l); buddy.say("think", reveal ? "This one's a bop 🎶" : "Listening… 🎧", { hold: false, ms: l * 1000 + 700, after: reveal ? "Ready for the next?" : "Got it? Type it in!" }); };
+    if (reveal) { $("#nt-next").onclick = () => { stopTune(); st.i++; st.len = CLIP_STEPS[0]; st.phase = "guess"; draw(); buddy.say("idle", st.i < SONGS.length ? "Next song! Ears ready?" : "Let's see the score!"); }; return; }
+    game.querySelectorAll(".nt-chip").forEach(c => c.onclick = () => { st.len = +c.dataset.s; draw(); buddy.bop({ 0.5: "Living dangerously!", 1: "Still brave!", 2: "A little more…", 5: "Playing it safe." }[st.len] || "Okay!"); });
+    $("#nt-more").onclick = () => { st.len = Math.min(MAX_LISTEN, +(st.len + 1).toFixed(1)); draw(); play(st.len); buddy.say("think", "One more second…", { hold: false, ms: st.len * 1000 + 700, after: "Got it now?" }); };
     $("#nt-skip").onclick = () => done(0, "Skipped. It was this one.", false);
     $("#nt-form").onsubmit = e => {
       e.preventDefault();
       const t = $("#nt-title").value, a = $("#nt-artist").value;
-      if (!t.trim() && !a.trim()) { $("#nt-status").textContent = "Type a song name first."; return; }
+      if (!t.trim() && !a.trim()) { $("#nt-status").textContent = "Type a song name first."; buddy.say("think", "Type a song name first!", { hold: false, ms: 1500 }); return; }
       const okT = matches(t, [song.title, ...song.titleAlts]), okA = matches(a, [song.artist, ...song.artistAlts]);
       if (okT) {
         const pts = okA ? worth : Math.round(worth * .6 / 100) * 100;
@@ -1397,8 +1409,10 @@ function renderDay6(view, pv) {
       $("#pt-board").appendChild(f); setTimeout(() => f.remove(), 900);
     };
     const banner = (t) => { const el = $("#pt-banner"); el.textContent = t; el.hidden = false; el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); setTimeout(() => el.hidden = true, 1300); };
+    const petLines = ["Purr~", "So soft!", "Theo ♥", "Fluffy!!", "Good boy!", "More pets!", "Prrrr…", "Sooo fluffy"];
     const pet = (pts, el) => {
       S.score += pts; float(el, "+" + pts + " ♥", "good");
+      buddy.say("joy", petLines[Math.random() * petLines.length | 0], { hold: false, ms: 900, after: "Pet him! 🐾" });
       if (S.gt < S.purrUntil) return;                          // pets during purr-fect mode don't build the next one
       S.combo++;
       if (S.combo >= PET.purrNeed && S.gt >= S.purrUntil) {
@@ -1411,11 +1425,11 @@ function renderDay6(view, pv) {
 
     cubbies.forEach((c, i) => c.addEventListener("pointerdown", e => {
       e.preventDefault(); if (S.over) return;
-      const s = S.slots[i]; if (!s || s.done) return;
+      const s = S.slots[i]; if (!s || s.done) { buddy.bop(s ? "Already petted!" : "Nobody there!"); return; }
       if (s.type === "theo") { s.done = true; c.querySelector("img").src = theoSprite("petted"); pet(PET.points.theo, c); s.until = S.gt + 380; }
       else if (s.type === "sleepy") {
         s.taps++;
-        if (s.taps === 1) { c.classList.remove("stir"); void c.offsetWidth; c.classList.add("stir"); float(c, "zz…", "soft"); s.until += 500; }
+        if (s.taps === 1) { c.classList.remove("stir"); void c.offsetWidth; c.classList.add("stir"); float(c, "zz…", "soft"); s.until += 500; buddy.say("think", "Shh… he's waking up", { hold: false, ms: 900, after: "Pet him! 🐾" }); }
         else { s.done = true; c.querySelector("img").src = theoSprite("petted"); pet(PET.points.sleepy, c); s.until = S.gt + 420; }
       }
       else if (s.type === "belly") { s.done = true; c.querySelector("img").src = theoSprite("hiss"); S.score = Math.max(0, S.score + PET.points.belly); float(c, "hiss! −20", "bad"); ouch("Belly trap!! Every time…"); s.until = S.gt + 500; }
