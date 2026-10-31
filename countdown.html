@@ -894,13 +894,10 @@ function renderDay1(view, pv) {
 }
 
 /* ---------- Day 2: Final Cut ---------- */
-const MOVIES = [ // the pool; 10 are dealt at random each time the page opens
-  "The Godfather", "Titanic", "Inception", "Jurassic Park", "The Dark Knight", "Forrest Gump", "Toy Story", "Interstellar",
-  "Pulp Fiction", "The Lion King", "Finding Nemo", "Back to the Future", "The Matrix", "Gladiator", "Frozen", "Shrek",
-  "Avatar", "Jaws", "Rocky", "Home Alone", "Ratatouille", "La La Land", "The Social Network", "Parasite",
-  "Spirited Away", "The Truman Show", "Fight Club", "Goodfellas", "Inside Out", "Black Panther", "Oppenheimer",
-  "Barbie", "Joker", "Whiplash", "The Shining", "Casablanca", "Star Wars", "Spider-Man", "Harry Potter", "The Notebook",
-  "Mean Girls", "The Avengers", "Iron Man", "Top Gun", "Grease", "Twilight", "Zootopia", "Pirates of the Caribbean",
+const MOVIES = [ // his ten, shuffled each time the page opens. extra spellings that also count go after the title
+  ["Casablanca"], ["Fallen Angels"], ["A Separation"], ["Forgotten"], ["In Bruges"],
+  ["No Other Choice", "No Other Choices"], ["Eternity"], ["Night Is Short, Walk On Girl", "The Night Is Short, Walk On Girl"],
+  ["Yi Yi"], ["The Devil Wears Prada"],
 ];
 const skeleton = t => t.toUpperCase().replace(/[^A-Z0-9]/g, "").replace(/[AEIOU]/g, "");
 const norm = t => t.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]/g, "");
@@ -918,7 +915,7 @@ let fcTimer = null;
 function renderDay2(view, pv) {
   if (!finalCutGame) {
     const pool = MOVIES.slice(); for (let i = pool.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [pool[i], pool[j]] = [pool[j], pool[i]]; }
-    finalCutGame = { movies: pool.slice(0, 10), i: 0, results: [], start: null, end: null };
+    finalCutGame = { movies: pool.slice(0, 10).map(m => m[0]), i: 0, results: [], start: null, end: null };
   }
   const st = finalCutGame;
   const game = stage(view, pv, "Day 2 · Final Cut",
@@ -954,7 +951,8 @@ function renderDay2(view, pv) {
     $("#fc-form").onsubmit = e => {
       e.preventDefault();
       const g = norm(input.value); if (!g) return;
-      const answers = [norm(movie), norm(movie.replace(/^the\s+/i, ""))];
+      const alts = (MOVIES.find(m => m[0] === movie) || [movie]);
+      const answers = alts.flatMap(t => [norm(t), norm(t.replace(/^(the|a)\s+/i, ""))]);
       if (answers.includes(g) || answers.includes(g.replace(/^the/, ""))) return next(true);
       const dist = Math.min(...answers.map(a => lev(g, a)));
       const cut = $("#fc-cut"); cut.classList.remove("shake"); void cut.offsetWidth; cut.classList.add("shake");
