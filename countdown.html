@@ -1205,27 +1205,27 @@ const TUNE_PEAKS = {"ode-to-the-mets":[0.65,0.64,0.43,0.45,0.44,0.33,0.54,0.42,0
 
 /* ===== Theo & friends, drawn as text (20 x 18), outlined in code ===== */
 const THEO_BASE = [
-"...c............c...",
-"..cCc..........cCc..",
-"..cpCc........cCpc..",
-"..cppCcllllllcCppc..",
-".cCCCCCClllllCCCCCc.",
+"..c..............c..",
+"..cc............cc..",
+"..cpc..........cpc..",
+"..cppcCCCCCCCCcppc..",
+"..cpCCCCCCCCCCCCpc..",
+".cCCCCCCCCCCCCCCCCc.",
 ".CCCCCCCCCCCCCCCCCC.",
-"cCCCCCCCCCCCCCCCCCCc",
 "CCCCCCCCCCCCCCCCCCCC",
 "CCCCCCCCCCCCCCCCCCCC",
-"lCCCCCClllllCCCCCCCl",
-"llCCCCllllllllCCCCll",
-"lllCCCCllllllCCCClll",
-".lllcCCCCCCCCCCclll.",
-"l.llllcCCCCCCclll.l.",
-".llllllllllllllllll.",
-"..lllllllllllllllll.",
-"..llllllllllllllll..",
-"..llllllllllllllll..",
+"CCCCCCCCCCCCCCCCCCCC",
+"CCCCCCCllllllCCCCCCC",
+".CCCCCllllllllCCCCC.",
+".cCCCCCllllllCCCCCc.",
+"..ccCCCCCCCCCCCCcc..",
+"....cCCllllllCCc....",
+"....CCCllllllCCC....",
+"....CCClllllllCC....",
+"....CCCCCCCCCCCC....",
 ];
-const PAL_THEO = { C: "#f0d6b2", c: "#dcb88f", l: "#fbefdf", p: "#f2a9a6", E: "#c4782e", K: "#2a1d1a", W: "#ffffff", P: "#e98f93", m: "#9a6b4f", O: "#7a5236" };
-const PAL_GREY = { C: "#8c8f9c", c: "#6e717d", l: "#b4b7c2", p: "#b07f88", E: "#f3d23c", K: "#1c1b22", W: "#ffffff", P: "#4e4b55", m: "#2c2a31", O: "#2b2930" };
+const PAL_THEO = { C: "#f3d7ae", c: "#e2bb8a", l: "#fdf3e4", p: "#f4aaa8", E: "#c4782e", K: "#2a1d1a", W: "#ffffff", P: "#ee8e96", m: "#5a3d2e", b: "#f7b9b4", R: "#e86b7a", O: "#5a3d2e" };
+const PAL_GREY = { C: "#8c8f9c", c: "#6e717d", l: "#b4b7c2", p: "#b07f88", E: "#f3d23c", K: "#1c1b22", W: "#ffffff", P: "#4e4b55", m: "#2c2a31", b: "#8c8f9c", R: "#c4465a", O: "#2b2930" };
 const SPRITES = {
   cucumber: { pal: { G: "#5fa44a", g: "#3f7f35", L: "#9fd47e", O: "#24461f" }, rows: [
 "........gg..........",
@@ -1290,22 +1290,24 @@ function theoGrid(kind) {
   const pal = grey ? PAL_GREY : PAL_THEO;
   let g = THEO_BASE.map(r => [...r].map(ch => ch === "." ? null : ch));
   const set = (x, y, ch) => { if (g[y] && x >= 0 && x < 20) g[y][x] = ch; };
-  const eyes = { normal: [[5, 7, "E"], [6, 7, "E"], [5, 8, "E"], [6, 8, "K"], [13, 7, "E"], [14, 7, "E"], [13, 8, "K"], [14, 8, "E"], [5, 7, "W"], [13, 7, "W"]],
-    happy: [[4, 8, "O"], [5, 7, "O"], [6, 7, "O"], [7, 8, "O"], [12, 8, "O"], [13, 7, "O"], [14, 7, "O"], [15, 8, "O"]],
-    sleep: [[4, 7, "O"], [5, 8, "O"], [6, 8, "O"], [7, 7, "O"], [12, 7, "O"], [13, 8, "O"], [14, 8, "O"], [15, 7, "O"]],
-    wide: [[5, 6, "E"], [6, 6, "E"], [5, 7, "K"], [6, 7, "K"], [5, 8, "E"], [6, 8, "E"], [13, 6, "E"], [14, 6, "E"], [13, 7, "K"], [14, 7, "K"], [13, 8, "E"], [14, 8, "E"], [5, 6, "W"], [13, 6, "W"]],
-    angry: [[5, 7, "E"], [6, 7, "E"], [5, 8, "E"], [6, 8, "E"], [13, 7, "E"], [14, 7, "E"], [13, 8, "E"], [14, 8, "E"], [6, 7, "K"], [6, 8, "K"], [13, 7, "K"], [13, 8, "K"],
-            [3, 5, "O"], [4, 5, "O"], [5, 6, "O"], [6, 6, "O"], [16, 5, "O"], [15, 5, "O"], [14, 6, "O"], [13, 6, "O"]] };
+  const eyes = {
+    normal: [[5, 8, "K"], [6, 8, "K"], [5, 9, "K"], [6, 9, "K"], [13, 8, "K"], [14, 8, "K"], [13, 9, "K"], [14, 9, "K"], [5, 8, "W"], [13, 8, "W"]],
+    happy: [[4, 9, "K"], [5, 8, "K"], [6, 8, "K"], [7, 9, "K"], [12, 9, "K"], [13, 8, "K"], [14, 8, "K"], [15, 9, "K"]],
+    sleep: [[4, 8, "K"], [5, 9, "K"], [6, 9, "K"], [7, 8, "K"], [12, 8, "K"], [13, 9, "K"], [14, 9, "K"], [15, 8, "K"]],
+    wide: [[5, 7, "K"], [6, 7, "K"], [5, 8, "K"], [6, 8, "K"], [5, 9, "K"], [6, 9, "K"], [13, 7, "K"], [14, 7, "K"], [13, 8, "K"], [14, 8, "K"], [13, 9, "K"], [14, 9, "K"], [5, 7, "W"], [13, 7, "W"], [6, 8, "W"], [14, 8, "W"]],
+    angry: [[5, 8, "E"], [6, 8, "E"], [5, 9, "E"], [6, 9, "K"], [13, 8, "E"], [14, 8, "E"], [13, 9, "K"], [14, 9, "E"],
+            [4, 6, "K"], [5, 6, "K"], [6, 7, "K"], [7, 7, "K"], [15, 6, "K"], [14, 6, "K"], [13, 7, "K"], [12, 7, "K"]] };
   const face = { theo: "normal", petted: "happy", sleepy: "sleep", zoom: "wide", evil: "angry", belly: "happy", hiss: "angry" }[kind] || "normal";
   eyes[face].forEach(([x, y, c]) => set(x, y, c));
-  set(9, 9, "P"); set(10, 9, "P");
-  if (kind === "hiss" || kind === "evil") { set(8, 11, "O"); set(9, 10, "O"); set(10, 10, "O"); set(11, 11, "O"); set(9, 11, "W"); set(10, 11, "W"); }
-  else if (kind === "zoom") { set(9, 10, "m"); set(10, 10, "m"); set(9, 11, "m"); set(10, 11, "m"); }
-  else { set(9, 10, "m"); set(8, 11, "m"); set(10, 10, "m"); set(11, 11, "m"); }
-  if (grey) { set(2, 2, null); set(2, 3, "C"); }           // a nicked ear
+  set(9, 10, "P"); set(10, 10, "P");
+  set(3, 11, "b"); set(4, 11, "b"); set(15, 11, "b"); set(16, 11, "b");
+  if (kind === "hiss" || kind === "evil") { set(8, 12, "m"); set(9, 11, "m"); set(10, 11, "m"); set(11, 12, "m"); set(9, 12, "W"); set(10, 12, "W"); }
+  else if (kind === "zoom") { set(9, 11, "m"); set(10, 11, "m"); set(9, 12, "R"); set(10, 12, "R"); }
+  else { set(8, 11, "m"); set(9, 12, "m"); set(10, 12, "m"); set(11, 11, "m"); }
+  if (grey) { set(2, 0, null); set(2, 1, null); set(3, 1, null); set(3, 2, "c"); set(2, 2, "c"); }   // a nicked ear           // a nicked ear
   if (kind === "belly") {                                    // belly up: flip him over, paws in the air
     g = g.reverse();
-    [[3, 0], [4, 0], [5, 0], [3, 1], [4, 1], [5, 1], [14, 0], [15, 0], [16, 0], [14, 1], [15, 1], [16, 1]].forEach(([x, y]) => set(x, y, "C"));
+    [[4, 0], [5, 0], [4, 1], [5, 1], [14, 0], [15, 0], [14, 1], [15, 1]].forEach(([x, y]) => set(x, y, "C"));
     set(4, 0, "p"); set(15, 0, "p");
   }
   return { rows: g, pal };
