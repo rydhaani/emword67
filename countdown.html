@@ -274,6 +274,36 @@ body {
 @keyframes bannerpop { 0% { transform: translate(-50%, -50%) scale(.6); opacity: 0; } 20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; } 80% { opacity: 1; } 100% { transform: translate(-50%, -70%) scale(1); opacity: 0; } }
 .pt-sleep { width: 120px; image-rendering: pixelated; }
 @media (max-width: 420px) { .pt-legend { grid-template-columns: repeat(4, minmax(0, 1fr)); } .pt-leg img { width: 44px; } .pt-cab { gap: 7px; padding: 9px; } }
+/* pick your gift */
+.gift { display: grid; gap: 18px; width: 100%; max-width: 620px; justify-self: center; }
+.gc-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(10px, 3vw, 24px); perspective: 1200px; padding-top: 12px; }
+.gcard { border: 0; padding: 0; background: none; cursor: pointer; aspect-ratio: 5 / 7; max-width: 100%; transition: transform .25s ease, opacity .5s, filter .5s; -webkit-tap-highlight-color: transparent; }
+.gcard:disabled { cursor: default; }
+.gc-inner { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform .8s cubic-bezier(.3,.7,.2,1); }
+.gcard.flipped .gc-inner { transform: rotateY(180deg); }
+.gc-face { position: absolute; inset: 0; border-radius: 12px; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 10px 24px -14px rgba(35,28,32,.55); }
+.gc-back { background: var(--accent); border: 5px solid #fff; outline: 1.5px solid var(--line); }
+.gc-pattern { position: absolute; inset: 6px; border-radius: 6px; border: 1.5px solid rgba(255,255,255,.7);
+  background: repeating-linear-gradient(45deg, rgba(255,255,255,.22) 0 2px, transparent 2px 11px), repeating-linear-gradient(-45deg, rgba(255,255,255,.22) 0 2px, transparent 2px 11px); }
+.gc-peek { position: absolute; inset: -20%; background-size: cover; background-position: center; filter: blur(16px) saturate(1.3); opacity: 0; transition: opacity .35s; }
+.gc-mark { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--display); font-size: clamp(34px, 9vw, 64px); color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,.25); }
+.gc-front { transform: rotateY(180deg); background: #fff; border: 1.5px solid var(--line); display: grid; grid-template-rows: 1fr auto; padding: 22px 18px 26px; color: var(--ink); }
+.gc-front.red { color: #c8394c; }
+.gc-corner { position: absolute; font-family: var(--display); font-size: clamp(13px, 2.4vw, 18px); line-height: .95; text-align: center; }
+.gc-corner.tl { top: 6px; left: 8px; } .gc-corner.br { bottom: 6px; right: 8px; transform: rotate(180deg); }
+.gc-photo { display: grid; place-items: center; border-radius: 8px; overflow: hidden; min-height: 0; }
+.gc-photo img { width: 100%; height: 100%; object-fit: contain; }
+.gc-name { padding: 8px 14px 0; font-family: var(--display); font-size: clamp(13px, 2.6vw, 19px); line-height: 1.1; color: var(--ink); text-wrap: balance; }
+@media (hover: hover) { .gcard:not(:disabled):hover { transform: translateY(-8px) rotate(-1.5deg); } .gcard:not(:disabled):hover .gc-peek { opacity: .8; } }
+.gcard.sel { transform: translateY(-12px) scale(1.03); }
+.gcard.sel .gc-peek { opacity: .8; }
+.gcard.sel .gc-back { outline: 3px solid var(--ink); }
+.gcard.gone { opacity: .35; filter: grayscale(.8); transform: scale(.94); }
+.gcard.flipped { transform: translateY(-6px) scale(1.04); }
+.gcard:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: 12px; }
+.gift-foot { min-height: 64px; display: grid; justify-items: center; gap: 6px; }
+.gift-hint { font-size: 14px; color: var(--soft); margin: 0; }
+.gift-link { justify-self: center; border: 1.5px dashed var(--accent); background: #fff; color: var(--accent); border-radius: 999px; padding: 8px 16px; font: 800 14px var(--body); cursor: pointer; }
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 20; }
 
 @media (max-width: 700px) {
@@ -852,10 +882,12 @@ function renderDay1(view, pv) {
   const game = stage(view, pv, "Day 1 · Quordle", "Guess all four words in 9 tries. Every guess goes into all four boards.",
     ` · <a href="#" id="reset">new words</a>`);
   game.innerHTML = `<div style="display:grid;gap:14px">
+    ${store.get(DAY1_DONE()) ? `<button class="gift-link" id="gift-link" type="button">${giftState().pick ? "🎁 See your gift" : "🎁 Pick your gift"}</button>` : ""}
     <div class="tally" id="tally" aria-label="Boards solved"></div>
     <div class="boards" id="boards"></div>
     <div class="status" id="status" aria-live="polite"></div><div id="end"></div><div class="keyboard" id="kb"></div></div>`;
   if (pv) $("#reset").onclick = e => { e.preventDefault(); quordleGame = null; route(); };
+  if ($("#gift-link")) $("#gift-link").onclick = () => renderGift(view, pv);
 
   const solvedAt = () => W.map(w => st.guesses.indexOf(w));
   const won = () => solvedAt().every(i => i >= 0);
@@ -959,10 +991,11 @@ function renderDay1(view, pv) {
     $("#end").innerHTML = `<div class="win">
       <h3>${w ? "You got all four!" : `${n} of 4`}</h3>
       <p class="msg">${w ? `Solved in ${st.guesses.length} guesses.` : n ? "So close! The missing words are under their boards." : "Not this time. The words are under each board."}</p>
-      <div class="row-btns" style="justify-content:center"><button class="btn" id="again" type="button">Play again</button></div>
-      <p class="msg"><strong>Tomorrow's candle lights at midnight.</strong></p>
+      <div class="row-btns" style="justify-content:center"><button class="btn" id="to-gift" type="button">${giftState().pick ? "See your gift 🎁" : "Pick your gift →"}</button><button class="btn ghost" id="again" type="button">Play again</button></div>
     </div>`;
+    store.set(DAY1_DONE(), true);
     $("#again").onclick = () => { quordleGame = null; route(); };
+    $("#to-gift").onclick = () => { renderGift(view, pv); scrollTo(0, 0); };
     if (w) buddy.say("joy", "WE DID IT!! 🎉", { burst: lastFlip >= 0 ? "big" : false });
     else buddy.say("sad", n ? `${n} out of 4… next time!` : "Aww… next time!");
   }
@@ -975,6 +1008,79 @@ function renderDay1(view, pv) {
   };
   if (!over()) buddy.say("idle", st.guesses.length ? "Welcome back! Let's finish this." : "Let's find those words!");
   draw();
+}
+
+/* ---------- after Quordle: pick your gift ---------- */
+const GIFTS = [ // key, name, photo in gifts/, photo background, playing-card suit
+  { key: "bag", name: "Leather work bag", img: "gifts/bag.jpg", bg: "#f1f1f1", suit: "♥", red: true },
+  { key: "jacket", name: "Brown wool zip jacket", img: "gifts/jacket.jpg", bg: "#e0e1e3", suit: "♠", red: false },
+  { key: "sweater", name: "Green half-zip sweater", img: "gifts/sweater.jpg", bg: "#f1f2f2", suit: "♦", red: true },
+];
+const GIFT_KEY = () => PV() ? "bday-gift-preview" : "bday-gift";
+const DAY1_DONE = () => PV() ? "bday-day1-done-preview" : "bday-day1-done";
+function giftState() {
+  let g = store.get(GIFT_KEY());
+  if (!g || !Array.isArray(g.order) || g.order.length !== GIFTS.length) {
+    const order = GIFTS.map(x => x.key); for (let i = order.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [order[i], order[j]] = [order[j], order[i]]; }
+    g = { order, pick: null }; store.set(GIFT_KEY(), g);
+  }
+  return g;
+}
+
+function renderGift(view, pv) {
+  buddy?.destroy(); document.onkeydown = null;
+  const g = giftState();
+  const game = stage(view, pv, "Pick your gift", g.pick ? "" : "Three cards, one gift. You can only flip one, so choose carefully.",
+    ` · <a href="#" id="gift-reset">reset the pick</a>`);
+  if (pv) $("#gift-reset").onclick = e => { e.preventDefault(); store.del(GIFT_KEY()); renderGift(view, pv); };
+  const cards = g.order.map(k => GIFTS.find(x => x.key === k));
+  game.innerHTML = `<div class="gift">
+    <div class="gc-row">${cards.map((c, i) => `
+      <button class="gcard${g.pick === c.key ? " flipped" : g.pick ? " gone" : ""}" type="button" data-k="${c.key}" aria-label="${g.pick === c.key ? c.name : "Card " + (i + 1)}" ${g.pick ? "disabled" : ""}>
+        <span class="gc-inner">
+          <span class="gc-face gc-back"><span class="gc-pattern"></span><span class="gc-peek" style="background-image:url('${c.img}')"></span><span class="gc-mark">?</span></span>
+          <span class="gc-face gc-front ${c.red ? "red" : ""}">
+            <span class="gc-corner tl">A<br>${c.suit}</span>
+            <span class="gc-photo" style="background:${c.bg}"><img src="${c.img}" alt="${c.name}"></span>
+            <span class="gc-name">${c.name}</span>
+            <span class="gc-corner br">A<br>${c.suit}</span>
+          </span>
+        </span>
+      </button>`).join("")}</div>
+    <div class="gift-foot" id="gift-foot"></div></div>`;
+  const foot = $("#gift-foot");
+  const btns = [...game.querySelectorAll(".gcard")];
+  let sel = null;
+
+  const showPicked = (fresh) => {
+    const c = GIFTS.find(x => x.key === g.pick);
+    foot.innerHTML = `<div class="win"><h3>${escapeHtml(c.name)}</h3><p class="msg">It's yours. Happy birthday, ${escapeHtml(CONFIG.name)} 🎁</p>
+      <p class="msg"><strong>Tomorrow's candle lights at midnight.</strong></p></div>`;
+    buddy.say("joy", fresh ? "IT'S YOURS!! 🎁" : "Your gift! 🎁", { burst: fresh ? "big" : false });
+  };
+  if (g.pick) { showPicked(false); return; }
+
+  const choose = (b) => {
+    sel = b; btns.forEach(x => x.classList.toggle("sel", x === b));
+    foot.innerHTML = `<div class="row-btns" style="justify-content:center"><button class="btn" id="gift-flip" type="button">Flip this card</button></div>
+      <p class="gift-hint">Not sure? Tap another card first.</p>`;
+    $("#gift-flip").onclick = flip;
+    buddy.say("think", ["Ooh, this one?", "Hmm… this one?", "Are you sure? 👀"][btns.indexOf(b)] || "This one?", { hold: false, ms: 4000, after: "Choose wisely…" });
+  };
+  const flip = () => {
+    if (!sel || g.pick) return;
+    g.pick = sel.dataset.k; store.set(GIFT_KEY(), g);
+    sel.classList.remove("sel"); sel.classList.add("flipped"); sel.setAttribute("aria-label", GIFTS.find(x => x.key === g.pick).name);
+    btns.forEach(x => { x.disabled = true; if (x !== sel) x.classList.add("gone"); });
+    foot.innerHTML = "";
+    const intro = game.parentElement.querySelector(":scope > p"); if (intro) intro.hidden = true;
+    setTimeout(() => showPicked(true), matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 800);
+  };
+  btns.forEach(b => {
+    b.addEventListener("click", () => { if (!g.pick) choose(b); });
+    b.addEventListener("pointerenter", e => { if (e.pointerType === "mouse" && !g.pick && b !== sel) buddy.bop(["What's in this one?", "Hmm, a peek…", "Ooh, mysterious"][btns.indexOf(b)]); });
+  });
+  buddy.say("idle", "A present?! Pick one! 🎁");
 }
 
 /* ---------- Day 2: Final Cut ---------- */
