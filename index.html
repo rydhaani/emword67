@@ -496,7 +496,7 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
     <h1>make a wish</h1>
     <p>then blow out the candles</p>
   </div>
-  <svg class="cake-art" viewBox="0 20 400 400" role="img" aria-label="a chocolate birthday cake with gold 2 and 7 candles">
+  <svg class="cake-art" viewBox="0 20 400 400" role="img" aria-label="a chocolate cake with strawberries, blackberries and cream, and gold 2 and 7 candles">
     <defs>
       <linearGradient id="sideG" x1="0" x2="1" y1="0" y2="0">
         <stop offset="0" stop-color="#170904"/><stop offset=".16" stop-color="#3a1b0d"/><stop offset=".34" stop-color="#55291480" stop-opacity="1"/>
@@ -511,24 +511,13 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
       <radialGradient id="glowG"><stop offset="0" stop-color="#ffcf73" stop-opacity=".55"/><stop offset="1" stop-color="#ffcf73" stop-opacity="0"/></radialGradient>
       <filter id="blurS" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
     </defs>
-    <ellipse cx="200" cy="392" rx="186" ry="34" fill="#000" opacity=".55" filter="url(#blurS)"/>
-    <ellipse cx="200" cy="378" rx="180" ry="38" fill="#ece7de"/>
-    <ellipse cx="200" cy="374" rx="162" ry="30" fill="#d9d2c6"/>
-    <path d="M65 190V368A135 34 0 0 0 335 368V190Z" fill="url(#sideG)"/>
-    <path d="M65 262A135 34 0 0 0 335 262" fill="none" stroke="#5e301a" stroke-width="5" opacity=".6"/>
-    <path d="M65 318A135 34 0 0 0 335 318" fill="none" stroke="#5e301a" stroke-width="5" opacity=".6"/>
-    <rect x="102" y="232" width="16" height="130" rx="8" fill="#fff" opacity=".05"/>
-    <ellipse cx="200" cy="190" rx="135" ry="34" fill="url(#topG)"/>
-    <ellipse cx="168" cy="176" rx="64" ry="10" fill="#fff" opacity=".07"/>
-    <path id="drips" fill="url(#dripG)"/>
-    <path id="dripShine" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="2.5" stroke-linecap="round"/>
-    <g fill="#1c0a03" opacity=".9">
-      <path d="M130 188q6-5 12 0q-6 3-12 0z"/><path d="M262 196q7-4 13 1q-7 2-13-1z"/><path d="M205 210q5-5 11-1q-6 3-11 1z"/><path d="M150 205q5-4 10 0q-5 3-10 0z"/><path d="M245 176q5-4 10 0q-5 2-10 0z"/>
-    </g>
+    <ellipse cx="200" cy="400" rx="176" ry="22" fill="#000" opacity=".5" filter="url(#blurS)"/>
+    <image href="art/cake.png" x="30" y="100" width="340" height="310" preserveAspectRatio="xMidYMid meet"/>
+    <path id="drips" style="display:none"/><path id="dripShine" style="display:none"/>
     <g class="candle c2" id="c2" role="button" tabindex="0" aria-label="blow out the 2 candle">
-      <text x="168" y="200" text-anchor="middle" font-size="98" font-weight="800" fill="url(#goldG)" stroke="#7a5410" stroke-width="1.4" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none">2</text>
-      <line x1="168" y1="132" x2="168" y2="118" stroke="#2b2015" stroke-width="2.5" stroke-linecap="round"/>
-      <g transform="translate(168 118)"><g class="glow"><circle cx="0" cy="-24" r="46" fill="url(#glowG)"/></g>
+      <text x="104" y="206" text-anchor="middle" font-size="68" font-weight="800" fill="url(#goldG)" stroke="#7a5410" stroke-width="1.4" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none">2</text>
+      <line x1="104" y1="160" x2="104" y2="149" stroke="#2b2015" stroke-width="2.5" stroke-linecap="round"/>
+      <g transform="translate(104 149) scale(.8)"><g class="glow"><circle cx="0" cy="-24" r="46" fill="url(#glowG)"/></g>
           <g class="wind"><g class="flame">
             <path d="M0 0C-11-4-12-20-6-30C-3-36-1-42 0-50C2-42 5-36 8-29C13-19 11-4 0 0Z" fill="url(#flameG)"/>
             <path d="M0-2C-6-4-6-13-3-19C-1-23 0-27 0-31C1-26 3-22 4-18C7-12 6-4 0-2Z" fill="#fff6c9"/>
@@ -540,9 +529,9 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
           <circle cx="0" cy="-22" r="30" fill="transparent"/></g>
     </g>
     <g class="candle c7" id="c7" role="button" tabindex="0" aria-label="blow out the 7 candle">
-      <text x="236" y="200" text-anchor="middle" font-size="98" font-weight="800" fill="url(#goldG)" stroke="#7a5410" stroke-width="1.4" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none">7</text>
-      <line x1="240" y1="133" x2="240" y2="119" stroke="#2b2015" stroke-width="2.5" stroke-linecap="round"/>
-      <g transform="translate(240 119)"><g class="glow"><circle cx="0" cy="-24" r="46" fill="url(#glowG)"/></g>
+      <text x="300" y="206" text-anchor="middle" font-size="68" font-weight="800" fill="url(#goldG)" stroke="#7a5410" stroke-width="1.4" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none">7</text>
+      <line x1="303" y1="160" x2="303" y2="149" stroke="#2b2015" stroke-width="2.5" stroke-linecap="round"/>
+      <g transform="translate(303 149) scale(.8)"><g class="glow"><circle cx="0" cy="-24" r="46" fill="url(#glowG)"/></g>
           <g class="wind"><g class="flame">
             <path d="M0 0C-11-4-12-20-6-30C-3-36-1-42 0-50C2-42 5-36 8-29C13-19 11-4 0 0Z" fill="url(#flameG)"/>
             <path d="M0-2C-6-4-6-13-3-19C-1-23 0-27 0-31C1-26 3-22 4-18C7-12 6-4 0-2Z" fill="#fff6c9"/>
