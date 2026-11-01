@@ -337,14 +337,17 @@ body {
 .sp-gallery figcaption { font-size: 12px; color: var(--soft); line-height: 1.3; }
 /* theo's cameos */
 .pt-cameo { position: fixed; inset: 0; pointer-events: none; z-index: 15; overflow: hidden; }
-.pt-paw { position: absolute; right: calc(env(safe-area-inset-right, 0px) - 10px); top: 34%; width: min(46vw, 230px); image-rendering: pixelated; transform-origin: 80% 100%; animation: pawin 1.5s cubic-bezier(.3,.8,.3,1) forwards; }
-@keyframes pawin { 0% { transform: translateX(110%) rotate(-14deg); } 28% { transform: translateX(0) rotate(-14deg); } 36% { transform: translateX(-6%) rotate(-4deg) scale(1.08); } 46% { transform: translateX(0) rotate(-12deg) scale(1); } 78% { transform: translateX(0) rotate(-12deg); } 100% { transform: translateX(115%) rotate(-14deg); } }
+.pt-paw { position: absolute; top: 40%; width: min(70vw, 360px); image-rendering: pixelated; }
+.pt-pawlayer { position: absolute; inset: 0; }
+.left .pt-pawlayer { transform: scaleX(-1); }                 /* the left-side paw is the right-side one, mirrored */
+.pt-paw { right: 0; transform-origin: 100% 50%; animation: pawR 1.5s cubic-bezier(.3,.8,.3,1) forwards; }
+@keyframes pawR { 0% { transform: translateX(102%); } 28% { transform: translateX(0); } 36% { transform: translateX(-5%) rotate(-7deg) scale(1.06); } 46% { transform: translateX(0) rotate(0) scale(1); } 78% { transform: translateX(0); } 100% { transform: translateX(102%); } }
 .pt-cameo-word { position: absolute; font-family: var(--display); font-size: clamp(32px, 9vw, 56px); color: #fff; text-shadow: 0 2px 0 #d9536e, 0 0 18px rgba(217,83,110,.6); white-space: nowrap; opacity: 0; }
-.paw .pt-cameo-word { left: 0; right: min(18vw, 90px); text-align: center; top: 54%; animation: wordpop 1.5s ease-out .45s forwards; }
+.paw .pt-cameo-word { left: 0; right: 0; text-align: center; top: calc(40% + min(43vw, 220px)); animation: wordpop 1.5s ease-out .45s forwards; }
 .kiss .pt-cameo-word { left: 0; right: 0; text-align: center; bottom: min(70vw, 330px); animation: wordpop 1.6s ease-out .6s forwards; }
 @keyframes wordpop { 0% { opacity: 0; scale: .6; } 15% { opacity: 1; scale: 1.12; } 30% { scale: 1; } 80% { opacity: 1; } 100% { opacity: 0; translate: 0 -18px; } }
 .pt-spark { position: absolute; color: #f2c14e; font-size: 26px; opacity: 0; animation: sparkpop .7s ease-out .5s forwards; }
-.pt-spark.s1 { right: min(30vw, 160px); top: 31%; } .pt-spark.s2 { right: min(42vw, 220px); top: 46%; animation-delay: .56s; } .pt-spark.s3 { right: min(22vw, 110px); top: 52%; animation-delay: .62s; }
+.pt-spark { top: 38%; } .pt-spark.s1 { left: 30%; } .pt-spark.s2 { left: 50%; top: 34%; animation-delay: .56s; } .pt-spark.s3 { left: 68%; animation-delay: .62s; }
 @keyframes sparkpop { 0% { opacity: 0; transform: scale(.3); } 40% { opacity: 1; transform: scale(1.3) rotate(20deg); } 100% { opacity: 0; transform: scale(.8) rotate(40deg); } }
 .pt-kiss { position: absolute; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) - 4px); width: min(66vw, 300px); image-rendering: pixelated; transform-origin: 50% 100%; animation: kissup 1.8s cubic-bezier(.3,.8,.3,1) forwards; }
 @keyframes kissup { 0% { transform: translate(-50%, 105%); } 25% { transform: translate(-50%, 8%); } 40% { transform: translate(-50%, 2%) scale(1.2); } 52% { transform: translate(-50%, 6%) scale(1.08); } 80% { transform: translate(-50%, 8%); } 100% { transform: translate(-50%, 108%); } }
@@ -1554,20 +1557,21 @@ function purr(dur = .7, loud = .5) {
 }
 
 /* ---------- Theo's cameos when the purr meter fills: a high-five, then a kiss, alternating ---------- */
-function pawGrid() {                                   // drawn from shapes: palm, four toes, toe beans, arm
-  const W = 26, H = 34, C = "#f3d7ae", c = "#e2bb8a", P = "#f4a3a8", p = "#e2858c", O = "#5a3d2e", L = "#fdf3e4";
+function pawGrid() {                                   // lying sideways: four toes on the left, the arm running off the right edge
+  const W = 44, H = 26, C = "#f3d7ae", c = "#e2bb8a", P = "#f4a3a8", p = "#e2858c", O = "#5a3d2e", L = "#fdf3e4";
   const g = Array.from({ length: H }, () => Array(W).fill(null));
   const ell = (cx, cy, rx, ry, col) => { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (((x + .5 - cx) / rx) ** 2 + ((y + .5 - cy) / ry) ** 2 <= 1) g[y][x] = col; };
-  for (let y = 21; y < H; y++) for (let x = 7; x < 19; x++) g[y][x] = x > 15 ? c : C;      // arm
-  ell(13, 17, 9.2, 8, C);                                                                    // palm
-  [[5, 9.5], [10, 6], [16, 6], [21, 9.5]].forEach(([x, y]) => ell(x, y, 3.2, 3.4, C));     // toes
-  ell(16.5, 20, 5, 4, c);                                                                     // shade under the palm
-  ell(13, 17, 9.2, 8, C); [[5, 9.5], [10, 6], [16, 6], [21, 9.5]].forEach(([x, y]) => ell(x, y, 3.2, 3.4, C));
-  ell(13, 18, 4.8, 3.8, P); ell(14, 19, 2.6, 1.6, p);                                        // big bean
-  [[5.3, 10.2], [10, 6.8], [16, 6.8], [20.7, 10.2]].forEach(([x, y]) => ell(x, y, 1.5, 1.7, P)); // toe beans
-  [[8, 30], [12, 31], [16, 30]].forEach(([x, y]) => { g[y][x] = L; });                       // fluffy tufts
+  for (let y = 7; y < 20; y++) for (let x = 17; x < W; x++) g[y][x] = y > 16 ? c : C;      // arm, all the way to the edge
+  [[24, 7], [31, 7], [38, 7], [27, 19], [35, 19]].forEach(([x, y]) => { g[y][x] = null; });    // a few fluffy notches
+  ell(13, 13, 8, 9.4, C);                                                                    // palm
+  [[5.5, 4.6], [3.2, 10.2], [3.2, 15.8], [5.5, 21.4]].forEach(([x, y]) => ell(x, y, 3.4, 3.2, C)); // toes
+  ell(15.5, 17, 4.5, 4.5, c);
+  ell(13, 13, 8, 9.4, C); [[5.5, 4.6], [3.2, 10.2], [3.2, 15.8], [5.5, 21.4]].forEach(([x, y]) => ell(x, y, 3.4, 3.2, C));
+  ell(12.5, 13, 3.8, 4.8, P); ell(13.3, 14, 1.8, 2.6, p);                                    // big bean
+  [[6.2, 5.2], [4, 10.4], [4, 15.6], [6.2, 20.8]].forEach(([x, y]) => ell(x, y, 1.6, 1.5, P)); // toe beans
+  [[22, 18], [30, 18], [38, 18]].forEach(([x, y]) => { g[y][x] = L; });
   const o = g.map(r => r.slice());
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (!g[y][x] && [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => g[y + dy]?.[x + dx])) o[y][x] = O;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W - 1; x++) if (!g[y][x] && [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => g[y + dy]?.[x + dx])) o[y][x] = O;
   return o;
 }
 let pawURL = null;
@@ -1592,9 +1596,10 @@ function smooch() {                                    // "mwah": a little lip p
 function theoCameo(kind) {                             // returns how long the cameo takes (ms)
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   document.querySelectorAll(".pt-cameo").forEach(e => e.remove());
-  const el = document.createElement("div"); el.className = "pt-cameo " + kind;
+  const side = Math.random() < .5 ? "left" : "right";
+  const el = document.createElement("div"); el.className = "pt-cameo " + kind + " " + side;
   if (kind === "paw") {
-    el.innerHTML = `<img class="pt-paw" src="${pawSprite()}" alt="Theo's paw, high-fiving you"><span class="pt-cameo-word">HIGH FIVE!</span><span class="pt-spark s1">✦</span><span class="pt-spark s2">✦</span><span class="pt-spark s3">✦</span>`;
+    el.innerHTML = `<span class="pt-pawlayer"><img class="pt-paw" src="${pawSprite()}" alt="Theo's paw, high-fiving you"></span><span class="pt-cameo-word">HIGH FIVE!</span><span class="pt-spark s1">✦</span><span class="pt-spark s2">✦</span><span class="pt-spark s3">✦</span>`;
     setTimeout(slap, reduce ? 0 : 520);
   } else {
     el.innerHTML = `<img class="pt-kiss" src="${theoSprite("kiss")}" alt="Theo, leaning in for a kiss"><span class="pt-cameo-word">mwah!</span>` +
