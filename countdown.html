@@ -353,7 +353,7 @@ const CONFIG = {
   age: "27th",
   year: 2026, month: 11,          // November 2026 (normal 1–12 numbering)
   days: { 1: "Quordle", 2: "Final Cut", 3: "Pop the Balloons", 4: "Name That Tune", 5: "Connections",
-          6: "Pet Theo", 7: "Sliding Puzzle", 8: "Word Search", 9: "Light the Candles", 10: "The Big Day" },
+          6: "Pet Theo", 7: "Sliding Puzzle", 8: "Word Search", 9: "The List", 10: "The Big Day" },
 };
 /* ============================================================ */
 
@@ -756,6 +756,7 @@ function route() {
   view.innerHTML = ""; stopClock(); clearInterval(fcTimer); stopTune(); stopPetTheo(); buddy?.destroy(); buddy = null; document.onkeydown = null;
   if (viewing == null) return renderHome(view);
   if (!loadBuddy()) return renderMaker(view, route);          // buddy is made before any game
+  if (viewing === 9) { location.href = PV() ? "index.html?peek#list" : "index.html#list"; return; }   // the list from the birthday page, a day early
   if (viewing === 10) { location.href = PV() ? "index.html?peek" : "index.html"; return; }   // the cake page that's already built
   if (viewing === 1) return renderDay1(view, PV());
   if (viewing === 2) return renderDay2(view, PV());

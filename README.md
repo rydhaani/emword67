@@ -23,6 +23,7 @@ each text file has short instructions at the top. lines starting with `#` are no
 `countdown.html` is the ten-candle countdown. from **nov 1** the locked site sends people there instead of the "come back later!" page. he blows one candle a day, each one opens that day's game, and candle 10 opens the cake on **nov 10**.
 
 - **to change his name:** open `countdown.html`, find the `EDIT HERE` block near the top of the script, change the text between the quotes, commit.
+- **day 9 is the list:** candle 9 opens `index.html#list` a day early (the music player comes with it; the globe game stays hidden until nov 10). on nov 10 the cake leads straight to the globe game, then the letter.
 - **to try any day early:** add `#day-1` … `#day-10` to the address, e.g. `rydhaani.github.io/emword67/countdown.html#day-3`. this pretends it's that date and never touches his real progress.
 - his pixel buddy and game progress are saved in his own browser.
 

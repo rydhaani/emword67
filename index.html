@@ -264,6 +264,11 @@ main.page { justify-content: flex-start; gap: 0; padding-block: calc(env(safe-ar
 @keyframes luv { from { opacity: 1; transform: translate(-50%, 0) scale(.6); } to { opacity: 0; transform: translate(-50%, -60px) scale(1.2); } }
 @media (max-width: 640px) { .cat { width: 104px; height: 74px; } }
 
+/* ---------- day 9: the list on its own, before the birthday ---------- */
+.to-candles { display: none !important; }
+body.early-list .to-candles { display: inline-flex !important; }
+body.early-list #toGame, body.early-list #gamecard { display: none !important; }
+
 /* ---------- the cake ---------- */
 #cake { justify-content: center; gap: 6px; text-align: center; }
 .cake-head { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 104px; justify-content: flex-end; }
@@ -551,7 +556,7 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
 </main>
 
 <main id="letter" class="view page" hidden>
-  <a class="back" href="#list"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 8H3M7 4L3 8l4 4"/></svg>back</a>
+  <a class="back" href="#cake"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 8H3M7 4L3 8l4 4"/></svg>back</a>
   <div class="spread">
     <div class="strips-row">
       <div class="strip strip-l" data-strip="letter"></div>
@@ -576,6 +581,7 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
 </main>
 
 <main id="list" class="view page" hidden>
+  <a class="back to-candles" href="countdown.html"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 8H3M7 4L3 8l4 4"/></svg>back to the candles</a>
   <div class="spread">
     <article class="sheet">
       <div class="kicker" id="listKicker">this past year, you</div>
@@ -909,6 +915,7 @@ function buildLetter(text) {
    to look at it early yourself, add ?peek to the address: rydhaani.github.io/emword67/?peek */
 const UNLOCK = new Date(2026, 10, 10, 0, 0, 0);
 const COUNTDOWN = new Date(2026, 10, 1, 0, 0, 0); // from nov 1, the lock screen hands over to the candle countdown (countdown.html)
+const LIST_OPEN = new Date(2026, 10, 9, 0, 0, 0);  // the list opens a day early: candle 9 of the countdown brings him here
 const LIVE_HOSTS = []; // add your own web address here if you ever give the site one, e.g. "mutahar.com"
 const params = new URLSearchParams(location.search);
 try { if (params.has("peek")) sessionStorage.setItem("peek", "1"); } catch (e) {}
@@ -921,19 +928,21 @@ function isLocked() {
 }
 if (isLocked()) setInterval(() => { if (!isLocked()) location.reload(); }, 30000);
 
-/* views: cake → #list → #game → #letter. one page, so the music keeps going */
+/* views: cake → #game → #letter on nov 10. #list is day 9 of the countdown (and stays reachable after). one page, so the music keeps going */
 const TITLES = { lock: "come back later!", cake: "happy birthday", list: "the list", letter: "a letter", game: "lovetap" };
 function route() {
   let name = (location.hash || "").replace("#", "");
-  if (isLocked() && Date.now() >= COUNTDOWN.getTime() && !params.has("lock")) { location.replace("countdown.html"); return; }
-  if (isLocked()) name = "lock";
+  const early = name === "list" && isLocked() && Date.now() >= LIST_OPEN.getTime() && !params.has("lock");   // nov 9: just the list
+  document.body.classList.toggle("early-list", early);
+  if (!early && isLocked() && Date.now() >= COUNTDOWN.getTime() && !params.has("lock")) { location.replace("countdown.html"); return; }
+  if (!early && isLocked()) name = "lock";
   else if (!["list", "letter", "game"].includes(name)) name = "cake";
   const page = name === "game" ? "list" : name;
   document.querySelectorAll(".view").forEach(m => { m.hidden = m.id !== page; });
   document.title = TITLES[name];
   document.body.classList.toggle("no-player", name === "lock" || name === "cake" || name === "game");
   const card = $("gamecard");
-  if (name === "list") { setTimeout(() => { if (location.hash === "#list") card.classList.add("in"); }, 1600); }
+  if (name === "list" && !early) { setTimeout(() => { if (location.hash === "#list") card.classList.add("in"); }, 1600); }
   else card.classList.remove("in");
   if (name === "game") openGame(); else closeGame();
   if (name !== "game") window.scrollTo(0, 0);
@@ -950,7 +959,7 @@ $("toGame").addEventListener("click", () => { location.hash = "#game"; });
 window.addEventListener("message", e => {
   if (e.origin !== location.origin && location.origin !== "null") return;
   if (e.data === "lovetap:letter") location.hash = "#letter";
-  if (e.data === "lovetap:close") location.hash = "#list";
+  if (e.data === "lovetap:close") location.hash = "#cake";
 });
 window.addEventListener("hashchange", route);
 route();
@@ -1023,7 +1032,7 @@ route();
       confetti();
       $("cakeHead").innerHTML = '<div class="eyebrow">made with love, for mutahar &lt;3</div><h1 class="fade-in">happy birthday</h1><p class="fade-in" style="animation-delay:.2s">i hope all your wishes come true</p>';
       $("cakeActions").innerHTML = '<button class="pill solid fade-in" style="animation-delay:.6s" id="startBtn">let\'s begin →</button>';
-      $("startBtn").addEventListener("click", () => { location.hash = "#list"; });
+      $("startBtn").addEventListener("click", () => { location.hash = "#game"; });
     }, 700);
   }
   function confetti() {
