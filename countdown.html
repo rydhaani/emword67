@@ -401,9 +401,22 @@ body {
 @keyframes pick { 0% { transform: translateX(-50%); } 40% { transform: translateX(-50%) translateY(-34px) rotate(-12deg) scale(1.2); opacity: 1; } 100% { transform: translateX(-50%) translateY(-70px) rotate(20deg) scale(.4); opacity: 0; } }
 .mu-note { position: absolute; left: 50%; top: 14%; z-index: 5; width: min(86%, 340px); transform: translateX(-50%) rotate(-1.5deg); background: #fffdf6; border: 1.5px solid #e7dcc6; border-radius: 6px;
   padding: 16px 18px 14px; text-align: center; box-shadow: 0 16px 30px -14px rgba(60,30,10,.5); cursor: pointer; animation: notein .35s cubic-bezier(.3,1.4,.5,1); }
-.mu-note .d { font-size: 22px; } .mu-note p { margin: 4px 0 6px; font: 600 26px/1.15 var(--hand, "Caveat", cursive); color: var(--ink); }
+.mu-note .d { font-size: 22px; } .mu-note p { margin: 4px 0 6px; font: 600 21px/1.25 -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif; letter-spacing: -.01em; color: var(--ink); text-wrap: balance; }
 .mu-note small { color: var(--soft); font-size: 12px; }
 @keyframes notein { from { transform: translateX(-50%) translateY(14px) rotate(-6deg) scale(.7); opacity: 0; } }
+.mu-lb { position: fixed; inset: 0; z-index: 30; background: rgba(24,16,18,.9); display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px;
+  padding: calc(env(safe-area-inset-top, 0px) + 56px) max(12px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 24px) max(12px, env(safe-area-inset-left, 0px)); animation: lbin .25s ease-out; }
+@keyframes lbin { from { opacity: 0; } }
+.mu-lb-fig { margin: 0; display: grid; justify-items: center; gap: 10px; min-width: 0; }
+.mu-lb-fig img { max-width: 100%; max-height: calc(100vh - 150px); object-fit: contain; background: #fff; padding: 10px; border-radius: 4px; box-shadow: 0 20px 50px -20px rgba(0,0,0,.8); animation: lbpop .3s cubic-bezier(.3,1.3,.5,1); }
+@keyframes lbpop { from { transform: scale(.88); opacity: 0; } }
+.mu-lb-fig figcaption { color: rgba(255,255,255,.75); font: 700 13px var(--body); letter-spacing: .08em; }
+.mu-lb-nav, .mu-lb-x { border: 0; background: rgba(255,255,255,.14); color: #fff; width: 44px; height: 44px; border-radius: 50%; font-size: 20px; cursor: pointer; }
+.mu-lb-x { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 10px); right: max(12px, env(safe-area-inset-right, 0px)); font-size: 26px; line-height: 1; }
+.mu-lb-nav:hover, .mu-lb-x:hover { background: rgba(255,255,255,.26); }
+body.mu-lock { overflow: hidden; }
+.mu-item:focus-visible .mu-frame { outline-color: var(--accent); }
+.mu-sign b { text-transform: none; }
 .mu-count { position: absolute; right: 12px; top: 8px; z-index: 4; background: rgba(255,255,255,.92); border-radius: 999px; padding: 3px 10px; font: 800 13px var(--body); font-variant-numeric: tabular-nums; }
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 20; }
 
@@ -453,7 +466,7 @@ const CONFIG = {
   name: "Mutahar",
   age: "27th",
   year: 2026, month: 11,          // November 2026 (normal 1–12 numbering)
-  days: { 1: "Quordle", 2: "Final Cut", 3: "The Museum", 4: "Name That Tune", 5: "Connections",
+  days: { 1: "Quordle", 2: "Final Cut", 3: "A Walk Through Your Life", 4: "Name That Tune", 5: "Connections",
           6: "Pet Theo", 7: "Sliding Puzzle", 8: "Word Search", 9: "The List", 10: "The Big Day" },
 };
 /* ============================================================ */
@@ -854,7 +867,7 @@ function candleSVG([fill, dy, tilt]) {
 
 function route() {
   const view = $("#view");
-  view.innerHTML = ""; stopClock(); clearInterval(fcTimer); stopTune(); stopPetTheo(); stopSlide(); buddy?.destroy(); buddy = null; document.onkeydown = null;
+  view.innerHTML = ""; stopClock(); clearInterval(fcTimer); stopTune(); stopPetTheo(); stopSlide(); document.body.classList.remove("mu-lock"); buddy?.destroy(); buddy = null; document.onkeydown = null;
   if (viewing == null) return renderHome(view);
   if (!loadBuddy()) return renderMaker(view, route);          // buddy is made before any game
   if (viewing === 9) { location.href = PV() ? "index.html?peek#list" : "index.html#list"; return; }   // the list from the birthday page, a day early
@@ -1249,8 +1262,8 @@ const MUSEUM = [ // fallback only: the real list is content/museum.txt
 let museumScroll = null;
 
 function renderDay3(view, pv) {
-  if (!museumReady) { stage(view, pv, "Day 3 · The Museum", "Opening the doors…"); prepareMuseum().then(() => { if (viewing === 3) route(); }); return; }
-  const game = stage(view, pv, "Day 3 · The Museum", "A little gallery of us. Walk along the wall, stop at each one, and pick the daisies.");
+  if (!museumReady) { stage(view, pv, "Day 3 · a walk through your life", "Opening the doors…"); prepareMuseum().then(() => { if (viewing === 3) route(); }); return; }
+  const game = stage(view, pv, "Day 3 · a walk through your life", "Walk along the wall, stop at each one, tap a picture to see it properly, and pick the daisies.");
   view.querySelector(".stage").classList.add("solo");               // the buddy walks the hall here, so the side panel steps aside
   const cfg = loadBuddy();
   const sprite = mood => { const c = document.createElement("canvas"); paintGrid(c, buddyGrid(cfg, mood, false), 6); return c.toDataURL(); };
@@ -1259,7 +1272,7 @@ function renderDay3(view, pv) {
     <div class="mu-stage" id="mu-stage" tabindex="0" aria-label="The museum wall. Scroll sideways to walk.">
       <div class="mu-hall" id="mu-hall">
         <div class="mu-wall"></div><div class="mu-rail"></div><div class="mu-floor"></div>
-        <div class="mu-sign"><b>The Museum of Us</b><span>Est. ${CONFIG.year}</span></div>
+        <div class="mu-sign"><b>a walk through your life</b><span>est. 10 · 11 · 1999</span></div>
         ${MUSEUM.map((m, i) => `<figure class="mu-item" data-i="${i}"><span class="mu-light"></span><div class="mu-frame"><img src="${m.img}" alt="A memory" loading="lazy"></div></figure>`).join("")}
         <div class="mu-end"><b>That's the whole museum</b><span>for now 💕</span></div>
       </div>
@@ -1270,6 +1283,12 @@ function renderDay3(view, pv) {
     <div class="mu-dots" id="mu-dots">${MUSEUM.map(() => "<i></i>").join("")}</div>
     <div class="mu-count" id="mu-count" aria-live="polite">🌼 0 / ${COMPLIMENTS.length}</div>
     <div class="mu-note" id="mu-note" hidden role="status"></div>
+  </div>
+  <div class="mu-lb" id="mu-lb" hidden role="dialog" aria-modal="true" aria-label="Picture">
+    <button class="mu-lb-x" id="mu-lb-x" type="button" aria-label="Close">×</button>
+    <button class="mu-lb-nav l" id="mu-lb-l" type="button" aria-label="Previous picture">←</button>
+    <figure class="mu-lb-fig"><img id="mu-lb-img" alt="A memory"><figcaption id="mu-lb-n"></figcaption></figure>
+    <button class="mu-lb-nav r" id="mu-lb-r" type="button" aria-label="Next picture">→</button>
   </div>`;
   const st = $("#mu-stage"), bud = $("#mu-bud"), vis = $("#mu-visitor"), emo = $("#mu-emote"), items = [...game.querySelectorAll(".mu-item")];
   const seen = new Set(); let last = st.scrollLeft, settle = null, current = -1;
@@ -1321,8 +1340,20 @@ function renderDay3(view, pv) {
   }, { passive: true });
   const go = dir => { const t = current < 0 ? 0 : Math.max(0, Math.min(items.length - 1, current + dir)); st.scrollTo({ left: centreOf(items[t]), behavior: "smooth" }); current = t; };
   $("#mu-l").onclick = () => go(-1); $("#mu-r").onclick = () => go(1);
-  items.forEach((it, i) => it.onclick = () => st.scrollTo({ left: centreOf(it), behavior: "smooth" }));
-  document.onkeydown = e => { if (e.key === "ArrowRight") { e.preventDefault(); go(1); } if (e.key === "ArrowLeft") { e.preventDefault(); go(-1); } };
+  // tapping a picture opens it big (the whole photo, not the square crop), and the buddy walks over to it
+  const lb = $("#mu-lb"), lbImg = $("#mu-lb-img"); let lbAt = -1, lbFrom = null;
+  const lbShow = i => { lbAt = (i + MUSEUM.length) % MUSEUM.length; lbImg.src = MUSEUM[lbAt].img; $("#mu-lb-n").textContent = `${lbAt + 1} / ${MUSEUM.length}`; st.scrollTo({ left: centreOf(items[lbAt]), behavior: "smooth" }); };
+  const lbOpen = i => { lbFrom = document.activeElement; lbShow(i); lb.hidden = false; document.body.classList.add("mu-lock"); $("#mu-lb-x").focus(); buddy.bop(MUSEUM[lbAt].emote); };
+  const lbClose = () => { lb.hidden = true; document.body.classList.remove("mu-lock"); lbFrom?.focus?.(); };
+  items.forEach((it, i) => { it.tabIndex = 0; it.setAttribute("role", "button"); it.setAttribute("aria-label", `Open picture ${i + 1}`); it.onclick = () => lbOpen(i); it.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); lbOpen(i); } }; });
+  $("#mu-lb-x").onclick = lbClose; $("#mu-lb-l").onclick = () => lbShow(lbAt - 1); $("#mu-lb-r").onclick = () => lbShow(lbAt + 1);
+  lb.onclick = e => { if (e.target === lb) lbClose(); };
+  let tx = null; lb.addEventListener("touchstart", e => { tx = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener("touchend", e => { if (tx == null) return; const dx = e.changedTouches[0].clientX - tx; tx = null; if (Math.abs(dx) > 50) lbShow(lbAt + (dx < 0 ? 1 : -1)); });
+  document.onkeydown = e => {
+    if (!lb.hidden) { if (e.key === "Escape") lbClose(); if (e.key === "ArrowRight") lbShow(lbAt + 1); if (e.key === "ArrowLeft") lbShow(lbAt - 1); return; }
+    if (e.key === "ArrowRight") { e.preventDefault(); go(1); } if (e.key === "ArrowLeft") { e.preventDefault(); go(-1); }
+  };
   // start at the entrance sign, with a little hello
   requestAnimationFrame(() => { st.scrollLeft = museumScroll ?? 0; last = st.scrollLeft; });
   st.addEventListener("scroll", () => { museumScroll = st.scrollLeft; }, { passive: true });
