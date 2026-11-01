@@ -304,6 +304,32 @@ body {
 .gift-foot { min-height: 64px; display: grid; justify-items: center; gap: 6px; }
 .gift-hint { font-size: 14px; color: var(--soft); margin: 0; }
 .gift-link { justify-self: center; border: 1.5px dashed var(--accent); background: #fff; color: var(--accent); border-radius: 999px; padding: 8px 16px; font: 800 14px var(--body); cursor: pointer; }
+/* sliding puzzle */
+.sp { display: grid; gap: 14px; width: 100%; max-width: 440px; justify-self: center; }
+.sp-top { display: flex; justify-content: space-between; color: var(--soft); font-weight: 700; font-variant-numeric: tabular-nums; }
+.sp-top b { color: var(--ink); }
+.sp-board { position: relative; width: 100%; aspect-ratio: 1; max-width: 100%; border-radius: 14px; background: var(--tint); border: 1.5px solid var(--line); overflow: hidden; touch-action: manipulation; }
+.sp-tile { position: absolute; width: calc(100% / var(--n)); height: calc(100% / var(--n)); padding: 0; border: 2px solid var(--paper); border-radius: 10px;
+  background-size: calc(var(--n) * 100%) calc(var(--n) * 100%); cursor: pointer; transition: left .14s ease, top .14s ease, border-width .4s, border-radius .4s; }
+.sp-tile span { position: absolute; top: 4px; left: 6px; font: 800 13px var(--body); color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.6); opacity: 0; transition: opacity .2s; }
+.sp-board.nums .sp-tile span { opacity: 1; }
+.sp-tile:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; z-index: 2; }
+.sp-tile.nope { animation: shake .3s; }
+.sp-board.solved { border-color: var(--hit); }
+.sp-board.solved .sp-tile { border-width: 0; border-radius: 0; cursor: default; }
+.sp-board.solved .sp-tile span { opacity: 0 !important; }
+.sp-tile { box-shadow: inset 0 0 0 1px rgba(35,28,32,.12); }
+.sp-board.solved .sp-tile { box-shadow: none; }
+.sp-peek { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 3; }
+.sp-ctrl { display: flex; justify-content: center; gap: 10px; }
+.sp-ctrl .nt-side { padding: 12px 16px; font-size: 14px; user-select: none; -webkit-user-select: none; touch-action: none; }
+.sp-ctrl .nt-side[aria-pressed="true"] { border-color: var(--ink); }
+.sp-done { display: grid; gap: 10px; text-align: center; }
+.sp-cap { font-family: var(--display); font-size: 22px; color: var(--ink) !important; }
+.sp-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; width: 100%; }
+.sp-gallery figure { margin: 0; display: grid; gap: 4px; }
+.sp-gallery img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; }
+.sp-gallery figcaption { font-size: 12px; color: var(--soft); line-height: 1.3; }
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 20; }
 
 @media (max-width: 700px) {
@@ -753,7 +779,7 @@ function candleSVG([fill, dy, tilt]) {
 
 function route() {
   const view = $("#view");
-  view.innerHTML = ""; stopClock(); clearInterval(fcTimer); stopTune(); stopPetTheo(); buddy?.destroy(); buddy = null; document.onkeydown = null;
+  view.innerHTML = ""; stopClock(); clearInterval(fcTimer); stopTune(); stopPetTheo(); stopSlide(); buddy?.destroy(); buddy = null; document.onkeydown = null;
   if (viewing == null) return renderHome(view);
   if (!loadBuddy()) return renderMaker(view, route);          // buddy is made before any game
   if (viewing === 9) { location.href = PV() ? "index.html?peek#list" : "index.html#list"; return; }   // the list from the birthday page, a day early
@@ -762,6 +788,7 @@ function route() {
   if (viewing === 2) return renderDay2(view, PV());
   if (viewing === 4) return renderDay4(view, PV());
   if (viewing === 6) return renderDay6(view, PV());
+  if (viewing === 7) return renderDay7(view, PV());
   return renderPlaceholder(view, viewing, PV());
 }
 
@@ -1600,6 +1627,123 @@ function renderDay6(view, pv) {
     petTheoRaf = requestAnimationFrame(loop);
   }
   intro();
+}
+
+/* ---------- Day 7: Sliding Puzzle ---------- */
+const PUZZLES = [ // square photos in puzzles/, grid size (3 = 3x3, 4 = 4x4), caption shown once it's solved
+  { img: "puzzles/sample-candles.jpg", size: 3, caption: "Sample photo: the countdown's own candles." },
+  { img: "puzzles/sample-cake.jpg", size: 3, caption: "Sample photo: the birthday cake." },
+  { img: "puzzles/sample-theo.jpg", size: 4, caption: "Sample photo: Theo, very pleased with himself." },
+];
+let slideGame = null, slideTimer = null;
+function stopSlide() { clearInterval(slideTimer); }
+const fmtClock = ms => { const s = Math.floor(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
+
+function shuffledBoard(n) {
+  const t = Array.from({ length: n * n }, (_, k) => k), blank = n * n - 1;
+  let b = blank, prev = -1;
+  for (let k = 0; k < (n === 3 ? 90 : 200) || t.every((v, i) => v === i); k++) {
+    const x = b % n, y = b / n | 0;
+    const opts = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => [x + dx, y + dy]).filter(([a, c]) => a >= 0 && a < n && c >= 0 && c < n).map(([a, c]) => c * n + a).filter(p => p !== prev);
+    const p = opts[Math.random() * opts.length | 0];
+    [t[b], t[p]] = [t[p], t[b]]; prev = b; b = p;
+  }
+  return t;
+}
+
+function renderDay7(view, pv) {
+  if (!slideGame) slideGame = { i: 0, results: [], board: null, moves: 0, start: 0, numbers: false };
+  const st = slideGame;
+  const game = stage(view, pv, "Day 7 · Sliding Puzzle", "Tap a tile next to the gap to slide it. Put each photo back together.",
+    ` · <a href="#" id="reset">restart</a> · <a href="#" id="cheat">solve this one</a>`);
+  if (pv) {
+    $("#reset").onclick = e => { e.preventDefault(); stopSlide(); slideGame = null; route(); };
+    $("#cheat").onclick = e => { e.preventDefault(); if (st.board) { st.board = st.board.map((_, k) => k); st.moves++; draw(true); } };
+  }
+
+  function newPhoto() { const pz = PUZZLES[st.i]; st.board = shuffledBoard(pz.size); st.moves = 0; st.start = 0; st.closeSaid = false; }
+  if (st.i < PUZZLES.length && !st.board) newPhoto();
+
+  function draw(justMoved) {
+    stopSlide();
+    if (st.i >= PUZZLES.length) return finish();
+    const pz = PUZZLES[st.i], n = pz.size, blank = n * n - 1;
+    const solved = st.board.every((v, k) => v === k);
+    game.innerHTML = `<div class="sp">
+      <div class="sp-top"><span>Photo <b>${st.i + 1}</b> of ${PUZZLES.length}</span><span id="sp-moves">${st.moves} move${st.moves === 1 ? "" : "s"}</span><span id="sp-time">${fmtClock(st.start ? Date.now() - st.start : 0)}</span></div>
+      <div class="sp-board${solved ? " solved" : ""}${st.numbers ? " nums" : ""}" id="sp-board" style="--n:${n}" role="grid" aria-label="Sliding puzzle, ${n} by ${n}">
+        ${st.board.map((tile, pos) => {
+          if (tile === blank && !solved) return "";
+          const tx = tile % n, ty = tile / n | 0, px = pos % n, py = pos / n | 0;
+          return `<button type="button" class="sp-tile" data-pos="${pos}" style="left:${px * 100 / n}%;top:${py * 100 / n}%;background-image:url('${pz.img}');background-position:${n > 1 ? tx * 100 / (n - 1) : 0}% ${n > 1 ? ty * 100 / (n - 1) : 0}%" aria-label="Tile ${tile + 1}"><span>${tile + 1}</span></button>`;
+        }).join("")}
+        <img class="sp-peek" id="sp-peek" src="${pz.img}" alt="" hidden>
+      </div>
+      ${solved ? `<div class="sp-done"><p class="sp-cap">${escapeHtml(pz.caption || "")}</p>
+          <div class="row-btns" style="justify-content:center"><button class="btn" id="sp-next" type="button">${st.i + 1 < PUZZLES.length ? "Next photo →" : "See them all →"}</button></div></div>`
+        : `<div class="sp-ctrl"><button class="nt-side" id="sp-peekbtn" type="button">👁 Hold to peek</button><button class="nt-side" id="sp-nums" type="button" aria-pressed="${st.numbers}">${st.numbers ? "Hide" : "Show"} numbers</button></div>`}
+      <div class="status" id="sp-status" aria-live="polite"></div></div>`;
+
+    if (solved) {
+      $("#sp-next").onclick = () => { st.i++; st.board = null; if (st.i < PUZZLES.length) newPhoto(); draw(); scrollTo({ top: 0, behavior: "smooth" }); buddy.say("idle", st.i < PUZZLES.length ? "Next one! 🧩" : "Look at them all!"); };
+      if (justMoved) {
+        st.results[st.i] = { moves: st.moves, ms: st.start ? Date.now() - st.start : 0 };
+        buddy.say("joy", st.i + 1 < PUZZLES.length ? "Pieced together!! 🧩" : "All done!! 🎉", { burst: "big" });
+      }
+      return;
+    }
+    if (st.start) slideTimer = setInterval(() => { const t = $("#sp-time"); if (t) t.textContent = fmtClock(Date.now() - st.start); }, 500);
+
+    game.querySelectorAll(".sp-tile").forEach(t => t.onclick = () => tap(+t.dataset.pos));
+    const peekBtn = $("#sp-peekbtn"), peek = $("#sp-peek");
+    const on = e => { e.preventDefault(); peek.hidden = false; buddy.bop("Sneaky peek 👀"); }, off = () => { peek.hidden = true; };
+    peekBtn.addEventListener("pointerdown", on); ["pointerup", "pointerleave", "pointercancel"].forEach(ev => peekBtn.addEventListener(ev, off));
+    peekBtn.addEventListener("keydown", e => { if (e.key === " " || e.key === "Enter") { peek.hidden = false; } });
+    peekBtn.addEventListener("keyup", off);
+    $("#sp-nums").onclick = () => { st.numbers = !st.numbers; draw(); buddy.bop(st.numbers ? "Numbers on. No shame!" : "Numbers off. Brave!"); };
+  }
+
+  const slideLines = ["Slide!", "Ooh", "Nice move", "Hmm…", "Swoosh", "Getting there…", "Tap tap", "Okay okay"];
+  function tap(pos) {
+    const pz = PUZZLES[st.i], n = pz.size, blank = n * n - 1;
+    const b = st.board.indexOf(blank), bx = b % n, by = b / n | 0, x = pos % n, y = pos / n | 0;
+    if (x !== bx && y !== by) { buddy.bop("That one's stuck!"); const el = game.querySelector(`[data-pos="${pos}"]`); el?.classList.remove("nope"); void el?.offsetWidth; el?.classList.add("nope"); return; }
+    // slide every tile between the tapped one and the gap
+    const step = x === bx ? (y < by ? -n : n) : (x < bx ? -1 : 1);
+    let g = b, moved = 0;
+    while (g !== pos) { const nx = g + step; st.board[g] = st.board[nx]; st.board[nx] = blank; g = nx; moved++; }
+    if (!st.start) st.start = Date.now();
+    st.moves += moved;
+    const correct = st.board.filter((v, k) => v === k && v !== blank).length, total = n * n - 1;
+    draw(true);
+    if (st.board.every((v, k) => v === k)) return;
+    if (correct >= total - 2 && !st.closeSaid) { st.closeSaid = true; buddy.say("think", "Ooh… nearly there!", { hold: false, ms: 2200 }); }
+    else buddy.bop(slideLines[Math.random() * slideLines.length | 0]);
+  }
+
+  document.onkeydown = e => {
+    if (st.i >= PUZZLES.length || !st.board) return;
+    const n = PUZZLES[st.i].size, b = st.board.indexOf(n * n - 1), bx = b % n, by = b / n | 0;
+    const target = { ArrowLeft: [bx + 1, by], ArrowRight: [bx - 1, by], ArrowUp: [bx, by + 1], ArrowDown: [bx, by - 1] }[e.key];
+    if (!target || st.board.every((v, k) => v === k)) return;
+    const [x, y] = target; if (x < 0 || y < 0 || x >= n || y >= n) return;
+    e.preventDefault(); tap(y * n + x);
+  };
+
+  function finish() {
+    stopSlide();
+    const moves = st.results.reduce((a, r) => a + (r?.moves || 0), 0), ms = st.results.reduce((a, r) => a + (r?.ms || 0), 0);
+    game.innerHTML = `<div class="sp"><div class="win">
+      <h3>All ${PUZZLES.length} back together</h3>
+      <p class="msg">${moves} moves in ${fmtClock(ms)}</p>
+      <div class="sp-gallery">${PUZZLES.map(pz => `<figure><img src="${pz.img}" alt=""><figcaption>${escapeHtml(pz.caption || "")}</figcaption></figure>`).join("")}</div>
+      <div class="row-btns" style="justify-content:center"><button class="btn" id="sp-again" type="button">Play again</button></div>
+      <p class="msg"><strong>Tomorrow's candle lights at midnight.</strong></p></div></div>`;
+    $("#sp-again").onclick = () => { slideGame = null; route(); };
+    buddy.say("joy", "Puzzle master! 🧩", { burst: "big" });
+  }
+  if (!st.results.length && !st.moves) buddy.say("idle", "Let's put it back together!");
+  draw();
 }
 
 /* ---------- confetti ---------- */
