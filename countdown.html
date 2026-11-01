@@ -335,6 +335,21 @@ body {
 .sp-gallery figure { margin: 0; display: grid; gap: 4px; }
 .sp-gallery img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; }
 .sp-gallery figcaption { font-size: 12px; color: var(--soft); line-height: 1.3; }
+/* theo's cameos */
+.pt-cameo { position: fixed; inset: 0; pointer-events: none; z-index: 15; overflow: hidden; }
+.pt-paw { position: absolute; right: calc(env(safe-area-inset-right, 0px) - 10px); top: 34%; width: min(46vw, 230px); image-rendering: pixelated; transform-origin: 80% 100%; animation: pawin 1.5s cubic-bezier(.3,.8,.3,1) forwards; }
+@keyframes pawin { 0% { transform: translateX(110%) rotate(-14deg); } 28% { transform: translateX(0) rotate(-14deg); } 36% { transform: translateX(-6%) rotate(-4deg) scale(1.08); } 46% { transform: translateX(0) rotate(-12deg) scale(1); } 78% { transform: translateX(0) rotate(-12deg); } 100% { transform: translateX(115%) rotate(-14deg); } }
+.pt-cameo-word { position: absolute; font-family: var(--display); font-size: clamp(32px, 9vw, 56px); color: #fff; text-shadow: 0 2px 0 #d9536e, 0 0 18px rgba(217,83,110,.6); white-space: nowrap; opacity: 0; }
+.paw .pt-cameo-word { left: 0; right: min(18vw, 90px); text-align: center; top: 54%; animation: wordpop 1.5s ease-out .45s forwards; }
+.kiss .pt-cameo-word { left: 0; right: 0; text-align: center; bottom: min(70vw, 330px); animation: wordpop 1.6s ease-out .6s forwards; }
+@keyframes wordpop { 0% { opacity: 0; scale: .6; } 15% { opacity: 1; scale: 1.12; } 30% { scale: 1; } 80% { opacity: 1; } 100% { opacity: 0; translate: 0 -18px; } }
+.pt-spark { position: absolute; color: #f2c14e; font-size: 26px; opacity: 0; animation: sparkpop .7s ease-out .5s forwards; }
+.pt-spark.s1 { right: min(30vw, 160px); top: 31%; } .pt-spark.s2 { right: min(42vw, 220px); top: 46%; animation-delay: .56s; } .pt-spark.s3 { right: min(22vw, 110px); top: 52%; animation-delay: .62s; }
+@keyframes sparkpop { 0% { opacity: 0; transform: scale(.3); } 40% { opacity: 1; transform: scale(1.3) rotate(20deg); } 100% { opacity: 0; transform: scale(.8) rotate(40deg); } }
+.pt-kiss { position: absolute; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) - 4px); width: min(66vw, 300px); image-rendering: pixelated; transform-origin: 50% 100%; animation: kissup 1.8s cubic-bezier(.3,.8,.3,1) forwards; }
+@keyframes kissup { 0% { transform: translate(-50%, 105%); } 25% { transform: translate(-50%, 8%); } 40% { transform: translate(-50%, 2%) scale(1.2); } 52% { transform: translate(-50%, 6%) scale(1.08); } 80% { transform: translate(-50%, 8%); } 100% { transform: translate(-50%, 108%); } }
+.pt-heart { position: absolute; left: calc(50% + var(--x)); bottom: min(40vw, 190px); color: #ee6f86; font-size: 24px; opacity: 0; animation: heartup 1.1s ease-out var(--d) forwards; text-shadow: 0 0 8px #fff; }
+@keyframes heartup { 0% { opacity: 0; transform: translateY(0) scale(.5); } 20% { opacity: 1; transform: translateY(-20px) scale(1.1); } 100% { opacity: 0; transform: translateY(-140px) scale(.9); } }
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 20; }
 
 @media (max-width: 700px) {
@@ -1448,12 +1463,13 @@ function theoGrid(kind) {
     wide: [[5, 7, "K"], [6, 7, "K"], [5, 8, "K"], [6, 8, "K"], [5, 9, "K"], [6, 9, "K"], [13, 7, "K"], [14, 7, "K"], [13, 8, "K"], [14, 8, "K"], [13, 9, "K"], [14, 9, "K"], [5, 7, "W"], [13, 7, "W"], [6, 8, "W"], [14, 8, "W"]],
     angry: [[5, 8, "E"], [6, 8, "E"], [5, 9, "E"], [6, 9, "K"], [13, 8, "E"], [14, 8, "E"], [13, 9, "K"], [14, 9, "E"],
             [4, 6, "K"], [5, 6, "K"], [6, 7, "K"], [7, 7, "K"], [15, 6, "K"], [14, 6, "K"], [13, 7, "K"], [12, 7, "K"]] };
-  const face = { theo: "normal", petted: "happy", sleepy: "sleep", zoom: "wide", evil: "angry", belly: "happy", hiss: "angry" }[kind] || "normal";
+  const face = { theo: "normal", petted: "happy", sleepy: "sleep", zoom: "wide", evil: "angry", belly: "happy", hiss: "angry", kiss: "happy" }[kind] || "normal";
   eyes[face].forEach(([x, y, c]) => set(x, y, c));
   set(9, 10, "P"); set(10, 10, "P");
   set(3, 11, "b"); set(4, 11, "b"); set(15, 11, "b"); set(16, 11, "b");
   if (kind === "hiss" || kind === "evil") { set(8, 12, "m"); set(9, 11, "m"); set(10, 11, "m"); set(11, 12, "m"); set(9, 12, "W"); set(10, 12, "W"); }
   else if (kind === "zoom") { set(9, 11, "m"); set(10, 11, "m"); set(9, 12, "R"); set(10, 12, "R"); }
+  else if (kind === "kiss") { set(9, 11, "R"); set(10, 11, "R"); set(8, 11, "m"); set(11, 11, "m"); set(9, 12, "m"); set(10, 12, "m"); set(3, 10, "R"); set(16, 10, "R"); }
   else { set(8, 11, "m"); set(9, 12, "m"); set(10, 12, "m"); set(11, 11, "m"); }
   if (grey) { set(2, 0, null); set(2, 1, null); set(3, 1, null); set(3, 2, "c"); set(2, 2, "c"); }   // a nicked ear           // a nicked ear
   if (kind === "belly") {                                    // belly up: flip him over, paws in the air
@@ -1537,6 +1553,60 @@ function purr(dur = .7, loud = .5) {
   noise.start(t); lfo.start(t); noise.stop(t + n * cycle + .05); lfo.stop(t + n * cycle + .05); catTrack(noise, lfo);
 }
 
+/* ---------- Theo's cameos when the purr meter fills: a high-five, then a kiss, alternating ---------- */
+function pawGrid() {                                   // drawn from shapes: palm, four toes, toe beans, arm
+  const W = 26, H = 34, C = "#f3d7ae", c = "#e2bb8a", P = "#f4a3a8", p = "#e2858c", O = "#5a3d2e", L = "#fdf3e4";
+  const g = Array.from({ length: H }, () => Array(W).fill(null));
+  const ell = (cx, cy, rx, ry, col) => { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (((x + .5 - cx) / rx) ** 2 + ((y + .5 - cy) / ry) ** 2 <= 1) g[y][x] = col; };
+  for (let y = 21; y < H; y++) for (let x = 7; x < 19; x++) g[y][x] = x > 15 ? c : C;      // arm
+  ell(13, 17, 9.2, 8, C);                                                                    // palm
+  [[5, 9.5], [10, 6], [16, 6], [21, 9.5]].forEach(([x, y]) => ell(x, y, 3.2, 3.4, C));     // toes
+  ell(16.5, 20, 5, 4, c);                                                                     // shade under the palm
+  ell(13, 17, 9.2, 8, C); [[5, 9.5], [10, 6], [16, 6], [21, 9.5]].forEach(([x, y]) => ell(x, y, 3.2, 3.4, C));
+  ell(13, 18, 4.8, 3.8, P); ell(14, 19, 2.6, 1.6, p);                                        // big bean
+  [[5.3, 10.2], [10, 6.8], [16, 6.8], [20.7, 10.2]].forEach(([x, y]) => ell(x, y, 1.5, 1.7, P)); // toe beans
+  [[8, 30], [12, 31], [16, 30]].forEach(([x, y]) => { g[y][x] = L; });                       // fluffy tufts
+  const o = g.map(r => r.slice());
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (!g[y][x] && [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => g[y + dy]?.[x + dx])) o[y][x] = O;
+  return o;
+}
+let pawURL = null;
+function pawSprite() { if (!pawURL) { const cv = document.createElement("canvas"); paintGrid(cv, pawGrid(), 8); pawURL = cv.toDataURL(); } return pawURL; }
+
+function slap() {                                      // a quick high-five smack
+  if (!catSoundOn()) return; const ac = catAudio(); if (!ac) return;
+  const t = ac.currentTime + .01, len = Math.ceil(ac.sampleRate * .16), buf = ac.createBuffer(1, len, ac.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 6);
+  const src = ac.createBufferSource(); src.buffer = buf;
+  const bp = ac.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 1700; bp.Q.value = .9;
+  const g = ac.createGain(); g.gain.value = 1.6; src.connect(bp); bp.connect(g); g.connect(catOut); src.start(t); catTrack(src);
+}
+function smooch() {                                    // "mwah": a little lip pop that rises
+  if (!catSoundOn()) return; const ac = catAudio(); if (!ac) return;
+  const t = ac.currentTime + .01, o = ac.createOscillator(), g = ac.createGain();
+  o.type = "sine"; o.frequency.setValueAtTime(320, t); o.frequency.exponentialRampToValueAtTime(1100, t + .09); o.frequency.exponentialRampToValueAtTime(700, t + .16);
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.5, t + .015); g.gain.exponentialRampToValueAtTime(.001, t + .18);
+  o.connect(g); g.connect(catOut); o.start(t); o.stop(t + .2); catTrack(o);
+}
+
+function theoCameo(kind) {                             // returns how long the cameo takes (ms)
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.querySelectorAll(".pt-cameo").forEach(e => e.remove());
+  const el = document.createElement("div"); el.className = "pt-cameo " + kind;
+  if (kind === "paw") {
+    el.innerHTML = `<img class="pt-paw" src="${pawSprite()}" alt="Theo's paw, high-fiving you"><span class="pt-cameo-word">HIGH FIVE!</span><span class="pt-spark s1">✦</span><span class="pt-spark s2">✦</span><span class="pt-spark s3">✦</span>`;
+    setTimeout(slap, reduce ? 0 : 520);
+  } else {
+    el.innerHTML = `<img class="pt-kiss" src="${theoSprite("kiss")}" alt="Theo, leaning in for a kiss"><span class="pt-cameo-word">mwah!</span>` +
+      Array.from({ length: 9 }, (_, i) => `<span class="pt-heart" style="--x:${(i - 4) * 26 + (Math.random() * 16 - 8)}px;--d:${.55 + i * .07}s">♥</span>`).join("");
+    setTimeout(smooch, reduce ? 0 : 640); setTimeout(() => meow({ pitch: 1.15, dur: .4 }), reduce ? 0 : 1000);
+  }
+  document.body.appendChild(el);
+  const ms = reduce ? 900 : kind === "paw" ? 1500 : 1800;
+  setTimeout(() => el.remove(), ms + 100);
+  return ms;
+}
+
 /* ---------- Day 6: Pet Theo ---------- */
 const THEO_SPRITE_URLS = {};
 function theoSprite(name) {
@@ -1550,7 +1620,7 @@ const PET = {
   bad: { evil: "Not that cat! 😾", cucumber: "Eek, a cucumber!", lily: "No lilies! They're toxic to cats." },
 };
 let petTheoRaf = 0;
-function stopPetTheo() { cancelAnimationFrame(petTheoRaf); if (typeof catStopAll === "function") catStopAll(); }
+function stopPetTheo() { cancelAnimationFrame(petTheoRaf); if (typeof catStopAll === "function") catStopAll(); document.querySelectorAll(".pt-cameo").forEach(e => e.remove()); }
 
 function renderDay6(view, pv) {
   const game = stage(view, pv, "Day 6 · Pet Theo", "Theo's hiding in his favourite cabinet. Pet him as fast as you can, and watch out for the troublemakers.");
@@ -1633,7 +1703,11 @@ function renderDay6(view, pv) {
       if (S.gt < S.purrUntil) return;                          // pets during purr-fect mode don't build the next one
       S.combo++;
       if (S.combo >= PET.purrNeed && S.gt >= S.purrUntil) {
-        S.purrUntil = S.gt + PET.purrFor; S.combo = 0; banner("PURR-FECT!"); catStopAll(); purr(3.8, .6);
+        S.purrUntil = S.gt + PET.purrFor; S.combo = 0; catStopAll(); purr(3.8, .6);
+        S.fills = (S.fills || 0) + 1;
+        const cameo = S.fills % 2 ? "paw" : "kiss";
+        S.cameoUntil = performance.now() + theoCameo(cameo);
+        setTimeout(() => buddy.say("joy", cameo === "paw" ? "Theo high-fived you!! ✋" : "Theo kissed you!! 💕", { hold: false, ms: 1800, after: "Pet him! 🐾" }), cameo === "paw" ? 550 : 700);
         buddy.say("joy", "Purr-fect mode!! 💕", { hold: false, burst: true });
         cubbies.forEach((_, i) => { if (!S.slots[i] || !["theo", "sleepy"].includes(S.slots[i].type)) { hide(i); show(i, "theo", PET.purrFor); } });
       } else if (S.combo && S.combo % 5 === 0 && S.gt >= S.purrUntil) buddy.say("joy", `${S.combo} in a row! Theo's purring!`, { hold: false });
@@ -1667,7 +1741,7 @@ function renderDay6(view, pv) {
     });
 
     const loop = now => {
-      const dt = Math.min(64, now - last); last = now;
+      const dt = now < (S.cameoUntil || 0) ? 0 : Math.min(64, now - last); last = now;   // the clock waits while Theo's cameo plays
       S.real += dt; const slow = S.real < S.treatUntil ? .45 : 1; S.gt += dt * slow;
       const prog = Math.min(1, S.real / PET.round), purring = S.gt < S.purrUntil;
       S.slots.forEach((s, i) => { if (s && S.gt >= s.until) hide(i, true); });
@@ -1693,7 +1767,7 @@ function renderDay6(view, pv) {
       petTheoRaf = requestAnimationFrame(loop);
     };
     function end() {
-      if (S.over) return; S.over = true; stopPetTheo(); if (introText) introText.hidden = false;
+      if (S.over) return; S.over = true; stopPetTheo(); if (introText) introText.hidden = false; document.querySelectorAll(".pt-cameo").forEach(e => e.remove());
       setTimeout(() => S.hearts <= 0 ? meow({ grumpy: true, dur: .6 }) : purr(1.9, .4), 150);
       const sc = S.score, rating = sc >= 900 ? "Theo has chosen you as his human." : sc >= 450 ? "Theo approves." : "Theo tolerated you.";
       game.innerHTML = `<div class="pt"><div class="win">
