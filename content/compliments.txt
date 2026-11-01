@@ -1,0 +1,16 @@
+# ─────────────────────────────────────────────────────────────
+# THE DAISIES (day 3)
+# daisies grow on the museum floor. each one he picks shows one of these.
+# lines that start with # are notes for you. they never show on the site.
+#
+# one compliment per line. there's one daisy for every line, so 10 lines = 10 daisies.
+# they come out in this order, whichever daisy he picks.
+#
+# the lines below are placeholders. replace them with yours.
+# ─────────────────────────────────────────────────────────────
+(placeholder) your first compliment goes here
+(placeholder) your second compliment goes here
+(placeholder) your third compliment goes here
+(placeholder) your fourth compliment goes here
+(placeholder) your fifth compliment goes here
+(placeholder) your sixth compliment goes here

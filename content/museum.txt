@@ -1,0 +1,24 @@
+# ─────────────────────────────────────────────────────────────
+# THE MUSEUM (day 3)
+# lines that start with # are notes for you. they never show on the site.
+#
+# one picture per line, in the order they hang on the wall (left to right).
+# write the photo's file name, then | and the emote his buddy pops in front of it:
+#     beach-trip.jpg | 🥹
+#
+# the emote is optional. leave it off and one is picked for you:
+#     beach-trip.jpg
+#
+# photos go in the "museum" folder. the name here must match the file
+# (spelling, capitals and spaces matter). any shape is fine, they're shown square.
+# iphone .heic photos are fine: they're turned into .jpg automatically,
+# so write .jpg here (beach-trip.heic becomes beach-trip.jpg).
+#
+# the sample pictures below are placeholders. replace these lines with yours.
+# ─────────────────────────────────────────────────────────────
+sample-sunset.jpg | 🥹
+sample-theo.jpg | 😂
+sample-cafe.jpg | ☕
+sample-cake.jpg | 😋
+sample-city.jpg | ✨
+sample-candles.jpg | 💕
