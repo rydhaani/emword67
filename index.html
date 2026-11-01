@@ -265,9 +265,7 @@ main.page { justify-content: flex-start; gap: 0; padding-block: calc(env(safe-ar
 @media (max-width: 640px) { .cat { width: 104px; height: 74px; } }
 
 /* ---------- day 9: the list on its own, before the birthday ---------- */
-.to-candles { display: none !important; }
-body.early-list .to-candles { display: inline-flex !important; }
-body.early-list #toGame, body.early-list #gamecard { display: none !important; }
+#toGame, #gamecard { display: none !important; }   /* the list is day 9; the game belongs to nov 10 (cake → game → letter) */
 
 /* ---------- the cake ---------- */
 #cake { justify-content: center; gap: 6px; text-align: center; }
@@ -514,13 +512,22 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
       </linearGradient>
       <radialGradient id="flameG" cx=".5" cy=".85" r=".8"><stop offset="0" stop-color="#fff2b8"/><stop offset=".35" stop-color="#ffc246"/><stop offset=".75" stop-color="#ff7a12"/><stop offset="1" stop-color="#ff5a00" stop-opacity="0"/></radialGradient>
       <radialGradient id="glowG"><stop offset="0" stop-color="#ffcf73" stop-opacity=".55"/><stop offset="1" stop-color="#ffcf73" stop-opacity="0"/></radialGradient>
+      <linearGradient id="goldFace" x1="0" x2="0" y1="0" y2="1" gradientUnits="objectBoundingBox">
+        <stop offset="0" stop-color="#fff3c4"/><stop offset=".22" stop-color="#f9d777"/><stop offset=".5" stop-color="#e2ac3c"/><stop offset=".72" stop-color="#f3c95e"/><stop offset="1" stop-color="#b98322"/>
+      </linearGradient>
+      <linearGradient id="goldShine" x1="0" x2=".35" y1="0" y2="1" gradientUnits="objectBoundingBox">
+        <stop offset="0" stop-color="#fff" stop-opacity=".7"/><stop offset=".3" stop-color="#fff" stop-opacity=".15"/><stop offset=".31" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+      </linearGradient>
+      <filter id="candleShadow" x="-50%" y="-200%" width="200%" height="500%"><feGaussianBlur stdDeviation="2.5"/></filter>
+      <clipPath id="rimClip2"><rect x="60" y="130" width="60" height="45"/></clipPath>
+      <clipPath id="rimClip7"><rect x="256" y="130" width="60" height="45"/></clipPath>
       <filter id="blurS" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
     </defs>
     <ellipse cx="200" cy="400" rx="176" ry="22" fill="#000" opacity=".5" filter="url(#blurS)"/>
     <image href="art/cake.png" x="30" y="100" width="340" height="310" preserveAspectRatio="xMidYMid meet"/>
     <path id="drips" style="display:none"/><path id="dripShine" style="display:none"/>
     <g class="candle c2" id="c2" role="button" tabindex="0" aria-label="blow out the 2 candle">
-      <text x="104" y="206" text-anchor="middle" font-size="68" font-weight="800" fill="url(#goldG)" stroke="#7a5410" stroke-width="1.4" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none">2</text>
+      <g class="num3d"><ellipse cx="107" cy="207" rx="20" ry="5" fill="#2a1206" opacity=".45" filter="url(#candleShadow)"/><text x="107.85" y="211.25" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="#5e3b08">2</text><text x="107.30" y="210.50" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="#6f470c">2</text><text x="106.75" y="209.75" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="#7f5310">2</text><text x="106.20" y="209.00" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="#8f5f14">2</text><text x="105.65" y="208.25" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="#9c6a18">2</text><text x="105.10" y="207.50" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="#a8741d">2</text><text x="104.55" y="206.75" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="#b27d22">2</text><text x="104" y="206" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="url(#goldFace)" stroke="#8a5d12" stroke-width="1.2" paint-order="stroke">2</text><text x="104" y="206" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="url(#goldShine)">2</text><text x="103.3" y="205.1" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="none" stroke="#fff4c8" stroke-width=".9" opacity=".75" clip-path="url(#rimClip2)">2</text></g>
       <line x1="104" y1="160" x2="104" y2="149" stroke="#2b2015" stroke-width="2.5" stroke-linecap="round"/>
       <g transform="translate(104 149) scale(.8)"><g class="glow"><circle cx="0" cy="-24" r="46" fill="url(#glowG)"/></g>
           <g class="wind"><g class="flame">
@@ -534,7 +541,7 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
           <circle cx="0" cy="-22" r="30" fill="transparent"/></g>
     </g>
     <g class="candle c7" id="c7" role="button" tabindex="0" aria-label="blow out the 7 candle">
-      <text x="300" y="206" text-anchor="middle" font-size="68" font-weight="800" fill="url(#goldG)" stroke="#7a5410" stroke-width="1.4" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none">7</text>
+      <g class="num3d"><ellipse cx="303" cy="207" rx="20" ry="5" fill="#2a1206" opacity=".45" filter="url(#candleShadow)"/><text x="303.85" y="211.25" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="#5e3b08">7</text><text x="303.30" y="210.50" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="#6f470c">7</text><text x="302.75" y="209.75" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="#7f5310">7</text><text x="302.20" y="209.00" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="#8f5f14">7</text><text x="301.65" y="208.25" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="#9c6a18">7</text><text x="301.10" y="207.50" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="#a8741d">7</text><text x="300.55" y="206.75" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="#b27d22">7</text><text x="300" y="206" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="url(#goldFace)" stroke="#8a5d12" stroke-width="1.2" paint-order="stroke">7</text><text x="300" y="206" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="url(#goldShine)">7</text><text x="299.3" y="205.1" text-anchor="middle" font-size="72" font-weight="900" style="font-family: ui-rounded, 'SF Pro Rounded', -apple-system, 'Arial Rounded MT Bold', 'Nunito', Inter, sans-serif; text-transform: none" fill="none" stroke="#fff4c8" stroke-width=".9" opacity=".75" clip-path="url(#rimClip7)">7</text></g>
       <line x1="303" y1="160" x2="303" y2="149" stroke="#2b2015" stroke-width="2.5" stroke-linecap="round"/>
       <g transform="translate(303 149) scale(.8)"><g class="glow"><circle cx="0" cy="-24" r="46" fill="url(#glowG)"/></g>
           <g class="wind"><g class="flame">
@@ -588,7 +595,7 @@ footer { font-size: 13px; color: var(--ink-faint); letter-spacing: .01em; }
       <h1 class="title" id="listTitle">look at everything you did</h1>
       <p class="count" id="count"></p>
       <ul class="wins" id="wins"></ul>
-      <div class="list-end"><button class="pill solid" id="toGame">one more thing →</button></div>
+      <div class="list-end"><a class="pill solid" href="countdown.html">back to the candles</a><button class="pill solid" id="toGame" hidden>one more thing →</button></div>
     </article>
   </div>
 </main>
@@ -942,8 +949,7 @@ function route() {
   document.title = TITLES[name];
   document.body.classList.toggle("no-player", name === "lock" || name === "cake" || name === "game");
   const card = $("gamecard");
-  if (name === "list" && !early) { setTimeout(() => { if (location.hash === "#list") card.classList.add("in"); }, 1600); }
-  else card.classList.remove("in");
+  card.classList.remove("in");                                   // the game card no longer appears on the list: the game is part of nov 10
   if (name === "game") openGame(); else closeGame();
   if (name !== "game") window.scrollTo(0, 0);
 }

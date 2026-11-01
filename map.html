@@ -485,7 +485,11 @@ function typeLove() {
     i++;
     el.innerHTML = esc(txt.slice(0, i)) + (i < txt.length ? '<span class="cursor">_</span>' : "");
     if (i < txt.length) setTimeout(tick, reduceMotion ? 0 : 170);
-    else { $("loveSub").textContent = REVEAL_LINE; $("loveSub").classList.add("on"); $("again").classList.add("on"); $("letterBtn").classList.add("on"); }
+    else {
+      $("loveSub").textContent = REVEAL_LINE; $("loveSub").classList.add("on"); $("letterBtn").classList.add("on");
+      if (framed) setTimeout(() => window.parent.postMessage("lovetap:letter", "*"), 5000);   // on the birthday page, go on to the letter by itself
+      else $("again").classList.add("on");
+    }
   };
   setTimeout(tick, 300);
 }
@@ -535,11 +539,7 @@ $("letterBtn").href = LETTER_URL;
 const framed = window.parent !== window;
 if (framed) {
   $("letterBtn").addEventListener("click", e => { e.preventDefault(); window.parent.postMessage("lovetap:letter", "*"); });
-  const hb = $("homeBtn");
-  hb.innerHTML = "← list"; hb.setAttribute("role", "button"); hb.tabIndex = 0;
-  hb.style.cursor = "pointer"; hb.style.pointerEvents = "auto"; hb.style.fontSize = "15px";
-  const back = () => window.parent.postMessage("lovetap:close", "*");
-  hb.addEventListener("click", back); hb.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") back(); });
+  $("again").hidden = true;                      // on the birthday page the game leads straight on to the letter
 }
 
 
