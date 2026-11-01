@@ -244,6 +244,8 @@ body {
 .pt-hud { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-variant-numeric: tabular-nums; }
 .pt-hearts { color: var(--accent); font-size: 22px; letter-spacing: 2px; }
 .pt-score { font-size: 28px; } .pt-time { color: var(--soft); font-size: 20px; min-width: 2ch; text-align: right; }
+.pt-right { display: flex; align-items: center; gap: 10px; }
+.pt-snd-mini { border: 1.5px solid var(--line); background: #fff; border-radius: 999px; width: 34px; height: 34px; font-size: 16px; cursor: pointer; padding: 0; }
 .pt-time::after { content: "s"; font-size: 14px; }
 .pt-meter { position: relative; height: 18px; border-radius: 999px; background: var(--tint); overflow: hidden; border: 1.5px solid var(--line); }
 .pt-meter i { position: absolute; inset: 0 auto 0 0; width: 0; background: linear-gradient(90deg, #f2c58f, #e89a9a); transition: width .2s; }
@@ -1470,6 +1472,68 @@ function outlined(rows, pal) {
   return o;
 }
 
+/* ---------- Theo's sounds: meow and purr, made in the browser (no audio files) ---------- */
+const CAT_SFX_KEY = "bday-theo-sound";
+let catCtx = null, catOut = null, catLive = [];
+function catSoundOn() { const v = store.get(CAT_SFX_KEY); return v !== false; }
+function catAudio() {                                   // call from a tap so phones allow sound
+  if (!catCtx) {
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+    catCtx = new AC(); catOut = catCtx.createGain(); catOut.gain.value = .9;
+    const comp = catCtx.createDynamicsCompressor(); catOut.connect(comp); comp.connect(catCtx.destination);
+  }
+  if (catCtx.state === "suspended") catCtx.resume();
+  return catCtx;
+}
+function catTrack(...nodes) { catLive.push(...nodes); setTimeout(() => { catLive = catLive.filter(n => !nodes.includes(n)); }, 6000); }
+function catStopAll() { catLive.forEach(n => { try { n.stop(); } catch (e) {} }); catLive = []; }
+
+function meow({ pitch = 1, dur = .55, grumpy = false } = {}) {
+  if (!catSoundOn()) return; const ac = catAudio(); if (!ac) return;
+  const t = ac.currentTime + .01, f = (grumpy ? 330 : 560) * pitch * (.94 + Math.random() * .12);
+  const src = ac.createOscillator(); src.type = "sawtooth";
+  src.frequency.setValueAtTime(f * .8, t);
+  src.frequency.linearRampToValueAtTime(f * 1.22, t + dur * .32);
+  src.frequency.exponentialRampToValueAtTime(f * (grumpy ? .62 : .72), t + dur);
+  const vib = ac.createOscillator(), vibG = ac.createGain(); vib.frequency.value = 6.5; vibG.gain.value = f * .02; vib.connect(vibG); vibG.connect(src.frequency);
+  const env = ac.createGain(); env.gain.setValueAtTime(0, t);
+  env.gain.linearRampToValueAtTime(1.1, t + .05); env.gain.setValueAtTime(1.1, t + dur * .55); env.gain.linearRampToValueAtTime(0, t + dur);
+  // "mee" → "ow": two mouth resonances that open up and close again
+  const mix = ac.createGain(); mix.gain.value = 1;
+  [[650, 1150, 560, 7], [2000, 1350, 1000, 9]].forEach(([a, b, c, q]) => {
+    const bp = ac.createBiquadFilter(); bp.type = "bandpass"; bp.Q.value = q;
+    bp.frequency.setValueAtTime(a, t); bp.frequency.linearRampToValueAtTime(b, t + dur * .4); bp.frequency.linearRampToValueAtTime(c, t + dur);
+    src.connect(bp); bp.connect(mix);
+  });
+  const hp = ac.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 260;
+  const soft = ac.createBiquadFilter(); soft.type = "lowpass"; soft.frequency.value = 3200; soft.Q.value = .5;
+  mix.connect(hp); hp.connect(soft); soft.connect(env); env.connect(catOut);
+  src.start(t); vib.start(t); src.stop(t + dur + .05); vib.stop(t + dur + .05); catTrack(src, vib);
+}
+
+function purr(dur = .7, loud = .5) {
+  if (!catSoundOn()) return; const ac = catAudio(); if (!ac) return;
+  const t = ac.currentTime + .01, len = Math.ceil(ac.sampleRate * (dur + .1));
+  const buf = ac.createBuffer(1, len, ac.sampleRate), d = buf.getChannelData(0);
+  let last = 0; for (let i = 0; i < len; i++) { last = .9 * last + .1 * (Math.random() * 2 - 1); d[i] = last * 3; }   // soft brown-ish noise
+  const noise = ac.createBufferSource(); noise.buffer = buf;
+  const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 420; lp.Q.value = .8;
+  const body = ac.createBiquadFilter(); body.type = "peaking"; body.frequency.value = 140; body.gain.value = 8;
+  // the rumble: about 25 flutters a second
+  const am = ac.createGain(); am.gain.value = .5;
+  const lfo = ac.createOscillator(), lfoG = ac.createGain(); lfo.type = "triangle"; lfo.frequency.value = 23 + Math.random() * 4; lfoG.gain.value = .5; lfo.connect(lfoG); lfoG.connect(am.gain);
+  const env = ac.createGain(); env.gain.setValueAtTime(0, t);
+  // breathe in (softer), then out (stronger), repeating for long purrs
+  const cycle = .95, n = Math.max(1, Math.round(dur / cycle));
+  for (let k = 0; k < n; k++) {
+    const s = t + k * cycle, inEnd = s + cycle * .38, outEnd = s + cycle;
+    env.gain.linearRampToValueAtTime(loud * .45, s + .06); env.gain.linearRampToValueAtTime(loud * .3, inEnd);
+    env.gain.linearRampToValueAtTime(loud, inEnd + .08); env.gain.linearRampToValueAtTime(loud * .8, outEnd - .1); env.gain.linearRampToValueAtTime(.001, outEnd);
+  }
+  noise.connect(lp); lp.connect(body); body.connect(am); am.connect(env); env.connect(catOut);
+  noise.start(t); lfo.start(t); noise.stop(t + n * cycle + .05); lfo.stop(t + n * cycle + .05); catTrack(noise, lfo);
+}
+
 /* ---------- Day 6: Pet Theo ---------- */
 const THEO_SPRITE_URLS = {};
 function theoSprite(name) {
@@ -1483,17 +1547,25 @@ const PET = {
   bad: { evil: "Not that cat! 😾", cucumber: "Eek, a cucumber!", lily: "No lilies! They're toxic to cats." },
 };
 let petTheoRaf = 0;
-function stopPetTheo() { cancelAnimationFrame(petTheoRaf); }
+function stopPetTheo() { cancelAnimationFrame(petTheoRaf); if (typeof catStopAll === "function") catStopAll(); }
 
 function renderDay6(view, pv) {
   const game = stage(view, pv, "Day 6 · Pet Theo", "Theo's hiding in his favourite cabinet. Pet him as fast as you can, and watch out for the troublemakers.");
   const legend = [["theo", "Theo", "pet him: +10"], ["sleepy", "Sleepy Theo", "tap twice: +25"], ["zoom", "Zoomies", "catch him: +20"],
     ["belly", "Belly up", "it's a trap: −20"], ["evil", "Grey cat", "don't! −1 ♥"], ["cucumber", "Cucumber", "don't! −1 ♥"], ["lily", "Lily", "don't! −1 ♥"], ["treats", "Treats", "slow-mo for 5s"]];
+  function wireSound() {
+    game.querySelectorAll(".pt-snd").forEach(b => b.onclick = () => {
+      const on = !catSoundOn(); store.set(CAT_SFX_KEY, on); if (!on) catStopAll(); else { catAudio(); meow({ pitch: 1.1, dur: .4 }); }
+      game.querySelectorAll(".pt-snd").forEach(x => { x.setAttribute("aria-pressed", on); x.textContent = x.classList.contains("pt-snd-mini") ? (on ? "🔊" : "🔇") : (on ? "🔊 Sound on" : "🔇 Sound off"); });
+      buddy.bop(on ? "Sound on! 🔊" : "Shh… sound off");
+    });
+  }
   const intro = () => {
     game.innerHTML = `<div class="pt"><div class="pt-legend">${legend.map(([s, n, d]) => `<div class="pt-leg"><img src="${theoSprite(s)}" alt=""><b>${n}</b><span>${d}</span></div>`).join("")}</div>
       <p class="pt-small">Pet ${PET.purrNeed} in a row to fill the purr meter for a few seconds of Purr-fect mode. 45 seconds, 3 hearts.</p>
-      <div class="row-btns" style="justify-content:center"><button class="btn" id="pt-start" type="button">Start petting</button></div></div>`;
-    $("#pt-start").onclick = play;
+      <div class="row-btns" style="justify-content:center"><button class="btn" id="pt-start" type="button">Start petting</button><button class="btn ghost pt-snd" type="button" aria-pressed="${catSoundOn()}">${catSoundOn() ? "🔊 Sound on" : "🔇 Sound off"}</button></div></div>`;
+    $("#pt-start").onclick = () => { catAudio(); play(); };
+    wireSound();
     buddy.say("idle", "Theo! Here, kitty kitty…");
   };
 
@@ -1501,7 +1573,7 @@ function renderDay6(view, pv) {
   function play() {
     if (introText) introText.hidden = true;
     game.innerHTML = `<div class="pt">
-      <div class="pt-hud"><span class="pt-hearts" id="pt-hearts"></span><span class="pt-score" id="pt-score">0</span><span class="pt-time" id="pt-time">45</span></div>
+      <div class="pt-hud"><span class="pt-hearts" id="pt-hearts"></span><span class="pt-score" id="pt-score">0</span><span class="pt-right"><button class="pt-snd pt-snd-mini" type="button" aria-pressed="${catSoundOn()}" aria-label="Sound">${catSoundOn() ? "🔊" : "🔇"}</button><span class="pt-time" id="pt-time">45</span></span></div>
       <div class="pt-meter" aria-label="Purr meter"><i id="pt-purr"></i><span id="pt-purr-l">purr meter</span></div>
       <div class="pt-board" id="pt-board">
         <div class="pt-top" id="pt-top"><img class="pt-zoom" id="pt-zoom" src="${theoSprite("zoom")}" alt="Zoomies Theo" hidden></div>
@@ -1509,6 +1581,13 @@ function renderDay6(view, pv) {
         <div class="pt-banner" id="pt-banner" hidden></div>
       </div></div>`;
     const cubbies = [...game.querySelectorAll(".pt-cubby")];
+    wireSound();
+    let lastPurr = 0, petCount = 0;
+    const petSound = () => {                                   // a purr for each pet, a happy meow every fourth
+      petCount++; const now = performance.now();
+      if (petCount % 4 === 0) meow({ pitch: 1.05 + Math.random() * .15, dur: .42 });
+      else if (now - lastPurr > 380) { lastPurr = now; purr(.6, .45); }
+    };
     const S = { score: 0, hearts: PET.hearts, combo: 0, gt: 0, real: 0, next: 400, nextZoom: 6000 + Math.random() * 3000, zoom: null,
       treatUntil: -1, purrUntil: -1, lastTreat: -99999, slots: cubbies.map(() => null), emptied: [], over: false };
     let last = performance.now();
@@ -1547,10 +1626,11 @@ function renderDay6(view, pv) {
     const pet = (pts, el) => {
       S.score += pts; float(el, "+" + pts + " ♥", "good");
       buddy.say("joy", petLines[Math.random() * petLines.length | 0], { hold: false, ms: 900, after: "Pet him! 🐾" });
+      if (S.gt >= S.purrUntil) petSound();
       if (S.gt < S.purrUntil) return;                          // pets during purr-fect mode don't build the next one
       S.combo++;
       if (S.combo >= PET.purrNeed && S.gt >= S.purrUntil) {
-        S.purrUntil = S.gt + PET.purrFor; S.combo = 0; banner("PURR-FECT!");
+        S.purrUntil = S.gt + PET.purrFor; S.combo = 0; banner("PURR-FECT!"); catStopAll(); purr(3.8, .6);
         buddy.say("joy", "Purr-fect mode!! 💕", { hold: false, burst: true });
         cubbies.forEach((_, i) => { if (!S.slots[i] || !["theo", "sleepy"].includes(S.slots[i].type)) { hide(i); show(i, "theo", PET.purrFor); } });
       } else if (S.combo && S.combo % 5 === 0 && S.gt >= S.purrUntil) buddy.say("joy", `${S.combo} in a row! Theo's purring!`, { hold: false });
@@ -1563,13 +1643,13 @@ function renderDay6(view, pv) {
       if (s.type === "theo") { s.done = true; c.querySelector("img").src = theoSprite("petted"); pet(PET.points.theo, c); s.until = S.gt + 380; }
       else if (s.type === "sleepy") {
         s.taps++;
-        if (s.taps === 1) { c.classList.remove("stir"); void c.offsetWidth; c.classList.add("stir"); float(c, "zz…", "soft"); s.until += 500; buddy.say("think", "Shh… he's waking up", { hold: false, ms: 900, after: "Pet him! 🐾" }); }
-        else { s.done = true; c.querySelector("img").src = theoSprite("petted"); pet(PET.points.sleepy, c); s.until = S.gt + 420; }
+        if (s.taps === 1) { c.classList.remove("stir"); void c.offsetWidth; c.classList.add("stir"); float(c, "zz…", "soft"); s.until += 500; purr(.5, .28); buddy.say("think", "Shh… he's waking up", { hold: false, ms: 900, after: "Pet him! 🐾" }); }
+        else { s.done = true; c.querySelector("img").src = theoSprite("petted"); meow({ pitch: 1.18, dur: .38 }); petCount++; pet(PET.points.sleepy, c); s.until = S.gt + 420; }
       }
-      else if (s.type === "belly") { s.done = true; c.querySelector("img").src = theoSprite("hiss"); S.score = Math.max(0, S.score + PET.points.belly); float(c, "hiss! −20", "bad"); ouch("Belly trap!! Every time…"); s.until = S.gt + 500; }
-      else if (s.type === "treats") { s.done = true; S.treatUntil = S.real + PET.treatFor; S.lastTreat = S.gt; float(c, "treats! 🐟", "good"); banner("Treat time!"); buddy.say("joy", "Treats! Everything's slow-mo 🐟", { hold: false }); hide(i); }
+      else if (s.type === "belly") { s.done = true; c.querySelector("img").src = theoSprite("hiss"); S.score = Math.max(0, S.score + PET.points.belly); float(c, "hiss! −20", "bad"); meow({ grumpy: true, dur: .45 }); ouch("Belly trap!! Every time…"); s.until = S.gt + 500; }
+      else if (s.type === "treats") { s.done = true; S.treatUntil = S.real + PET.treatFor; S.lastTreat = S.gt; float(c, "treats! 🐟", "good"); banner("Treat time!"); meow({ pitch: 1.25, dur: .5 }); buddy.say("joy", "Treats! Everything's slow-mo 🐟", { hold: false }); hide(i); }
       else if (PET.bad[s.type]) {
-        s.done = true; S.hearts--; float(c, "−1 ♥", "bad"); ouch(PET.bad[s.type]);
+        s.done = true; S.hearts--; float(c, "−1 ♥", "bad"); ouch(PET.bad[s.type]); meow({ grumpy: true, pitch: .9, dur: .55 });
         S.slots.forEach((t, k) => { if (t && ["theo", "sleepy"].includes(t.type) && !t.done) hide(k); });   // Theo runs off
         s.until = S.gt + 450;
         if (S.hearts <= 0) return end();
@@ -1579,7 +1659,7 @@ function renderDay6(view, pv) {
     const zoomEl = $("#pt-zoom");
     zoomEl.addEventListener("pointerdown", e => {
       e.preventDefault(); if (!S.zoom || S.zoom.caught || S.over) return;
-      S.zoom.caught = true; zoomEl.src = theoSprite("petted"); S.score += PET.points.zoom; if (S.gt >= S.purrUntil) S.combo++; float(zoomEl, "+20 zoom!", "good");
+      S.zoom.caught = true; zoomEl.src = theoSprite("petted"); S.score += PET.points.zoom; if (S.gt >= S.purrUntil) S.combo++; float(zoomEl, "+20 zoom!", "good"); meow({ pitch: 1.35, dur: .32 });
       buddy.say("joy", "Caught him mid-zoomies!", { hold: false, burst: true }); hud();
     });
 
@@ -1611,6 +1691,7 @@ function renderDay6(view, pv) {
     };
     function end() {
       if (S.over) return; S.over = true; stopPetTheo(); if (introText) introText.hidden = false;
+      setTimeout(() => S.hearts <= 0 ? meow({ grumpy: true, dur: .6 }) : purr(1.9, .4), 150);
       const sc = S.score, rating = sc >= 900 ? "Theo has chosen you as his human." : sc >= 450 ? "Theo approves." : "Theo tolerated you.";
       game.innerHTML = `<div class="pt"><div class="win">
         <img class="pt-sleep" src="${theoSprite("sleepy")}" alt="Theo, curled up asleep">
