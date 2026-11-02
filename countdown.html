@@ -1325,7 +1325,7 @@ function renderDay3(view, pv) {
   const nearest = () => { let best = -1, d = 1e9; items.forEach((it, i) => { const dd = Math.abs(centreOf(it) - st.scrollLeft); if (dd < d) { d = dd; best = i; } }); return [best, d]; };
   const emote = (txt) => {
     txt = txt.replace(/(\p{Extended_Pictographic})(?![\uFE0F\u200D\p{Emoji_Modifier}])/gu, "$1\uFE0F");   // ⛰ ♥ etc. show in colour, not as plain symbols
-    const isWord = /\p{L}/u.test(txt);                       // words get a neat label; emoji-only gets the big bubble
+    const isWord = /[^\s\p{Extended_Pictographic}\uFE0F\u200D\p{Emoji_Modifier}]/u.test(txt);   // anything typed (words, <3, ?) gets the neat label; emoji-only gets the big bubble
     emo.innerHTML = isWord ? escapeHtml(txt).replace(/(\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic}|\p{Emoji_Modifier})*)+/gu, m => `<span class="e">${m}</span>`) : escapeHtml(txt);
     emo.classList.toggle("word", isWord); emo.classList.remove("pop"); void emo.offsetWidth; emo.classList.add("pop");
     for (let k = 0; k < 5; k++) { const h = document.createElement("span"); h.className = "mu-heart"; h.textContent = "♥"; h.style.setProperty("--x", (k - 2) * 14 + "px"); h.style.animationDelay = (.1 + k * .08) + "s"; vis.appendChild(h); setTimeout(() => h.remove(), 1600); }
