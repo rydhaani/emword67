@@ -1,0 +1,15 @@
+# ─────────────────────────────────────────────────────────────
+# THE SLIDING PUZZLE (day 7)
+# lines that start with # are notes for you. they never show on the site.
+#
+# one photo per line, in the order he solves them. three works best.
+# the whole photo is used (the board takes the photo's shape), so nothing is cut off.
+#
+# to add a caption that shows once a photo is solved, add | and the words:
+#     first-date.jpg | the night we got lost looking for that café
+#
+# photos go in the "puzzles" folder. the name here must match the file.
+# ─────────────────────────────────────────────────────────────
+4fd8be79-44e0-4642-9e5b-dacb611be260.jpg
+68ae2a74-3544-487e-83dc-8ee71d2def9f.jpg
+ef849dae-5c3e-4cdf-ab78-b8e9b347eb1d.jpg
