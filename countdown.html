@@ -384,6 +384,7 @@ body {
 @keyframes muwalk { to { transform: translateY(-5px) rotate(2deg); } }
 @keyframes muwalkL { from { transform: scaleX(-1); } to { transform: scaleX(-1) translateY(-5px) rotate(2deg); } }
 .mu-emote { position: absolute; left: 50%; bottom: 100%; transform: translateX(-50%) scale(0); background: #fff; border: 2px solid var(--ink); border-radius: 14px; padding: 2px 8px; font-size: 24px; line-height: 1.2; opacity: 0; }
+.mu-emote.word { font: 800 15px/1.3 var(--body); padding: 5px 11px; white-space: nowrap; }
 .mu-emote::after { content: ""; position: absolute; left: 50%; bottom: -8px; margin-left: -6px; border: 6px solid transparent; border-top-color: var(--ink); }
 .mu-emote.pop { animation: emote 1.8s ease-out forwards; }
 @keyframes emote { 0% { opacity: 0; transform: translateX(-50%) translateY(6px) scale(.3); } 14% { opacity: 1; transform: translateX(-50%) translateY(-4px) scale(1.15); } 24% { transform: translateX(-50%) translateY(0) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) translateY(-6px) scale(1); } }
@@ -1322,7 +1323,7 @@ function renderDay3(view, pv) {
   const centreOf = el => el.offsetLeft + el.offsetWidth / 2 - st.clientWidth / 2;
   const nearest = () => { let best = -1, d = 1e9; items.forEach((it, i) => { const dd = Math.abs(centreOf(it) - st.scrollLeft); if (dd < d) { d = dd; best = i; } }); return [best, d]; };
   const emote = (txt) => {
-    emo.textContent = txt; emo.classList.remove("pop"); void emo.offsetWidth; emo.classList.add("pop");
+    emo.textContent = txt; emo.classList.toggle("word", /\p{L}/u.test(txt)); emo.classList.remove("pop"); void emo.offsetWidth; emo.classList.add("pop");
     for (let k = 0; k < 5; k++) { const h = document.createElement("span"); h.className = "mu-heart"; h.textContent = "♥"; h.style.setProperty("--x", (k - 2) * 14 + "px"); h.style.animationDelay = (.1 + k * .08) + "s"; vis.appendChild(h); setTimeout(() => h.remove(), 1600); }
   };
   function arrive() {
