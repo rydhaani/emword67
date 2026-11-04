@@ -468,8 +468,8 @@ const CONFIG = {
   name: "Mutahar",
   age: "27th",
   year: 2026, month: 11,          // November 2026 (normal 1–12 numbering)
-  days: { 1: "Quordle", 2: "Final Cut", 3: "A Walk Through Your Life", 4: "Name That Tune", 5: "Connections",
-          6: "Pet Theo", 7: "Sliding Puzzle", 8: "Word Search", 9: "The List", 10: "The Big Day" },
+  days: { 1: "Quordle", 2: "Final Cut", 3: "A Walk Through Your Life", 4: "Name That Tune", 5: "Pet Theo",
+          6: "Connections", 7: "Sliding Puzzle", 8: "Word Search", 9: "The List", 10: "The Big Day" },
 };
 /* ============================================================ */
 
@@ -878,7 +878,7 @@ function route() {
   if (viewing === 2) return renderDay2(view, PV());
   if (viewing === 3) return renderDay3(view, PV());
   if (viewing === 4) return renderDay4(view, PV());
-  if (viewing === 6) return renderDay6(view, PV());
+  if (viewing === 5) return renderDay6(view, PV());   // pet theo moved to day 5
   if (viewing === 7) return renderDay7(view, PV());
   return renderPlaceholder(view, viewing, PV());
 }
@@ -1863,7 +1863,7 @@ let petTheoRaf = 0;
 function stopPetTheo() { cancelAnimationFrame(petTheoRaf); if (typeof catStopAll === "function") catStopAll(); document.querySelectorAll(".pt-cameo").forEach(e => e.remove()); }
 
 function renderDay6(view, pv) {
-  const game = stage(view, pv, "Day 6 · Pet Theo", "Theo's hiding in his favourite cabinet. Pet him as fast as you can, and watch out for the troublemakers.");
+  const game = stage(view, pv, "Day 5 · Pet Theo", "Theo's hiding in his favourite cabinet. Pet him as fast as you can, and watch out for the troublemakers.");
   const legend = [["theo", "Theo", "pet him: +10"], ["sleepy", "Sleepy Theo", "tap twice: +25"], ["zoom", "Zoomies", "catch him: +20"],
     ["belly", "Belly up", "it's a trap: −20"], ["evil", "Grey cat", "don't! −1 ♥"], ["cucumber", "Cucumber", "don't! −1 ♥"], ["lily", "Lily", "don't! −1 ♥"], ["treats", "Treats", "slow-mo for 5s"]];
   function wireSound() {
