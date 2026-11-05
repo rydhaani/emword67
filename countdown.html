@@ -545,7 +545,7 @@ const CONFIG = {
   age: "27th",
   year: 2026, month: 11,          // November 2026 (normal 1–12 numbering)
   days: { 1: "Quordle", 2: "Final Cut", 3: "A Walk Through Your Life", 4: "Name That Tune", 5: "Pet Theo",
-          6: "Meet the Bakers", 7: "Sliding Puzzle", 8: "Bake It Together", 9: "The List", 10: "The Big Day" },
+          6: "Sliding Puzzle", 7: "Meet the Bakers", 8: "Bake It Together", 9: "The List", 10: "The Big Day" },
 };
 /* ============================================================ */
 
@@ -1135,8 +1135,8 @@ function route() {
   if (viewing === 3) return renderDay3(view, PV());
   if (viewing === 4) return renderDay4(view, PV());
   if (viewing === 5) return renderDay6(view, PV());   // pet theo moved to day 5
-  if (viewing === 6) return renderBakers(view, PV());
-  if (viewing === 7) return renderDay7(view, PV());
+  if (viewing === 6) return renderDay7(view, PV());   // sliding puzzle moved to day 6
+  if (viewing === 7) return renderBakers(view, PV());
   if (viewing === 8) return renderDay8(view, PV());
   return renderPlaceholder(view, viewing, PV());
 }
@@ -2336,10 +2336,10 @@ function shuffledBoard(n, steps) {
 }
 
 function renderDay7(view, pv) {
-  if (!puzzlesReady) { stage(view, pv, "Day 7 · Sliding Puzzle", "Getting the photos ready…"); preparePuzzles().then(() => { if (viewing === 7) route(); }); return; }
+  if (!puzzlesReady) { stage(view, pv, "Day 6 · Sliding Puzzle", "Getting the photos ready…"); preparePuzzles().then(() => { if (viewing === 6) route(); }); return; }
   if (!slideGame) slideGame = { i: 0, results: [], board: null, moves: 0, start: 0, numbers: false };
   const st = slideGame;
-  const game = stage(view, pv, "Day 7 · Sliding Puzzle", `Tap a tile next to the gap to slide it. Put each photo back together in ${SLIDE_MAX} moves or fewer.`,
+  const game = stage(view, pv, "Day 6 · Sliding Puzzle", `Tap a tile next to the gap to slide it. Put each photo back together in ${SLIDE_MAX} moves or fewer.`,
     ` · <a href="#" id="reset">restart</a> · <a href="#" id="cheat">solve this one</a>`);
   if (pv) {
     $("#reset").onclick = e => { e.preventDefault(); stopSlide(); slideGame = null; route(); };
@@ -2486,7 +2486,7 @@ function avatarURL(cfg, mood = "idle", scale = 5) { const c = document.createEle
 function loadDuo() { return store.get(DUO_KEY) || { powers: {}, toppings: [] }; }
 
 function renderBakers(view, pv) {
-  const game = stage(view, pv, "Day 6 · Meet the bakers", "Something's cooking for Sunday. First, the two bakers, their superpowers, and what goes on your cake.",
+  const game = stage(view, pv, "Day 7 · Meet the bakers", "Something's cooking for Sunday. First, the two bakers, their superpowers, and what goes on your cake.",
     ` · <a href="#" id="duo-reset">start over</a>`);
   if (pv) $("#duo-reset").onclick = e => { e.preventDefault(); store.del(PARTNER_KEY); store.del(DUO_KEY); route(); };
   const duo = loadDuo();
