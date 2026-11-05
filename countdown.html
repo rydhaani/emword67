@@ -420,6 +420,41 @@ body.mu-lock { overflow: hidden; }
 .mu-item:focus-visible .mu-frame { outline-color: var(--accent); }
 .mu-sign b { text-transform: none; }
 .mu-count { position: absolute; right: 12px; top: 8px; z-index: 4; background: rgba(255,255,255,.92); border-radius: 999px; padding: 3px 10px; font: 800 13px var(--body); font-variant-numeric: tabular-nums; }
+/* day 6 · meet the bakers */
+.duo-steps { list-style: none; display: flex; justify-content: center; gap: 6px; padding: 0; margin: 0 0 4px; flex-wrap: wrap; }
+.duo-steps li { display: flex; align-items: center; gap: 6px; font: 700 13px var(--body); color: var(--soft); padding: 4px 10px 4px 4px; border-radius: 999px; background: var(--tint); }
+.duo-steps li b { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: #fff; border: 1.5px solid var(--line); font-size: 12px; }
+.duo-steps li.on { color: var(--ink); background: #fde6e8; } .duo-steps li.on b { background: var(--accent); border-color: var(--accent); color: #fff; }
+.duo-steps li.done b { background: var(--hit); border-color: var(--hit); color: #fff; }
+.duo-news { text-align: center; font-weight: 700; background: #fff8e1; border: 1.5px dashed #f2c14e; border-radius: 12px; padding: 8px 12px; }
+.duo-lead { text-align: center; }
+.duo-maker { grid-template-columns: 190px minmax(0, 1fr); }
+.duo-maker .preview canvas { width: 156px; height: 288px; image-rendering: pixelated; }
+.pw-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.pw-col { display: grid; justify-items: center; gap: 8px; padding: 12px; border-radius: 16px; background: var(--tint); }
+.pw-ava { width: 78px; image-rendering: pixelated; } .pw-name { font: 400 22px var(--display); }
+.pw-list { display: grid; gap: 8px; width: 100%; }
+.pw { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 8px; align-items: center; text-align: left; border: 1.5px solid var(--line); background: #fff; border-radius: 12px; padding: 8px 10px; cursor: pointer; font: inherit; color: inherit; }
+.pw .pw-i { font-size: 24px; text-align: center; } .pw b { display: block; font-size: 14px; } .pw small { display: block; font-size: 12px; color: var(--soft); line-height: 1.3; }
+.pw[aria-pressed="true"] { border-color: var(--accent); background: #fde6e8; box-shadow: 0 0 0 2px var(--accent) inset; }
+.pw:disabled { opacity: .35; cursor: not-allowed; }
+.tp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px; }
+.tp { display: grid; justify-items: center; gap: 6px; padding: 10px 6px; border-radius: 14px; border: 1.5px solid var(--line); background: #fff; cursor: pointer; font: 700 12px var(--body); color: var(--ink); }
+.tp img { width: 44px; height: 44px; object-fit: contain; image-rendering: pixelated; }
+.tp[aria-pressed="true"] { border-color: var(--accent); background: #fde6e8; box-shadow: 0 0 0 2px var(--accent) inset; }
+.tp:disabled { opacity: .4; cursor: not-allowed; }
+.tp-count { text-align: center; font-weight: 800; color: var(--soft); }
+.duo-card { display: grid; gap: 16px; justify-items: center; text-align: center; padding: 18px; border-radius: 18px; background: linear-gradient(180deg, #fff8f0, #fff); border: 2px dashed var(--accent); }
+.duo-pair { display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; }
+.duo-pair figure { margin: 0; display: grid; gap: 6px; justify-items: center; }
+.duo-pair img { width: 104px; image-rendering: pixelated; }
+.duo-pair b { font: 400 24px var(--display); display: block; } .duo-pair span { font-weight: 800; font-size: 14px; }
+.duo-tops { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; font-weight: 700; color: var(--soft); }
+.duo-tops img { width: 38px; height: 38px; object-fit: contain; image-rendering: pixelated; }
+.duo-teaser { font-size: 17px; color: var(--ink) !important; }
+.duo-redo { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; align-items: center; } .duo-redo span { width: 100%; color: var(--soft); font-size: 13px; }
+.duo-redo .btn { padding: 8px 14px; font-size: 13px; }
+@media (max-width: 700px) { .duo-maker { grid-template-columns: minmax(0, 1fr); } .pw-cols { grid-template-columns: minmax(0, 1fr); } }
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 20; }
 
 @media (max-width: 700px) {
@@ -469,7 +504,7 @@ const CONFIG = {
   age: "27th",
   year: 2026, month: 11,          // November 2026 (normal 1–12 numbering)
   days: { 1: "Quordle", 2: "Final Cut", 3: "A Walk Through Your Life", 4: "Name That Tune", 5: "Pet Theo",
-          6: "Connections", 7: "Sliding Puzzle", 8: "Word Search", 9: "The List", 10: "The Big Day" },
+          6: "Meet the Bakers", 7: "Sliding Puzzle", 8: "Bake It Together", 9: "The List", 10: "The Big Day" },
 };
 /* ============================================================ */
 
@@ -483,16 +518,29 @@ const store = {
 /* ============================================================
    PIXEL BUDDY
    ============================================================ */
-const BUDDY_OPTS = {
+const OUTFIT_COLOURS = ["#c4473f", "#2d2a30", "#5b3b2b", "#2f5a3d", "#a9c79a", "#5a86c6", "#f1b6c5"];   // red, black, dark brown, dark green, sage, blue, pastel pink
+const BUDDY_OPTS = {   // him
   skin:   ["#ffe3cc", "#f3cba5", "#e0a77f", "#c68657", "#8d5a3b", "#5e3b28"],
   hair:   ["#1e1a1d", "#4a3226", "#8a5a36", "#e8c26b", "#d9603b", "#8a7cf0"],
-  outfit: ["#a9c79a", "#9fc3e6", "#e7a9b8", "#f2d27a", "#c3aee6", "#f4f1ea"],
-  style:  [["fluffy", "Fluffy"], ["neat", "Neat"], ["curly", "Curly"], ["long", "Long"], ["buzz", "Buzz"]],
+  outfit: OUTFIT_COLOURS,
+  style:  [["fluffy", "Fluffy"], ["neat", "Neat"], ["combed", "Combed over"], ["wavylong", "Long wavy"], ["buzz", "Buzz"]],
   glasses:[["yes", "Glasses"], ["no", "No glasses"]],
-  extra:  [["none", "Nothing"], ["hat", "Party hat"], ["crown", "Crown"], ["bow", "Bow"], ["ears", "Cat ears"]],
+  outfitType: [["cat", "Cat sweater"], ["hoodie", "Hoodie (her face)"], ["shirt", "Shirt"]],
+  top:    [["none", "Nothing"], ["chef", "Chef's hat"], ["cap", "Cap"], ["phones", "Headphones"], ["crown", "Crown"], ["ears", "Cat ears"], ["bday", "Birthday hat"], ["flour", "Flour on face"]],
 };
-const BUDDY_DEFAULT = { skin: "#f3cba5", hair: "#1e1a1d", outfit: "#a9c79a", style: "fluffy", glasses: "yes", extra: "none" };
-const BUDDY_KEY = "bday-buddy";
+const PARTNER_OPTS = { // her
+  skin:   BUDDY_OPTS.skin,
+  hair:   BUDDY_OPTS.hair,
+  outfit: OUTFIT_COLOURS,
+  style:  [["fluffy", "Fluffy"], ["neat", "Neat"], ["wavy", "Wavy"], ["long", "Long"], ["pixie", "Pixie"], ["bun", "Messy bun"]],
+  glasses:[["yes", "Glasses"], ["no", "No glasses"]],
+  earrings: [["yes", "Butterfly earrings"], ["no", "No earrings"]],
+  outfitType: [["cat", "Cat sweater"], ["hoodie", "Hoodie (his face)"], ["shirt", "Shirt"]],
+  top:    [["none", "Nothing"], ["chef", "Chef's hat"], ["cap", "Cap"], ["phones", "Headphones"], ["crown", "Crown"], ["ears", "Cat ears"], ["flour", "Flour on face"]],
+};
+const BUDDY_DEFAULT = { gender: "m", skin: "#f3cba5", hair: "#1e1a1d", outfit: "#a9c79a", outfitType: "cat", style: "fluffy", glasses: "yes", top: "none" };
+const PARTNER_DEFAULT = { gender: "f", skin: "#f3cba5", hair: "#4a3226", outfit: "#f1b6c5", outfitType: "cat", style: "wavy", glasses: "no", earrings: "yes", top: "none" };
+const BUDDY_KEY = "bday-buddy", PARTNER_KEY = "bday-partner", DUO_KEY = "bday-duo";
 // ===== new buddy sprite (26 x 48), drawn as text, recoloured from the maker's choices =====
 const BUDDY_W = 26, BUDDY_H = 48;
 const BODY = [ // S skin s skin-shade | W shirt w shirt-shade | G sweater g sweater-shade L sweater-light | P trousers p trousers-shade | B shoes
@@ -640,6 +688,113 @@ buzz: [
 ".....k..............k.....",
 ],
 };
+Object.assign(HAIR, {
+combed: [
+"..........................",
+"..........................",
+"..........................",
+"..........................",
+"...........HHHHHHH........",
+"........HHHHHHHHHHHHH.....",
+"......HHHHhhhhhHHHHHHH....",
+".....HHHhhHHHHHHHHHHHHH...",
+"....HHkHHHHHHHHHHHHHHHHH..",
+"....HHkHHHHHHHHHHHHHHHHH..",
+"....HHk.HHHHHHHHHHHHHHHH..",
+"....HHH...kHHHHHHHHkHHH...",
+"....HHH........kkk..HHH...",
+"....HH..............HH....",
+"....H................H....",
+],
+wavylong: [
+"..........................",
+"..........................",
+"..........................",
+"..........................",
+"........HHHHHHHHHH........",
+"......HHHHHhhhHHHHHH......",
+".....HHHHhhHHHHHHHHHH.....",
+"....HHHHHHHHHHHHHHHHHH....",
+"...HHHHHHHHHHHHHHHHHHHH...",
+"...HHHHHHHHHHHHHHHHHHHH...",
+"...HHHHHHkHHHHHHkHHHHHH...",
+"...HHHHHk.kk..kk.kHHHHH...",
+"...HHHH............HHHH...",
+"..HHHH..............HHHH..",
+"...HHH..............HHH...",
+"..HHHH..............HHHH..",
+"...HHH..............HHH...",
+"..HHHH..............HHHH..",
+"...HHHH............HHHH...",
+"..HHHk..............kHHH..",
+"...Hk................kH...",
+],
+wavy: [
+"..........................",
+"..........................",
+"..........................",
+"..........................",
+"........HHHHHHHHHH........",
+"......HHHHHhhhHHHHHH......",
+".....HHHHhhHHHHHHHHHH.....",
+"....HHHHHHHHHHHHHHHHHH....",
+"...HHHHHHHHHHHHHHHHHHHH...",
+"...HHHHHHHHHHHHHHHHHHHH...",
+"...HHHHHHkHHHHHHkHHHHHH...",
+"...HHHHHk.kk..kk.kHHHHH...",
+"...HHHH............HHHH...",
+"..HHHH..............HHHH..",
+"...HHH..............HHH...",
+"..HHHH..............HHHH..",
+"...HHH..............HHH...",
+"..HHHH..............HHHH..",
+"...HHH..............HHH...",
+"..HHHH..............HHHH..",
+"...HHHH............HHHH...",
+"..HHHHH............HHHHH..",
+"...HHHH............HHHH...",
+"..HHHH..............HHHH..",
+"...HHHk............kHHH...",
+"..HHk..............kHH....",
+"...k.................k....",
+],
+pixie: [
+"..........................",
+"..........................",
+"..........................",
+"..........................",
+"..........................",
+".........HHHHHHHH.........",
+".......HHHhhhhHHHHH.......",
+"......HHHhhHHHHHHHHH......",
+".....HHHHHHHHHHHHHHHH.....",
+".....HHHHHHHHHHHHHHHHH....",
+".....HHHHHHHHHHHHHHkHH....",
+".....HHHHHHHHHkk....kH....",
+".....HHHHHkk.........H....",
+".....HHk..............H...",
+"......H...................",
+],
+bun: [
+"..........H..HH...........",
+".........HHHHHHH.H........",
+"........HHHhhHHHHH........",
+".........HHHHHHHH.........",
+"..........HkkkHH..........",
+"........HHHHHHHHHH........",
+"......HHHHHhhhHHHHHH......",
+".....HHHHhhHHHHHHHHHH.....",
+"....HHHHHHHHHHHHHHHHHH....",
+"....HHHHHHHHHHHHHHHHHH....",
+"....HHHHHHHkHHHHHHHHHH....",
+"....HHHHHk.kk..kHHHHHH....",
+"....HHk.............kHH...",
+"....H...............H.H...",
+"...H.................H....",
+"....H................H....",
+],
+});
+
 const ARMS = { // overlays for moods; '_' clears a pixel
 joy: [
 [14, "..GG..................GG.."],
@@ -676,24 +831,74 @@ function shade(hex, f) { // f<0 darker, f>0 lighter
   r = Math.round(r + (t - r) * a); g = Math.round(g + (t - g) * a); b = Math.round(b + (t - b) * a);
   return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
 }
+function lum(hex) { const n = parseInt(hex.slice(1), 16); return (.299 * (n >> 16) + .587 * (n >> 8 & 255) + .114 * (n & 255)) / 255; }
+function avatarTop(c) { return c.top || ({ hat: "bday", crown: "crown", ears: "ears" }[c.extra] || "none"); }
 function buddyGrid(c, mood, blink) {
   const pal = {
     S: c.skin, s: shade(c.skin, -.14),
     H: c.hair, h: shade(c.hair, .28), k: shade(c.hair, -.35),
-    G: c.outfit, g: shade(c.outfit, -.2), L: shade(c.outfit, .3),
+    G: c.outfit, g: shade(c.outfit, lum(c.outfit) < .25 ? .18 : -.2), L: shade(c.outfit, .3),
     W: "#fbfaf7", w: "#d9d6d2",
     P: c.pants || "#2a2630", p: shade(c.pants || "#2a2630", -.25), B: "#1d1a20",
   };
   const g = BODY.map(r => [...r].map(ch => ch === "." ? null : ch));
   const over = (rows, y0 = 0) => rows.forEach((r, j) => [...r].forEach((ch, i) => { if (ch === "_") g[y0 + j][i] = null; else if (ch !== ".") g[y0 + j][i] = ch; }));
+  const put = (x, y, col) => { if (g[y] && x >= 0 && x < BUDDY_W) g[y][x] = col; };
+  const type = c.outfitType || "sweater", top = avatarTop(c);
+
+  // outfit details on the chest (drawn before the arms, so raised arms stay on top)
+  const ink = lum(c.outfit) > .55 ? shade(c.outfit, -.55) : "#fdf3e4";       // a print colour that shows on this outfit
+  if (type === "cat") {                                                         // a little cat face on the sweater
+    const P2 = ink, D = lum(c.outfit) > .55 ? "#fdf3e4" : "#3b2a2e";
+    [[10, 26], [15, 26], [10, 27], [11, 27], [14, 27], [15, 27]].forEach(([x, y]) => put(x, y, P2));
+    for (let y = 28; y <= 30; y++) for (let x = 10; x <= 15; x++) put(x, y, P2);
+    for (let x = 11; x <= 14; x++) put(x, 31, P2);
+    put(11, 29, D); put(14, 29, D); put(12, 30, "#ee8e96"); put(13, 30, "#ee8e96");
+  }
+  if (type === "hoodie") {                                                      // hood round the neck, strings, pocket, and the other one's face
+    // the hood: a thick rolled edge round the neck instead of a shirt collar
+    [[8, 22], [9, 22], [10, 22], [15, 22], [16, 22], [17, 22], [7, 23], [8, 23], [9, 23], [10, 23], [11, 23], [14, 23], [15, 23], [16, 23], [17, 23], [18, 23]].forEach(([x, y]) => put(x, y, "L"));
+    for (let x = 9; x <= 16; x++) put(x, 24, x === 12 || x === 13 ? "g" : "G");
+    [[10, 24], [10, 25], [10, 26], [15, 24], [15, 25], [15, 26]].forEach(([x, y]) => put(x, y, "W"));
+    put(10, 27, "w"); put(15, 27, "w");
+    const o = c.print || c, OH = o.hair || "#1e1a1d", OS = o.skin || "#f3cba5";
+    [[11, 26], [12, 26], [13, 26], [14, 26]].forEach(([x, y]) => put(x, y, OH));
+    put(11, 27, OH); put(12, 27, OS); put(13, 27, OS); put(14, 27, OH);
+    put(11, 28, OS); put(12, 28, "#2b2027"); put(13, 28, "#2b2027"); put(14, 28, OS);
+    put(12, 29, OS); put(13, 29, OS);
+    for (let x = 8; x <= 17; x++) put(x, 31, "g"); put(8, 32, "g"); put(17, 32, "g"); put(8, 33, "g"); put(17, 33, "g");
+  }
+  if (type === "shirt") {                                                       // collar points, a button line and a pocket
+    put(9, 23, "W"); put(10, 24, "W"); put(16, 23, "W"); put(15, 24, "W");
+    for (let y = 25; y <= 33; y++) put(12, y, "g");
+    [26, 29, 32].forEach(y => put(13, y, "W"));
+    for (let x = 15; x <= 17; x++) put(x, 27, "g"); put(15, 28, "g"); put(17, 28, "g");
+  }
   over(HAIR[c.style] || HAIR.fluffy);
   (ARMS[mood] || []).forEach(([y, r]) => over([r], y));
-  // extras on top of the hair
-  const put = (x, y, col) => { if (g[y] && x >= 0 && x < BUDDY_W) g[y][x] = col; };
-  if (c.extra === "hat") { put(13, 0, "#fff"); [[12, 1, 13], [12, 2, 14], [11, 3, 14], [11, 4, 15]].forEach(([a, y, b], k) => { for (let x = a; x <= b; x++) put(x, y, k % 2 ? "#e2457a" : "#f2c14e"); }); }
-  if (c.extra === "crown") { [10, 13, 16].forEach(x => put(x, 2, "#f2c14e")); for (let x = 10; x <= 16; x++) { put(x, 3, "#f2c14e"); put(x, 4, "#e9b23a"); } put(13, 3, "#e2457a"); }
-  if (c.extra === "bow") { [[16, 4], [16, 5], [16, 6], [17, 5], [19, 4], [19, 5], [19, 6], [18, 5]].forEach(([x, y]) => put(x, y, "#ff6fa0")); put(17.5 | 0, 5, "#d93f74"); }
-  if (c.extra === "ears") { [[5, 3], [5, 4], [6, 4], [6, 5], [20, 3], [20, 4], [19, 4], [19, 5]].forEach(([x, y]) => put(x, y, "H")); put(6, 5, "#ffb3c7"); put(19, 5, "#ffb3c7"); }
+
+  // things on top of the hair
+  if (top === "bday") { put(13, 0, "#fff"); [[12, 1, 13], [12, 2, 14], [11, 3, 14], [11, 4, 15]].forEach(([a, y, b], k) => { for (let x = a; x <= b; x++) put(x, y, k % 2 ? "#e2457a" : "#f2c14e"); }); }
+  if (top === "crown") { [10, 13, 16].forEach(x => put(x, 2, "#f2c14e")); for (let x = 10; x <= 16; x++) { put(x, 3, "#f2c14e"); put(x, 4, "#e9b23a"); } put(13, 3, "#e2457a"); }
+  if (top === "ears") { [[5, 3], [5, 4], [6, 4], [6, 5], [20, 3], [20, 4], [19, 4], [19, 5]].forEach(([x, y]) => put(x, y, "H")); put(6, 5, "#ffb3c7"); put(19, 5, "#ffb3c7"); }
+  if (top === "chef") {
+    const CW = "#ffffff", CG = "#e4e1dc";
+    [[9, 0, 11], [13, 0, 15], [8, 1, 17], [8, 2, 17], [8, 3, 17], [9, 4, 16]].forEach(([a, y, b]) => { for (let x = a; x <= b; x++) put(x, y, CW); });
+    put(12, 1, CG); put(10, 3, CG); put(15, 2, CG);
+    for (let x = 8; x <= 17; x++) { put(x, 5, CG); put(x, 6, CW); }
+  }
+  if (top === "cap") {
+    const C1 = "#d24a43", C2 = shade("#d24a43", -.22);
+    [[9, 3, 16], [7, 4, 18], [6, 5, 19], [6, 6, 19]].forEach(([a, y, b]) => { for (let x = a; x <= b; x++) put(x, y, C1); });
+    put(12, 2, "#fff"); put(13, 2, "#fff"); for (let x = 6; x <= 19; x++) put(x, 7, C2);
+    for (let x = 4; x <= 21; x++) put(x, 8, C2);
+  }
+  if (top === "phones") {
+    const D = "#3a3540", A = "#f2a7bd";
+    [[7, 5], [8, 4], [9, 3], [10, 3], [11, 2], [12, 2], [13, 2], [14, 2], [15, 3], [16, 3], [17, 4], [18, 5], [5, 7], [6, 6], [19, 6], [20, 7], [4, 8], [21, 8]].forEach(([x, y]) => put(x, y, D));
+    for (let y = 11; y <= 16; y++) { put(3, y, D); put(4, y, y > 11 && y < 16 ? A : D); put(21, y, y > 11 && y < 16 ? A : D); put(22, y, D); }
+    for (let y = 9; y <= 10; y++) { put(4, y, D); put(21, y, D); }
+  }
 
   // resolve palette, then a soft dark outline around everything
   const m = g.map(r => r.map(ch => ch == null ? null : (pal[ch] || ch)));
@@ -705,7 +910,7 @@ function buddyGrid(c, mood, blink) {
   }
   // face (eyes sit at rows 13–14, mouth at 18)
   const E = "#2b2027", set = (x, y, col) => { o[y][x] = col; };
-  const blush = shade(c.skin, -.02) === c.skin ? "#f4a3a3" : "#f4a3a3";
+  const blush = "#f4a3a3";
   if (c.glasses === "yes" || c.glasses === true) {
     const fr = "#b46a2c";
     [[7, 12], [8, 12], [9, 12], [10, 12], [6, 13], [11, 13], [6, 14], [11, 14], [7, 15], [8, 15], [9, 15], [10, 15],
@@ -718,12 +923,19 @@ function buddyGrid(c, mood, blink) {
   else if (mood === "think") { set(9, 13, E); set(10, 13, E); set(17, 13, E); set(18, 13, E); set(9, 14, E); set(17, 14, E); }
   else if (blink) { set(8, 14, E); set(9, 14, E); set(16, 14, E); set(17, 14, E); }
   else { set(8, 13, E); set(8, 14, E); set(9, 14, E); set(9, 13, "#fff"); set(16, 13, E); set(16, 14, E); set(17, 14, E); set(17, 13, "#fff"); }
+  if (c.gender === "f" && mood !== "joy") { set(7, 12, E); set(18, 12, E); }   // little lashes
   set(7, 16, blush); set(8, 16, blush); set(17, 16, blush); if (mood !== "sad") set(18, 16, blush);
   set(13, 16, shade(c.skin, -.16));                                      // nose
   if (mood === "joy") { for (let x = 11; x <= 14; x++) set(x, 18, E); set(12, 19, "#e2627a"); set(13, 19, "#e2627a"); }
   else if (mood === "sad") { set(12, 18, E); set(13, 18, E); set(11, 19, E); set(14, 19, E); }
   else if (mood === "think") { set(13, 18, E); set(14, 18, E); }
   else { set(11, 18, E); set(12, 19, E); set(13, 19, E); set(14, 18, E); }
+  if (top === "flour") { [[6, 15, "#fff"], [7, 17, "#f4f1ec"], [10, 10, "#fff"], [15, 9, "#fff"], [18, 15, "#f4f1ec"], [17, 17, "#fff"], [12, 16, "#fff"], [14, 8, "#f4f1ec"]].forEach(([x, y, col]) => set(x, y, col)); }
+  if (c.earrings === "yes") {                                             // dangly butterflies
+    const Au = "#e9b23a", Wg = "#9fd0f2", Wd = "#e98fb4";
+    [[4, 17], [4, 18], [21, 17], [21, 18]].forEach(([x, y]) => set(x, y, Au));
+    [[3, 19, Wg], [5, 19, Wg], [3, 20, Wd], [5, 20, Wd], [4, 19, E], [4, 20, E], [20, 19, Wg], [22, 19, Wg], [20, 20, Wd], [22, 20, Wd], [21, 19, E], [21, 20, E]].forEach(([x, y, col]) => set(x, y, col));
+  }
   return o;
 }
 
@@ -746,7 +958,8 @@ function cloudGrid() {
   return CLOUD.map((r, j) => [...r].map(ch => ch === "#" ? (j < 2 ? "#b9adc6" : "#9b8fa8") : null));
 }
 
-function loadBuddy() { return store.get(BUDDY_KEY); }
+function loadBuddy() { const c = store.get(BUDDY_KEY); if (c) { c.gender = "m"; c.print = store.get(PARTNER_KEY) || PARTNER_DEFAULT; } return c; }
+function loadPartner() { const c = store.get(PARTNER_KEY); if (c) { c.gender = "f"; c.print = store.get(BUDDY_KEY) || BUDDY_DEFAULT; } return c; }
 
 function mountBuddy(host, onEdit) {
   const cfg = loadBuddy();
@@ -793,10 +1006,12 @@ function mountBuddy(host, onEdit) {
 function renderMaker(view, onDone, onCancel) {
   const existing = loadBuddy();
   const pick = a => a[Math.random() * a.length | 0];
-  const randomCfg = () => ({ skin: pick(BUDDY_OPTS.skin), hair: pick(BUDDY_OPTS.hair), outfit: pick(BUDDY_OPTS.outfit), style: pick(BUDDY_OPTS.style)[0], glasses: pick(BUDDY_OPTS.glasses)[0], extra: pick(BUDDY_OPTS.extra)[0] });
+  const randomCfg = () => ({ skin: pick(BUDDY_OPTS.skin), hair: pick(BUDDY_OPTS.hair), outfit: pick(BUDDY_OPTS.outfit), style: pick(BUDDY_OPTS.style)[0], glasses: pick(BUDDY_OPTS.glasses)[0], outfitType: pick(BUDDY_OPTS.outfitType)[0], top: pick(BUDDY_OPTS.top)[0] });
   const cfg = Object.assign({ name: "" }, BUDDY_DEFAULT, existing || {});
   if (!BUDDY_OPTS.style.some(([v]) => v === cfg.style)) cfg.style = "fluffy";
   if (typeof cfg.glasses !== "string") cfg.glasses = "yes";
+  cfg.top = avatarTop(cfg); delete cfg.extra; if (!BUDDY_OPTS.outfitType.some(([v]) => v === cfg.outfitType)) cfg.outfitType = "cat";
+  if (!OUTFIT_COLOURS.includes(cfg.outfit)) cfg.outfit = "#a9c79a"; cfg.gender = "m"; cfg.print = store.get(PARTNER_KEY) || PARTNER_DEFAULT;
   view.innerHTML = `<section class="card">
     <h2>${existing ? "Edit your buddy" : "First, make your buddy"}</h2>
     <p>${existing ? "Change anything you like." : `This little one will play every game with you for the next ten days, ${escapeHtml(CONFIG.name)}. It gets sad when you miss, thinks hard when you're close, and celebrates when you get it.`}</p>
@@ -804,7 +1019,7 @@ function renderMaker(view, onDone, onCancel) {
       <div class="preview"><canvas id="mk-canvas"></canvas><button class="btn ghost" id="mk-rand" type="button">Shuffle</button></div>
       <div class="opts">
         <div class="opt"><label for="mk-name">Name</label><input class="text-in" id="mk-name" maxlength="14" placeholder="e.g. Bean" value="${escapeHtml(cfg.name)}"></div>
-        ${swatchGroup("Skin", "skin")}${chipGroup("Hair", "style")}${chipGroup("Glasses", "glasses")}${swatchGroup("Hair colour", "hair")}${swatchGroup("Outfit", "outfit")}${chipGroup("Extra", "extra")}
+        ${swatchGroup("Skin", "skin")}${chipGroup("Hair", "style")}${swatchGroup("Hair colour", "hair")}${chipGroup("Glasses", "glasses")}${chipGroup("Outfit", "outfitType")}${swatchGroup("Outfit colour", "outfit")}${chipGroup("On top", "top")}
         <div class="row-btns"><button class="btn" id="mk-save" type="button">That's me!</button>${existing ? `<button class="btn ghost" id="mk-cancel" type="button">Cancel</button>` : ""}</div>
       </div>
     </div></section>`;
@@ -821,7 +1036,7 @@ function renderMaker(view, onDone, onCancel) {
   view.querySelectorAll(".choices").forEach(g => g.onclick = e => { const b = e.target.closest("button"); if (b) { cfg[g.dataset.key] = b.dataset.v; sync(); } });
   $("#mk-rand").onclick = () => { Object.assign(cfg, randomCfg()); sync(); };
   $("#mk-name").oninput = e => cfg.name = e.target.value.trim();
-  $("#mk-save").onclick = () => { if (!cfg.name) cfg.name = "Bean"; store.set(BUDDY_KEY, cfg); onDone(); };
+  $("#mk-save").onclick = () => { if (!cfg.name) cfg.name = "Bean"; const { print, ...save } = cfg; store.set(BUDDY_KEY, save); onDone(); };
   if (existing) $("#mk-cancel").onclick = onCancel;
   sync();
 }
@@ -879,6 +1094,7 @@ function route() {
   if (viewing === 3) return renderDay3(view, PV());
   if (viewing === 4) return renderDay4(view, PV());
   if (viewing === 5) return renderDay6(view, PV());   // pet theo moved to day 5
+  if (viewing === 6) return renderBakers(view, PV());
   if (viewing === 7) return renderDay7(view, PV());
   return renderPlaceholder(view, viewing, PV());
 }
@@ -2178,6 +2394,158 @@ function renderDay7(view, pv) {
   }
   if (!st.results.length && !st.moves) buddy.say("idle", "Let's put it back together!");
   draw();
+}
+
+/* ---------- Day 6: meet the bakers (designs, superpowers, toppings for day 8's kitchen) ---------- */
+const POWERS = [
+  { key: "fire", icon: "🔥", name: "Fireproof", what: "Walks through stove flames and melts chocolate walls." },
+  { key: "splash", icon: "💧", name: "Splash", what: "Wades through spilled milk and puts out little fires." },
+  { key: "bubble", icon: "🫧", name: "Bubble jump", what: "Double-jumps up to the high shelves." },
+  { key: "strong", icon: "💪", name: "Strong arms", what: "Pushes heavy pots and crates into steps." },
+];
+const TOPPINGS = [
+  ["strawberries", "Strawberries"], ["cherries", "Cherries"], ["blackberries", "Blackberries"], ["raspberries", "Raspberries"],
+  ["sprinkles", "Sprinkles"], ["chips", "Chocolate chips"], ["oreo", "Oreos"], ["kitkat", "Kit Kat"],
+  ["ferrero", "Ferrero Rocher"], ["marshmallow", "Marshmallows"], ["gold", "Gold flakes"], ["theo", "Mini Theo"],
+];
+const TOPPING_MAX = 4, TOPPING_MIN = 3;
+function toppingGrid(key) {                                    // little pixel icons, reused on the cake on day 8
+  if (key === "theo") return spriteGrid("petted");
+  const W = 16, H = 16, g = Array.from({ length: H }, () => Array(W).fill(null));
+  const ell = (cx, cy, rx, ry, col) => { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (((x + .5 - cx) / rx) ** 2 + ((y + .5 - cy) / ry) ** 2 <= 1) g[y][x] = col; };
+  const px = (x, y, col) => { if (g[y] && x >= 0 && x < W) g[y][x] = col; };
+  const rect = (x0, y0, x1, y1, col) => { for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) px(x, y, col); };
+  switch (key) {
+    case "strawberries": ell(8, 9.5, 5.2, 5.4, "#e2393f"); ell(8, 12.5, 2.6, 2.6, "#e2393f"); ell(6.6, 8, 1.6, 2, "#f26b6b");
+      [[5, 9], [8, 8], [10, 10], [7, 11], [9, 13], [6, 12], [10, 7]].forEach(([x, y]) => px(x, y, "#f7d77a"));
+      [[5, 4], [6, 4], [7, 4], [8, 4], [9, 4], [10, 4], [11, 4], [6, 3], [8, 3], [10, 3], [8, 2]].forEach(([x, y]) => px(x, y, "#4f9a46")); break;
+    case "cherries": ell(5.5, 11, 3.4, 3.4, "#c8202f"); ell(10.8, 11.5, 3.4, 3.4, "#d8263a"); px(4, 10, "#f07a7f"); px(9, 10, "#f07a7f");
+      [[6, 7], [7, 6], [8, 5], [9, 4], [10, 4], [10, 5], [10, 6], [10, 7]].forEach(([x, y]) => px(x, y, "#5c8a3a")); ell(12, 3.5, 2, 1.2, "#6fae52"); break;
+    case "blackberries": case "raspberries": {
+      const c1 = key === "blackberries" ? "#3b2350" : "#e0405a", c2 = key === "blackberries" ? "#5e3a7a" : "#f27a8a";
+      [[6, 6], [10, 6], [4, 9], [8, 9], [12, 9], [6, 12], [10, 12], [8, 14]].forEach(([x, y]) => ell(x, y, 2.3, 2.3, c1));
+      [[6, 6], [10, 6], [8, 9], [6, 12], [10, 12]].forEach(([x, y]) => px(x - 1, y - 1, c2));
+      [[7, 2], [8, 2], [9, 2], [8, 3]].forEach(([x, y]) => px(x, y, "#4f9a46")); break; }
+    case "sprinkles": [["#f2c14e", 2, 3, 4, 4], ["#e2457a", 9, 2, 11, 2], ["#5a86c6", 6, 7, 6, 9], ["#5fbf95", 11, 7, 13, 8], ["#b39cf5", 2, 10, 4, 10], ["#ff9a5c", 8, 12, 8, 14], ["#e2457a", 12, 12, 13, 13], ["#f2c14e", 5, 13, 6, 13]].forEach(([c, a, b, d, e]) => rect(a, b, d, e, c)); break;
+    case "chips": [[4, 6], [11, 5], [7, 11], [12, 12]].forEach(([x, y]) => { ell(x, y + 1, 2.4, 2, "#4a2a1a"); px(x, y - 1, "#4a2a1a"); px(x - 1, y, "#6b3f27"); }); break;
+    case "oreo": ell(8, 6.5, 6, 2.6, "#2a2125"); rect(2, 7, 13, 9, "#2a2125"); ell(8, 12, 6, 2.6, "#2a2125"); rect(2, 9, 13, 10, "#f6f1ea"); ell(8, 6.2, 4.4, 1.6, "#3d3236"); break;
+    case "kitkat": rect(3, 2, 6, 14, "#7a4526"); rect(9, 2, 12, 14, "#7a4526"); rect(4, 3, 5, 13, "#8f5532"); rect(10, 3, 11, 13, "#8f5532"); px(4, 8, "#5c321b"); px(5, 8, "#5c321b"); px(10, 8, "#5c321b"); px(11, 8, "#5c321b"); break;
+    case "ferrero": ell(8, 12, 6, 3, "#7a4a28"); ell(8, 8, 5.4, 5.2, "#d9a63a"); ell(6.5, 6.5, 2, 1.8, "#f6d77a"); [[9, 9], [6, 10], [11, 7], [8, 5]].forEach(([x, y]) => px(x, y, "#b7832a")); break;
+    case "marshmallow": ell(5, 9, 3.4, 4.2, "#fdf6f1"); ell(11.5, 8, 3.4, 4.2, "#f8c9d6"); ell(5, 6, 3.2, 1.4, "#ffffff"); ell(11.5, 5, 3.2, 1.4, "#fde3ea"); break;
+    case "gold": [[3, 4, 2, 1], [9, 3, 2.4, 1.2], [5, 9, 1.6, 2], [11, 9, 2.2, 1.4], [8, 13, 2.6, 1.1], [13, 13, 1.2, 1.2]].forEach(([x, y, a, b]) => ell(x, y, a, b, "#e9b23a")); [[3, 4], [9, 3], [11, 9]].forEach(([x, y]) => px(x, y, "#fff2b5")); break;
+  }
+  const o = g.map(r => r.slice());
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (!g[y][x] && [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => g[y + dy]?.[x + dx])) o[y][x] = key === "sprinkles" || key === "gold" ? null : "#3a2a26";
+  return o;
+}
+const toppingURLs = {};
+function toppingSprite(key) { if (!toppingURLs[key]) { const c = document.createElement("canvas"); paintGrid(c, toppingGrid(key), key === "theo" ? 4 : 6); toppingURLs[key] = c.toDataURL(); } return toppingURLs[key]; }
+function avatarURL(cfg, mood = "idle", scale = 5) { const c = document.createElement("canvas"); paintGrid(c, buddyGrid(cfg, mood, false), scale); return c.toDataURL(); }
+function loadDuo() { return store.get(DUO_KEY) || { powers: {}, toppings: [] }; }
+
+function renderBakers(view, pv) {
+  const game = stage(view, pv, "Day 6 · Meet the bakers", "Something's cooking for Sunday. First, the two bakers, their superpowers, and what goes on your cake.",
+    ` · <a href="#" id="duo-reset">start over</a>`);
+  if (pv) $("#duo-reset").onclick = e => { e.preventDefault(); store.del(PARTNER_KEY); store.del(DUO_KEY); route(); };
+  const duo = loadDuo();
+  const save = () => store.set(DUO_KEY, duo);
+  const steps = [["me", "You"], ["her", "Her"], ["powers", "Powers"], ["toppings", "Toppings"]];
+  const stepper = cur => `<ol class="duo-steps">${steps.map(([k, t], i) => `<li class="${k === cur ? "on" : steps.findIndex(s => s[0] === cur) > i ? "done" : ""}"><b>${i + 1}</b>${t}</li>`).join("")}</ol>`;
+
+  function maker(which) {
+    const isHim = which === "me", OPTS = isHim ? BUDDY_OPTS : PARTNER_OPTS, KEY = isHim ? BUDDY_KEY : PARTNER_KEY;
+    const saved = store.get(KEY), cfg = Object.assign({ name: "" }, isHim ? BUDDY_DEFAULT : PARTNER_DEFAULT, saved || {});
+    cfg.gender = isHim ? "m" : "f"; cfg.top = avatarTop(cfg); delete cfg.extra;
+    Object.keys(OPTS).forEach(k => { const list = OPTS[k].map(v => Array.isArray(v) ? v[0] : v); if (!list.includes(cfg[k])) cfg[k] = list[0]; });
+    if (isHim && saved && !OUTFIT_COLOURS.includes(saved.outfit)) cfg.outfit = "#a9c79a";
+    const other = () => isHim ? (store.get(PARTNER_KEY) || PARTNER_DEFAULT) : (store.get(BUDDY_KEY) || BUDDY_DEFAULT);
+    game.innerHTML = `${stepper(which)}
+      ${isHim ? `<div class="duo-news">✨ New options just arrived. Redesign yourself if you like, or keep your look.</div>` : `<div class="duo-news">Now design her. Every baker needs a partner.</div>`}
+      <div class="maker duo-maker">
+        <div class="preview"><canvas id="mk-canvas"></canvas><button class="btn ghost" id="mk-rand" type="button">Shuffle</button></div>
+        <div class="opts">
+          <div class="opt"><label for="mk-name">Name</label><input class="text-in" id="mk-name" maxlength="14" placeholder="${isHim ? "e.g. Bean" : "Her name"}" value="${escapeHtml(cfg.name || "")}"></div>
+          ${sw("Skin", "skin")}${ch("Hair", "style")}${sw("Hair colour", "hair")}${ch("Glasses", "glasses")}${isHim ? "" : ch("Earrings", "earrings")}${ch("Outfit", "outfitType")}${sw("Outfit colour", "outfit")}${ch("On top", "top")}
+          <div class="row-btns"><button class="btn" id="mk-save" type="button">${isHim ? "That's me →" : "That's her →"}</button>${!isHim ? `<button class="btn ghost" id="mk-back" type="button">← Back</button>` : ""}</div>
+        </div>
+      </div>`;
+    function sw(label, key) { return `<div class="opt"><span>${label}</span><div class="choices" data-key="${key}">${OPTS[key].map(v => `<button class="swatch" type="button" data-v="${v}" style="background:${v}" aria-label="${label} ${v}"></button>`).join("")}</div></div>`; }
+    function ch(label, key) { return `<div class="opt"><span>${label}</span><div class="choices" data-key="${key}">${OPTS[key].map(([v, t]) => `<button class="chip" type="button" data-v="${v}">${t}</button>`).join("")}</div></div>`; }
+    const sync = () => {
+      game.querySelectorAll(".choices").forEach(gp => gp.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === cfg[gp.dataset.key])));
+      paintGrid($("#mk-canvas"), buddyGrid({ ...cfg, print: other() }, "idle"), 6);
+    };
+    game.querySelectorAll(".choices").forEach(gp => gp.onclick = e => { const b = e.target.closest("button"); if (b) { cfg[gp.dataset.key] = b.dataset.v; sync(); buddy.bop(["Ooh, nice", "Cute!", "Love that", "Yes!", "Stylish"][Math.random() * 5 | 0]); } });
+    $("#mk-rand").onclick = () => { const pk = a => a[Math.random() * a.length | 0]; Object.keys(OPTS).forEach(k => { const v = pk(OPTS[k]); cfg[k] = Array.isArray(v) ? v[0] : v; }); sync(); buddy.bop("Surprise me!"); };
+    $("#mk-name").oninput = e => { cfg.name = e.target.value.trim(); };
+    $("#mk-save").onclick = () => {
+      if (!cfg.name) cfg.name = isHim ? "Bean" : "Bun";
+      const { print, ...keep } = cfg; store.set(KEY, keep);
+      if (isHim) { renderBakers.pending = duo.ready ? "summary" : "her"; buddy.destroy(); renderBakers(view, pv); }   // redraw so the side buddy wears the new look
+      else next(duo.ready ? "summary" : "powers");
+    };
+    if (!isHim) $("#mk-back").onclick = () => next("me");
+    sync();
+  }
+
+  function powers() {
+    const him = loadBuddy(), her = loadPartner();
+    duo.powers = duo.powers || {};
+    game.innerHTML = `${stepper("powers")}
+      <p class="duo-lead">Give each baker one superpower. They can't share one, so they'll need each other in the kitchen.</p>
+      <div class="pw-cols">${[["m", him], ["f", her]].map(([k, c]) => `
+        <div class="pw-col" data-who="${k}"><img class="pw-ava" src="${avatarURL(c, "idle", 4)}" alt=""><b class="pw-name">${escapeHtml(c.name)}</b>
+          <div class="pw-list">${POWERS.map(p => `<button class="pw" type="button" data-p="${p.key}"><span class="pw-i">${p.icon}</span><span><b>${p.name}</b><small>${p.what}</small></span></button>`).join("")}</div></div>`).join("")}</div>
+      <div class="row-btns" style="justify-content:center"><button class="btn ghost" id="pw-back" type="button">← Back</button><button class="btn" id="pw-next" type="button" disabled>Lock in powers →</button></div>`;
+    const sync = () => {
+      game.querySelectorAll(".pw-col").forEach(col => { const me = col.dataset.who, them = me === "m" ? "f" : "m";
+        col.querySelectorAll(".pw").forEach(b => { b.setAttribute("aria-pressed", duo.powers[me] === b.dataset.p); b.disabled = duo.powers[them] === b.dataset.p; }); });
+      $("#pw-next").disabled = !(duo.powers.m && duo.powers.f);
+    };
+    game.querySelectorAll(".pw-col").forEach(col => col.onclick = e => { const b = e.target.closest(".pw"); if (!b || b.disabled) return;
+      duo.powers[col.dataset.who] = b.dataset.p; save(); sync(); const p = POWERS.find(x => x.key === b.dataset.p); buddy.say("joy", `${p.icon} ${p.name}!`, { hold: false, ms: 1400, after: "Pick their powers!" }); });
+    $("#pw-back").onclick = () => next("her"); $("#pw-next").onclick = () => next("toppings");
+    sync();
+  }
+
+  function toppings() {
+    duo.toppings = (duo.toppings || []).filter(t => TOPPINGS.some(([k]) => k === t));
+    game.innerHTML = `${stepper("toppings")}
+      <p class="duo-lead">It's a chocolate cake. Pick ${TOPPING_MIN} or ${TOPPING_MAX} toppings. You'll collect them in the kitchen on Sunday, then put them on yourself.</p>
+      <div class="tp-grid">${TOPPINGS.map(([k, t]) => `<button class="tp" type="button" data-t="${k}"><img src="${toppingSprite(k)}" alt=""><span>${t}</span></button>`).join("")}</div>
+      <p class="tp-count" id="tp-count"></p>
+      <div class="row-btns" style="justify-content:center"><button class="btn ghost" id="tp-back" type="button">← Back</button><button class="btn" id="tp-next" type="button" disabled>That's our cake →</button></div>`;
+    const sync = () => {
+      game.querySelectorAll(".tp").forEach(b => { const on = duo.toppings.includes(b.dataset.t); b.setAttribute("aria-pressed", on); b.disabled = !on && duo.toppings.length >= TOPPING_MAX; });
+      $("#tp-count").textContent = `${duo.toppings.length} of ${TOPPING_MAX} picked${duo.toppings.length < TOPPING_MIN ? ` · pick at least ${TOPPING_MIN}` : ""}`;
+      $("#tp-next").disabled = duo.toppings.length < TOPPING_MIN;
+    };
+    game.querySelector(".tp-grid").onclick = e => { const b = e.target.closest(".tp"); if (!b || b.disabled) return; const k = b.dataset.t;
+      duo.toppings = duo.toppings.includes(k) ? duo.toppings.filter(x => x !== k) : [...duo.toppings, k]; save(); sync();
+      buddy.bop(duo.toppings.includes(k) ? (k === "theo" ? "A tiny Theo!! 😻" : "Yum!") : "Okay, not that one"); };
+    $("#tp-back").onclick = () => next("powers"); $("#tp-next").onclick = () => { duo.ready = true; save(); next("summary", true); };
+    sync();
+  }
+
+  function summary(fresh) {
+    const him = loadBuddy(), her = loadPartner(), pw = k => POWERS.find(p => p.key === duo.powers[k]);
+    game.innerHTML = `<div class="duo-card">
+        <div class="duo-pair">${[["m", him], ["f", her]].map(([k, c]) => `<figure><img src="${avatarURL(c, "joy", 5)}" alt=""><figcaption><b>${escapeHtml(c.name)}</b><span>${pw(k).icon} ${pw(k).name}</span></figcaption></figure>`).join("")}</div>
+        <div class="duo-tops"><span>On the chocolate cake:</span>${duo.toppings.map(t => `<img src="${toppingSprite(t)}" alt="${TOPPINGS.find(x => x[0] === t)[1]}" title="${TOPPINGS.find(x => x[0] === t)[1]}">`).join("")}</div>
+        <p class="duo-teaser"><b>The kitchen opens Sunday.</b> Come back on Day 8 to bake it together.</p>
+        <div class="duo-redo"><span>Want to change something?</span>
+          <button class="btn ghost" type="button" data-go="me">Redo you</button><button class="btn ghost" type="button" data-go="her">Redo her</button>
+          <button class="btn ghost" type="button" data-go="powers">Change powers</button><button class="btn ghost" type="button" data-go="toppings">Change toppings</button></div>
+      </div>`;
+    game.querySelectorAll("[data-go]").forEach(b => b.onclick = () => next(b.dataset.go));
+    if (fresh) buddy.say("joy", "The bakers are ready!! 🎂", { burst: "big" }); else buddy.say("idle", "Our bakers! 🧁");
+  }
+
+  function next(step, fresh) { ({ me: () => maker("me"), her: () => maker("her"), powers, toppings, summary: () => summary(fresh) })[step](); game.scrollIntoView({ block: "start", behavior: "smooth" }); }
+  const start = !store.get(PARTNER_KEY) ? "me" : !(duo.powers?.m && duo.powers?.f) ? "powers" : !duo.ready ? "toppings" : "summary";
+  const go = renderBakers.pending || start; renderBakers.pending = null;
+  go === "summary" ? summary(false) : next(go);
+  if (go === "me") buddy.say("idle", "Bakers, assemble! 👩‍🍳");
 }
 
 /* ---------- confetti ---------- */
