@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────
-# THE SLIDING PUZZLE (day 7)
+# THE SLIDING PUZZLE (day 6)
 # lines that start with # are notes for you. they never show on the site.
 #
 # one photo per line, in the order he solves them. three works best.

@@ -1,0 +1,26 @@
+# ─────────────────────────────────────────────────────────────
+# THE CROSSWORD (day 7)
+# lines that start with # are notes for you. they never show on the site.
+#
+# one word per line:   answer | clue
+# a space in the answer is fine. it's left out of the grid, and the clue shows
+# the letter counts, so "ice cream" becomes ICECREAM with (3, 5).
+#
+# the grid builds itself from these words. if you add or change one,
+# open day 7 in preview to check every word still fits.
+# ─────────────────────────────────────────────────────────────
+august | The month we met
+maleha | One of the two people who introduced us
+usman | The other person who introduced us
+eggspectation | These days, we've got…
+crepes | Our first meal together
+federal | The first time we held hands
+angels | The first movie we watched together
+plushie | The first gift
+smile | My favourite feature of yours
+number | A word from your first message to me
+pyaru | A term of endearment
+nine eleven | Our first full-day date
+ice cream | Dessert, obviously
+hasan | Your favourite artist
+bro | A word you overuse
