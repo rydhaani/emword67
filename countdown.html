@@ -591,6 +591,8 @@ body:has(.card.app) { padding-bottom: 0; }
 .bk2-steps li.now { background: var(--ink); color: #fff; }
 .bk2-say { margin: 0; text-align: center; font-weight: 700; color: var(--ink); min-height: 1.4em; }
 .bk2-say.big { font: 400 32px var(--display); color: var(--ink); }
+.bk2-say small { display: block; font: 800 11px var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 2px; }
+.bk2-say b { color: var(--accent); }
 .bk2-stage { position: relative; width: 100%; max-width: 560px; justify-self: center; container-type: inline-size; }
 .bk2-stage canvas { display: block; width: 100%; height: auto; touch-action: none; }
 .bk2-stage.cake canvas { cursor: pointer; }
@@ -2881,9 +2883,11 @@ function ckCake(x, d, o = {}) {
   sidePath(); x.fillStyle = band(sideCol); x.fill();
   x.save(); sidePath(); x.clip();
   if (style !== "smooth") {
+    if (style !== "bare") {
     const fillCol = fr === "#3d1d0e" ? "#f3dcc4" : ckHex(ckTint(fr, .15));
     [TOP + 72, TOP + 144].forEach(y => { x.beginPath(); x.ellipse(CX, y, RX, RY, 0, 0, Math.PI); x.ellipse(CX, y + 18, RX, RY, 0, Math.PI, 0, true); x.closePath(); x.fillStyle = band(fillCol); x.fill();
       x.lineWidth = 2; x.strokeStyle = "rgba(59,34,41,.55)"; x.beginPath(); x.ellipse(CX, y, RX, RY, 0, 0, Math.PI); x.stroke(); x.beginPath(); x.ellipse(CX, y + 18, RX, RY, 0, 0, Math.PI); x.stroke(); });
+    }
     const R = ckSeed(d.seed || 3); x.strokeStyle = ckTint(sponge, -.35); x.lineWidth = 2;
     for (let i = 0; i < 70; i++) { const px = CX - RX + 20 + R() * (RX * 2 - 40), py = TOP + 30 + R() * (BOT - TOP + RY - 40); x.beginPath(); x.moveTo(px, py); x.lineTo(px + 3 + R() * 4, py + 4 + R() * 5); x.stroke(); }
   } else {
@@ -2910,8 +2914,9 @@ function ckCake(x, d, o = {}) {
   }
 
   // top
-  x.beginPath(); x.ellipse(CX, TOP, RX, RY, 0, 0, 7); x.fillStyle = fr; x.fill();
-  x.save(); x.beginPath(); x.ellipse(CX, TOP, RX, RY, 0, 0, 7); x.clip(); x.fillStyle = ckTint(fr, -.12); x.beginPath(); x.ellipse(CX + 30, TOP + 22, RX, RY, 0, 0, 7); x.ellipse(CX, TOP, RX + 60, RY + 60, 0, 0, 7, true); x.fill("evenodd"); x.restore();
+  const topCol = style === "bare" ? ckHex(ckTint(sponge, .14)) : fr;
+  x.beginPath(); x.ellipse(CX, TOP, RX, RY, 0, 0, 7); x.fillStyle = topCol; x.fill();
+  x.save(); x.beginPath(); x.ellipse(CX, TOP, RX, RY, 0, 0, 7); x.clip(); x.fillStyle = ckTint(topCol, -.12); x.beginPath(); x.ellipse(CX + 30, TOP + 22, RX, RY, 0, 0, 7); x.ellipse(CX, TOP, RX + 60, RY + 60, 0, 0, 7, true); x.fill("evenodd"); x.restore();
   x.strokeStyle = "rgba(255,255,255,.55)"; x.lineWidth = 4; x.beginPath(); x.ellipse(CX, TOP, RX - 22, RY - 16, 0, Math.PI * 1.08, Math.PI * 1.42); x.stroke();
   x.beginPath(); x.ellipse(CX, TOP, RX, RY, 0, 0, 7); ink();
 
@@ -2937,9 +2942,280 @@ function ckPipe(x, s) {
   x.strokeStyle = "rgba(255,255,255,.55)"; x.lineWidth = 2; path(-1.2, -1.8); x.stroke();
 }
 
+/* ---------- Day 8 kitchen: a guided recipe, Sara's-cooking-class style ---------- */
+const KOL = "#3b2229";
+const kInk = (x, w = 3) => { x.lineWidth = w; x.strokeStyle = KOL; x.lineJoin = "round"; x.lineCap = "round"; x.stroke(); };
+function kRect(x, a, b, w, h, r) { x.beginPath(); x.roundRect ? x.roundRect(a, b, w, h, r) : x.rect(a, b, w, h); }
+function kLabel(x, text, cx, cy, size = 13, col = "#fff") { x.fillStyle = col; x.font = `800 ${size}px Nunito, system-ui, sans-serif`; x.textAlign = "center"; x.textBaseline = "middle"; String(text).split("\n").forEach((l, i, a) => x.fillText(l, cx, cy + (i - (a.length - 1) / 2) * (size + 1))); }
+
+/* the things on the counter; each is drawn standing on (0, 0) */
+const KITEM = {
+  bag(x, it) { const c = it.col || "#e0606e"; x.beginPath(); x.moveTo(-34, 0); x.lineTo(-30, -96); x.lineTo(-22, -104); x.lineTo(-14, -97); x.lineTo(-6, -104); x.lineTo(2, -97); x.lineTo(10, -104); x.lineTo(18, -97); x.lineTo(26, -104); x.lineTo(30, -96); x.lineTo(34, 0); x.closePath(); x.fillStyle = "#fbf4e8"; x.fill(); kInk(x);
+    kRect(x, -31, -66, 62, 34, 4); x.fillStyle = c; x.fill(); kInk(x, 2.5); kLabel(x, it.label, 0, -49, it.label.length > 6 ? 10 : 13); },
+  tin(x, it) { const c = it.col || "#7a3b20", w = it.w2 || 58, h = it.h2 || 76; kRect(x, -w / 2, -h, w, h, 6); x.fillStyle = c; x.fill(); kInk(x);
+    x.beginPath(); x.ellipse(0, -h, w / 2, 8, 0, 0, 7); x.fillStyle = ckTint(c, -.25); x.fill(); kInk(x, 2.5);
+    kRect(x, -w / 2 + 4, -h * .66, w - 8, h * .36, 3); x.fillStyle = "#fffaf2"; x.fill(); kInk(x, 2); kLabel(x, it.label, 0, -h * .48, it.label.length > 7 ? 9 : 11, c); },
+  jar(x, it) { kRect(x, -30, -86, 60, 86, 12); x.fillStyle = "#e6f1f6"; x.fill(); kRect(x, -26, -60, 52, 56, 8); x.fillStyle = "#ffffff"; x.fill(); x.fillStyle = "rgba(150,170,190,.25)"; x.fillRect(-26, -60, 52, 6);
+    kRect(x, -30, -86, 60, 86, 12); kInk(x); kRect(x, -24, -98, 48, 14, 5); x.fillStyle = "#f1a7bb"; x.fill(); kInk(x, 2.5); kLabel(x, it.label, 0, -32, 11, "#b0526a"); },
+  bottle(x, it) { const c = it.col || "#8a5a2b"; kRect(x, -16, -62, 32, 62, 8); x.fillStyle = c; x.fill(); kInk(x); kRect(x, -7, -80, 14, 20, 3); x.fillStyle = c; x.fill(); kInk(x, 2.5); kRect(x, -9, -88, 18, 10, 3); x.fillStyle = "#3b2229"; x.fill();
+    kRect(x, -13, -44, 26, 22, 3); x.fillStyle = "#fffaf2"; x.fill(); kInk(x, 2); kLabel(x, it.label, 0, -33, 8, c); },
+  milk(x, it) { x.beginPath(); x.moveTo(-26, 0); x.lineTo(-26, -82); x.lineTo(0, -104); x.lineTo(26, -82); x.lineTo(26, 0); x.closePath(); x.fillStyle = "#ffffff"; x.fill(); kInk(x);
+    x.beginPath(); x.moveTo(-26, -82); x.lineTo(26, -82); kInk(x, 2.5); kRect(x, -26, -60, 52, 26, 0); x.fillStyle = "#6f9fd8"; x.fill(); kInk(x, 2.5); kLabel(x, "MILK", 0, -47, 12); },
+  eggs(x, it, S) { kRect(x, -44, -26, 88, 26, 6); x.fillStyle = "#d9c7ab"; x.fill(); kInk(x);
+    const n = it.count ?? 2; for (let i = 0; i < n; i++) { x.beginPath(); x.ellipse(-18 + i * 36, -32, 15, 19, 0, 0, 7); x.fillStyle = "#fbf1e2"; x.fill(); kInk(x, 2.5); } },
+  egg(x) { x.beginPath(); x.ellipse(0, -19, 15, 19, 0, 0, 7); x.fillStyle = "#fbf1e2"; x.fill(); kInk(x, 2.5); },
+  butter(x, it) { x.beginPath(); x.ellipse(0, -6, 46, 12, 0, 0, 7); x.fillStyle = "#e9eef5"; x.fill(); kInk(x);
+    x.beginPath(); x.moveTo(-30, -10); x.lineTo(-30, -34); x.lineTo(-16, -44); x.lineTo(32, -44); x.lineTo(32, -20); x.lineTo(18, -10); x.closePath(); x.fillStyle = "#f8dc72"; x.fill(); kInk(x, 2.5);
+    x.beginPath(); x.moveTo(-30, -34); x.lineTo(18, -34); x.lineTo(32, -44); x.moveTo(18, -34); x.lineTo(18, -10); kInk(x, 2); },
+  tub(x, it) { x.beginPath(); x.moveTo(-34, -50); x.lineTo(-28, 0); x.lineTo(28, 0); x.lineTo(34, -50); x.closePath(); x.fillStyle = "#ffffff"; x.fill(); kInk(x); x.beginPath(); x.ellipse(0, -50, 36, 9, 0, 0, 7); x.fillStyle = "#7fb8e6"; x.fill(); kInk(x, 2.5); kLabel(x, it.label, 0, -24, 9, "#3f7fb8"); },
+  dropper(x, it) { const c = it.col; kRect(x, -14, -46, 28, 46, 7); x.fillStyle = "#ffffff"; x.fill(); kRect(x, -11, -34, 22, 31, 5); x.fillStyle = c; x.fill(); kRect(x, -14, -46, 28, 46, 7); kInk(x, 2.5);
+    kRect(x, -8, -58, 16, 13, 3); x.fillStyle = "#fffaf2"; x.fill(); kInk(x, 2); x.beginPath(); x.moveTo(-4, -58); x.lineTo(0, -68); x.lineTo(4, -58); x.fillStyle = "#fffaf2"; x.fill(); kInk(x, 2); },
+  mixer(x, it, S, t) { const j = it.spin ? Math.sin(t / 30) * 3 : 0;
+    [-12, 12].forEach(o => { x.beginPath(); x.moveTo(o, -40); x.lineTo(o + j, -4); kInk(x, 3.5); x.beginPath(); x.ellipse(o + j, -10, 7, 11, 0, 0, 7); kInk(x, 2.5); });
+    kRect(x, -40, -80, 80, 40, 18); x.fillStyle = "#f4a9bd"; x.fill(); kInk(x); kRect(x, -22, -100, 44, 26, 12); x.fillStyle = "#f4a9bd"; x.fill(); kInk(x);
+    x.fillStyle = "#fff"; x.beginPath(); x.arc(-20, -62, 5, 0, 7); x.fill(); x.beginPath(); x.ellipse(14, -64, 12, 5, 0, 0, 7); x.fillStyle = "rgba(255,255,255,.7)"; x.fill(); },
+  bowl(x, it, S, t) { kBowl(x, 0, -70, .62, S.bowlB || { added: [], mix: 1, col: "#5a2c18" }, t); },
+  pan(x, it, S) { kPan(x, 0, -14, .8, S); },
+  spatula(x) { x.save(); x.rotate(-.5); kRect(x, -4, -90, 8, 50, 3); x.fillStyle = "#d39a5f"; x.fill(); kInk(x, 2.5); kRect(x, -14, -44, 28, 44, 8); x.fillStyle = "#cfd5dd"; x.fill(); kInk(x, 2.5); x.restore(); },
+};
+
+function kBowl(x, cx, cy, s, B, t = 0) {
+  x.save(); x.translate(cx, cy); x.scale(s, s);
+  x.fillStyle = "rgba(59,34,41,.12)"; x.beginPath(); x.ellipse(0, 138, 150, 16, 0, 0, 7); x.fill();
+  const body = () => { x.beginPath(); x.moveTo(-200, 0); x.bezierCurveTo(-195, 150, 195, 150, 200, 0); x.closePath(); };
+  const g = x.createLinearGradient(-200, 0, 200, 0); [[0, "#7fa9d6"], [.1, "#7fa9d6"], [.1, "#9cc3e8"], [.2, "#9cc3e8"], [.2, "#c7def3"], [.28, "#c7def3"], [.28, "#9cc3e8"], [.8, "#9cc3e8"], [.8, "#7fa9d6"], [1, "#7fa9d6"]].forEach(([o, c]) => g.addColorStop(o, c));
+  body(); x.fillStyle = g; x.fill(); kInk(x, 5);
+  x.beginPath(); x.ellipse(0, 0, 200, 56, 0, 0, 7); x.fillStyle = "#d8e8f7"; x.fill(); kInk(x, 5);
+  x.save(); x.beginPath(); x.ellipse(0, 4, 180, 45, 0, 0, 7); x.clip();
+  const m = B.mix || 0;
+  x.fillStyle = B.added.length ? mixCol(B.base || "#efe2cf", B.col, m) : "#b9d3ec"; x.fillRect(-200, -60, 400, 120);
+  B.added.forEach((bl, i) => { x.globalAlpha = 1 - m; const a = bl.a + (B.rot || 0) * (1 - bl.r / 180); x.beginPath(); x.ellipse(Math.cos(a) * bl.r, 4 + Math.sin(a) * bl.r * .25, bl.s, bl.s * .45, 0, 0, 7); x.fillStyle = bl.c; x.fill(); x.lineWidth = 2; x.strokeStyle = "rgba(59,34,41,.5)"; x.stroke(); });
+  x.globalAlpha = 1;
+  if (B.added.length && (B.rot || 0) > 0) { x.strokeStyle = `rgba(255,255,255,${.2 + .35 * m})`; x.lineWidth = 3.5; x.lineCap = "round"; for (let k = 0; k < 4; k++) { x.beginPath(); x.ellipse(0, 4, 36 + k * 36, (36 + k * 36) * .25, 0, B.rot + k, B.rot + k + 2); x.stroke(); } }
+  x.restore(); x.beginPath(); x.ellipse(0, 4, 180, 45, 0, 0, 7); kInk(x, 3);
+  x.restore();
+}
+function mixCol(a, b, m) { const A = ckRgb(a), B = ckRgb(b); return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * m)).join(",")})`; }
+function kPan(x, cx, cy, s, S) {
+  x.save(); x.translate(cx, cy); x.scale(s, s);
+  x.beginPath(); x.ellipse(0, 18, 120, 40, 0, 0, Math.PI); x.lineTo(-120, 0); x.ellipse(0, 0, 120, 40, 0, Math.PI, 0, true); x.closePath(); x.fillStyle = "#aeb5bf"; x.fill(); kInk(x, 4);
+  x.beginPath(); x.ellipse(0, 0, 120, 40, 0, 0, 7); x.fillStyle = "#c9ced6"; x.fill(); kInk(x, 4);
+  x.beginPath(); x.ellipse(0, 2, 106, 32, 0, 0, 7); x.fillStyle = "#8f97a3"; x.fill();
+  if (S.grease) { x.fillStyle = `rgba(255,236,160,${.55 * Math.min(1, S.grease)})`; x.fill(); x.strokeStyle = `rgba(255,255,255,${.8 * Math.min(1, S.grease)})`; x.lineWidth = 4; x.beginPath(); x.ellipse(-10, -4, 70, 16, 0, 3.6, 5.2); x.stroke(); }
+  if (S.fill) { const f = Math.min(1, S.fill); x.beginPath(); x.ellipse(0, 2, 106 * Math.sqrt(f), 32 * Math.sqrt(f), 0, 0, 7); x.fillStyle = S.baked ? "#5a2e19" : "#6b3a22"; x.fill(); x.strokeStyle = "rgba(255,255,255,.25)"; x.lineWidth = 3; x.beginPath(); x.ellipse(-20, -4, 40 * f, 8 * f, 0, 3.4, 5.4); x.stroke(); }
+  x.beginPath(); x.ellipse(0, 2, 106, 32, 0, 0, 7); kInk(x, 2.5);
+  x.restore();
+}
+function kOven(x, X, Y, W, H, S, t) {
+  const sx = W / 420, sy = H / 360; x.save(); x.translate(X, Y); x.scale(sx, sy);
+  x.fillStyle = "rgba(59,34,41,.12)"; x.beginPath(); x.ellipse(210, 368, 200, 12, 0, 0, 7); x.fill();
+  let g = x.createLinearGradient(0, 0, 420, 0); [[0, "#e89aae"], [.08, "#e89aae"], [.08, "#f6c3cf"], [.9, "#f6c3cf"], [.9, "#e89aae"], [1, "#e89aae"]].forEach(([o, c]) => g.addColorStop(o, c));
+  kRect(x, 0, 0, 420, 360, 30); x.fillStyle = g; x.fill(); kInk(x, 5);
+  kRect(x, 0, 0, 420, 70, [30, 30, 0, 0]); x.fillStyle = "#ef9fb3"; x.fill(); kInk(x, 5);
+  const knob = (cx, val, max, lab) => { x.beginPath(); x.arc(cx, 36, 22, 0, 7); x.fillStyle = "#fffaf2"; x.fill(); kInk(x, 4); const a = -Math.PI * .75 + (val / max) * Math.PI * 1.5; x.beginPath(); x.moveTo(cx, 36); x.lineTo(cx + Math.cos(a - Math.PI / 2) * 16, 36 + Math.sin(a - Math.PI / 2) * 16); kInk(x, 4); kLabel(x, lab, cx, 66, 11, KOL); };
+  knob(60, S.temp - 100, 160, `${S.temp}°`); knob(140, S.timer, 60, `${S.timer} min`);
+  kRect(x, 250, 22, 140, 30, 8); x.fillStyle = KOL; x.fill(); kLabel(x, S.screen || "OFF", 320, 37, 15, "#ffd166");
+  const on = S.baking || S.done;
+  kRect(x, 40, 100, 340, 200, 22); x.fillStyle = on ? "#f6a55a" : "#7c5a5e"; x.fill();
+  if (on) { const rg = x.createRadialGradient(210, 200, 10, 210, 200, 170); rg.addColorStop(0, "rgba(255,230,150,.95)"); rg.addColorStop(1, "rgba(255,230,150,0)"); x.fillStyle = rg; x.fill(); }
+  kRect(x, 40, 100, 340, 200, 22); kInk(x, 5);
+  x.beginPath(); x.moveTo(60, 270); x.lineTo(360, 270); kInk(x, 4);
+  if (S.inOven) { x.save(); x.translate(210, 262); const r = S.rise || 0; if (r > 0) { x.beginPath(); x.ellipse(0, -10, 84, 22 + 14 * r, 0, Math.PI, 0); x.fillStyle = "#5a2e19"; x.fill(); kInk(x, 3); } kPan(x, 0, -6, .72, { fill: 1, baked: S.done }); x.restore(); }
+  x.strokeStyle = "rgba(255,255,255,.55)"; x.lineWidth = 5; x.beginPath(); x.moveTo(66, 122); x.lineTo(106, 122); x.moveTo(66, 138); x.lineTo(86, 138); x.stroke();
+  kRect(x, 120, 318, 180, 16, 8); x.fillStyle = "#fffaf2"; x.fill(); kInk(x, 4);
+  if (S.ding) { const b = 1 + .08 * Math.sin(t / 80); x.save(); x.translate(330, -18); x.scale(b, b); kLabel(x, "DING!", 0, 0, 26, "#e0606e"); x.restore(); }
+  x.restore();
+}
+function kCounter(x) {
+  x.fillStyle = "#fbeef2"; x.fillRect(0, 0, 480, 640);
+  x.strokeStyle = "rgba(224,96,110,.10)"; x.lineWidth = 2; for (let i = 0; i <= 480; i += 48) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i, 336); x.stroke(); } for (let j = 0; j <= 336; j += 48) { x.beginPath(); x.moveTo(0, j); x.lineTo(480, j); x.stroke(); }
+  x.fillStyle = "#f1d7b6"; x.fillRect(0, 336, 480, 304); x.fillStyle = "#e7c59c"; x.fillRect(0, 336, 480, 10);
+  x.beginPath(); x.moveTo(0, 336); x.lineTo(480, 336); kInk(x, 4);
+}
+
+/* the engine: drag (or tap) the right thing, or tap/hold where the step says */
+function kitchenScene(el, buddy, { tasks, items, zones, state, bg, fg, start = 0, onStep, done, holdTarget }) {
+  el.innerHTML = `<p class="bk2-say" id="kt-say"></p><div class="bk2-stage"><canvas id="kt" width="480" height="640" aria-label="Kitchen counter"></canvas><div class="bk2-meter" id="kt-meter" hidden><i></i></div></div>`;
+  const cv = $("#kt"), x = cv.getContext("2d"), S = state; S.task = start;
+  items.forEach(it => { it.hx = it.x; it.hy = it.y; });
+  tasks.slice(0, start).forEach(tk => tk.apply && tk.apply(S, true));
+  let drag = null, fx = [], wrong = 0, idleAt = performance.now(), raf = 0, holding = false;
+  const cur = () => tasks[S.task];
+  const box = it => [it.x - it.w / 2, it.y - it.h, it.w, it.h];
+  const inBox = ([px, py], [a, b, w, h], pad = 10) => px >= a - pad && px <= a + w + pad && py >= b - pad && py <= b + h + pad;
+  const takes = (tk, it) => Array.isArray(tk.take) ? tk.take.includes(it.id) : typeof tk.take === "function" ? tk.take(it) : tk.take === it.id;
+  const pt = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * 480, (e.clientY - r.top) / r.height * 640]; };
+  const pick = a => a[Math.random() * a.length | 0];
+  function say() {
+    const tk = cur(); if (!tk) return;
+    $("#kt-say").innerHTML = `<small>Step ${S.task + 1} of ${tasks.length}</small>${tk.text}`;
+    buddy.say("idle", tk.short || tk.text); $("#kt-meter").hidden = tk.kind !== "hold" && tk.kind !== "scrub"; setMeter(0);
+    wrong = 0; idleAt = performance.now(); S.hint = null;
+    if (tk.kind === "auto") tk.run(S, () => complete());
+  }
+  const setMeter = v => { $("#kt-meter i").style.width = Math.min(100, v * 100) + "%"; };
+  function complete() {
+    const tk = cur(); if (tk.apply) tk.apply(S, false);
+    S.task++; onStep && onStep(S.task);
+    if (S.task >= tasks.length) { setTimeout(done, 700); buddy.say("joy", tk.cheer || "Perfect!", { burst: true, hold: false, ms: 1500 }); return; }
+    buddy.say("joy", tk.cheer || pick(["Perfect!", "Yes chef! 👨‍🍳", "Nailed it", "Lovely!", "Great job!"]), { burst: !!tk.burst, hold: false, ms: 1300, after: cur().short || cur().text });
+    setTimeout(say, 1300);
+  }
+  function oops(it) {
+    wrong++; const tk = cur();
+    buddy.say("sad", tk.kind === "tap" ? (tk.oops || "Not that one!") : `Oops, that's the ${it.name || it.label?.toLowerCase() || "wrong thing"}! ${tk.need || ""}`, { hold: false, ms: 2000, after: tk.short || tk.text });
+    if (wrong >= 2) S.hint = true;
+  }
+  function home(it) { fx.push({ t0: performance.now(), dur: 260, run(k) { it.x += (it.hx - it.x) * Math.min(1, k * 1.5); it.y += (it.hy - it.y) * Math.min(1, k * 1.5); }, end() { it.x = it.hx; it.y = it.hy; } }); }
+  function pour(it, tk) {
+    const [zx, zy] = tk.at || zones[tk.to].slice(0, 2), from = [it.x, it.y]; it.busy = true;
+    const target = [zx + (tk.dx ?? 60), zy - (tk.lift ?? 70)], dur = tk.stream ?? 900;
+    fx.push({ t0: performance.now(), dur: 350 + dur + 300, draw(k, now) {
+      const ms = k * (650 + dur), m1 = Math.min(1, ms / 300), back = Math.max(0, (ms - 350 - dur) / 300), m = back ? 1 - back : m1;
+      it.x = from[0] + (target[0] - from[0]) * m; it.y = from[1] + (target[1] - from[1]) * m;
+      const scol = tk.colFor ? tk.colFor(it) : tk.col; const tilt = (tk.tilt ?? -1.1) * Math.min(1, Math.max(0, (ms - 250) / 150)) * (back ? 1 - back : 1);
+      if (ms > 350 && ms < 350 + dur && scol) { const mx = it.x - 36, my = it.y - it.h * .75; x.beginPath(); x.moveTo(mx, my); x.quadraticCurveTo(mx - 10, (my + zy) / 2, zx + (tk.dx ?? 60) - 50, zy); x.lineWidth = 11; x.strokeStyle = KOL; x.lineCap = "round"; x.stroke(); x.lineWidth = 7; x.strokeStyle = scol; x.stroke(); }
+      x.save(); x.translate(it.x, it.y - it.h / 2); x.rotate(tilt); x.translate(0, it.h / 2); KITEM[it.kind](x, it, S, now); x.restore();
+      if (ms > 350 + dur * .3 && !it.poured) { it.poured = true; tk.pour && tk.pour(S, it); }
+    }, end() { it.busy = false; it.poured = false; it.x = it.hx; it.y = it.hy; complete(); } });
+  }
+  function use(it, p) {
+    const tk = cur(); if (!tk) return home(it);
+    if (!takes(tk, it)) { home(it); return oops(it); }
+    if (tk.kind === "scrub") { home(it); buddy.bop(tk.how || "Drag it over and rub it around!"); return; }
+    if (p && tk.to && !inBox(p, zones[tk.to], 40)) { home(it); buddy.bop(tk.where || "Drop it in!"); return; }
+    if (tk.kind === "pour") return pour(it, tk);
+    if (tk.kind === "drop") { it.busy = true; const [zx, zy] = zones[tk.to]; const from = [it.x, it.y];
+      fx.push({ t0: performance.now(), dur: 450, draw(k, now) { it.x = from[0] + (zx + zones[tk.to][2] / 2 - from[0]) * k; it.y = from[1] + (zy + zones[tk.to][3] * .8 - from[1]) * k; x.save(); x.translate(it.x, it.y); x.scale(1 - .3 * k, 1 - .3 * k); KITEM[it.kind](x, it, S, now); x.restore(); },
+        end() { it.busy = false; it.x = it.hx; it.y = it.hy; complete(); } }); return; }
+    if (tk.kind === "hold") { it.on = true; it.hidden = true; S.holdOn = true; buddy.bop(tk.how || "Now press and hold to mix!"); $("#kt-say").innerHTML = `<small>Step ${S.task + 1} of ${tasks.length}</small>${tk.how || "Press and hold to mix!"}`; return; }
+    home(it);
+  }
+  cv.addEventListener("pointerdown", e => {
+    const p = pt(e), tk = cur(); if (!tk) return; idleAt = performance.now();
+    cv.setPointerCapture(e.pointerId);
+    if (tk.kind === "hold" && S.holdOn) { holding = true; return; }
+    if (tk.kind === "tap") { if (inBox(p, zones[tk.to], 14)) { buddy.bop(tk.tapLine ? tk.tapLine(S) : "Click!"); if (tk.tap(S)) complete(); } else { const it = [...items].reverse().find(i => !i.hidden && !i.busy && inBox(p, box(i), 4)); if (it) { buddy.bop(tk.oops || "Not that one!"); } } return; }
+    const it = [...items].reverse().find(i => !i.hidden && !i.busy && !i.fixed && inBox(p, box(i), 6));
+    if (it) { drag = { it, p0: p, off: [it.x - p[0], it.y - p[1]], moved: false }; }
+  });
+  cv.addEventListener("pointermove", e => {
+    if (!drag) return; const p = pt(e), it = drag.it, tk = cur();
+    if (Math.hypot(p[0] - drag.p0[0], p[1] - drag.p0[1]) > 8) drag.moved = true;
+    const last = [it.x, it.y]; it.x = p[0] + drag.off[0]; it.y = p[1] + drag.off[1];
+    if (tk && tk.kind === "scrub" && takes(tk, it) && inBox([it.x, it.y - it.h / 2], zones[tk.to], 0)) {
+      S.scrub = (S.scrub || 0) + Math.hypot(it.x - last[0], it.y - last[1]); tk.progress && tk.progress(S, S.scrub / tk.amount); setMeter(S.scrub / tk.amount);
+      if (S.scrub >= tk.amount) { S.scrub = 0; const d2 = drag; drag = null; home(d2.it); complete(); }
+    }
+  });
+  const up = e => { if (holding) { holding = false; return; } if (!drag) return; const d2 = drag; drag = null; if (!d2.moved) use(d2.it, null); else use(d2.it, pt(e)); };
+  cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up);
+
+  let lastT = performance.now();
+  function frame(now) {
+    if (!cv.isConnected) return cancelAnimationFrame(raf);
+    const dt = now - lastT; lastT = now; const tk = cur();
+    if (tk && tk.kind === "hold" && holding) { S.hold = (S.hold || 0) + dt / (tk.ms || 2600); tk.progress && tk.progress(S, S.hold, dt); setMeter(S.hold);
+      if (S.hold >= 1) { holding = false; S.hold = 0; S.holdOn = false; items.forEach(i => { if (i.on) { i.on = false; i.hidden = false; } }); complete(); } }
+    if (tk && !S.hint && now - idleAt > 9000) S.hint = true;
+    bg(x, S, now);
+    if (S.hint && tk) { const pulse = 6 + 4 * Math.sin(now / 160); x.setLineDash([8, 8]); x.lineWidth = 3.5; x.strokeStyle = "#e0606e";
+      const rings = tk.kind === "tap" ? [zones[tk.to]] : tk.kind === "hold" && S.holdOn ? [zones[holdTarget || "bowl"]] : items.filter(i => !i.hidden && takes(tk, i)).map(box);
+      rings.forEach(([a, b, w, h]) => { x.beginPath(); x.ellipse(a + w / 2, b + h / 2, w / 2 + pulse + 8, h / 2 + pulse + 8, 0, 0, 7); x.stroke(); }); x.setLineDash([]); }
+    items.forEach(it => { if (it.hidden || it.busy || (drag && drag.it === it)) return; x.save(); x.translate(it.x, it.y); KITEM[it.kind](x, it, S, now); x.restore(); });
+    fg && fg(x, S, now, holding);
+    fx = fx.filter(f => { const k = Math.min(1, (now - f.t0) / f.dur); f.run && f.run(k); f.draw && f.draw(k, now); if (k >= 1) { f.end && f.end(); return false; } return true; });
+    if (drag) { const it = drag.it; x.save(); x.translate(it.x, it.y); x.scale(1.06, 1.06); KITEM[it.kind](x, it, S, now); x.restore(); }
+    raf = requestAnimationFrame(frame);
+  }
+  say(); raf = requestAnimationFrame(frame);
+  return () => cancelAnimationFrame(raf);
+}
+
+/* the three recipe scenes */
+function blobsFor(col, seed) { const R = ckSeed(seed); return Array.from({ length: 5 }, () => ({ c: col, a: R() * 6.28, r: 20 + R() * 130, s: 16 + R() * 16 })); }
+function mixScene(d) {
+  const B = { added: [], mix: 0, col: "#5a2c18", base: "#e9d9c4", rot: 0 };
+  const it = (id, kind, xx, yy, w, h, extra = {}) => ({ id, kind, x: xx, y: yy, w, h, ...extra });
+  const items = [it("flour", "bag", 52, 330, 72, 108, { label: "FLOUR", col: "#6f9fd8", name: "flour" }), it("sugar", "jar", 130, 330, 64, 100, { label: "SUGAR", name: "sugar" }),
+    it("cocoa", "tin", 207, 330, 64, 84, { label: "COCOA", col: "#7a3b20", name: "cocoa" }), it("bp", "tin", 279, 330, 50, 64, { label: "BAKING\nPOWDER", col: "#e0606e", w2: 48, h2: 58, name: "baking powder" }),
+    it("vanilla", "bottle", 341, 330, 36, 92, { label: "VANILLA", col: "#8a5a2b", name: "vanilla" }), it("milk", "milk", 420, 330, 56, 106, { name: "milk" }),
+    it("eggs", "eggs", 66, 622, 92, 54, { name: "eggs", count: 2 }), it("butter", "butter", 418, 420, 96, 50, { name: "butter" }), it("mixer", "mixer", 418, 628, 86, 104, { name: "mixer" })];
+  const add = (col, seed) => () => B.added.push(...blobsFor(col, seed));
+  const P = (id, text, col, seed, more = {}) => ({ kind: "pour", take: id, to: "bowl", text, col, pour: add(col, seed), apply: (S, instant) => { if (instant) add(col, seed)(); }, need: `We need the ${more.nm || id}.`, ...more });
+  const tasks = [
+    P("flour", "Add <b>2 cups of flour</b> to the bowl", "#f5efe6", 1, { short: "Flour first! Drag it into the bowl", nm: "flour" }),
+    P("sugar", "Add <b>1½ cups of sugar</b>", "#ffffff", 2, { short: "Now the sugar 🍬", nm: "sugar" }),
+    P("cocoa", "Add <b>¾ cup of cocoa powder</b>", "#5a2c15", 3, { short: "Cocoa! The chocolatey part 🍫", nm: "cocoa" }),
+    P("bp", "Add <b>1 teaspoon of baking powder</b>", "#f4f1ea", 4, { short: "Baking powder, so it rises", nm: "baking powder", stream: 500 }),
+    { kind: "pour", take: "eggs", to: "bowl", text: "Crack in <b>2 eggs</b>", short: "Crack in the eggs 🥚", col: "#f6c64a", stream: 600, need: "We need the eggs.", pour: (S, i) => { add("#f6c64a", 5)(); i.count = Math.max(0, (i.count ?? 2) - 2); }, apply: (S, instant) => { if (instant) { add("#f6c64a", 5)(); items[6].count = 0; } } },
+    P("butter", "Add the <b>melted butter</b>", "#f7e08f", 6, { short: "Melted butter 🧈", nm: "butter" }),
+    P("milk", "Pour in <b>1 cup of milk</b>", "#fbf7ef", 7, { short: "Splash in the milk 🥛", nm: "milk" }),
+    P("vanilla", "Add <b>a splash of vanilla</b>", "#8a5a2b", 8, { short: "Just a little vanilla", nm: "vanilla", stream: 450 }),
+    { kind: "hold", take: "mixer", to: "bowl", text: "Mix it all together with the <b>mixer</b>", short: "Grab the mixer!", how: "Press and hold anywhere to mix! 🌀", need: "We need the mixer.", ms: 3000, cheer: "Smooth, glossy batter! 🍫", burst: true,
+      progress: (S, k, dt) => { B.mix = Math.min(1, k); B.rot += dt / 120; }, apply: () => { B.mix = 1; } },
+  ];
+  const zones = { bowl: [96, 400, 288, 160] };
+  return { items, tasks, zones, state: { B },
+    bg(x, S, t) { kCounter(x); kBowl(x, 240, 470, .7, B, t); },
+    fg(x, S, t, holding) { if (S.holdOn) { x.save(); x.translate(232, 478); items[8].spin = holding; KITEM.mixer(x, items[8], S, t); x.restore(); } } };
+}
+function bakeScene(d) {
+  const items = [
+    { id: "butter", kind: "butter", x: 400, y: 440, w: 96, h: 50, name: "butter" },
+    { id: "bowl", kind: "bowl", x: 330, y: 632, w: 250, h: 108, name: "bowl of batter" },
+    { id: "pan", kind: "pan", x: 150, y: 520, w: 200, h: 70, name: "cake pan" },
+  ];
+  const S0 = { grease: 0, fill: 0, temp: 100, timer: 0, screen: "OFF", inOven: false, rise: 0, bowlB: { added: [], mix: 1, col: "#5a2c18" } };
+  const pan = items[2];
+  const tasks = [
+    { kind: "scrub", take: "butter", to: "pan", amount: 900, text: "Grease the pan: <b>drag the butter in and rub it around</b>", short: "Rub butter all over the pan", how: "Drag the butter onto the pan and rub it around!", need: "We need the butter.", progress: (S, k) => { S.grease = Math.min(1, k); }, apply: S => { S.grease = 1; items[0].hidden = true; } },
+    { kind: "pour", take: "bowl", to: "pan", at: [150, 492], dx: 70, lift: 110, tilt: -.9, col: "#6b3a22", stream: 1100, text: "Pour the <b>batter into the pan</b>", short: "Pour in the batter!", need: "We need the batter bowl.", pour: S => { fxFill(S); }, apply: S => { S.fill = 1; items[1].hidden = true; } },
+    { kind: "drop", take: "pan", to: "oven", text: "Put the <b>pan in the oven</b>", short: "Into the oven it goes!", need: "We need the pan.", apply: S => { S.inOven = true; pan.hidden = true; } },
+    { kind: "tap", to: "dial", text: "Turn the <b>temperature dial to 180°</b>", short: "Tap the dial to 180°", oops: "Tap the temperature dial on the oven!", tapLine: S => `${S.temp}°`, tap: S => { S.temp = S.temp >= 240 ? 100 : S.temp + 20; S.screen = S.temp + "°"; return S.temp === 180; }, apply: S => { S.temp = 180; S.screen = "180°"; } },
+    { kind: "tap", to: "timer", text: "Set the <b>timer for 30 minutes</b>", short: "Tap the timer to 30 minutes", oops: "Tap the timer dial on the oven!", tapLine: S => `${S.timer} min`, tap: S => { S.timer = S.timer >= 60 ? 0 : S.timer + 10; S.screen = S.timer + ":00"; return S.timer === 30; }, apply: S => { S.timer = 30; } },
+    { kind: "auto", text: "Baking… <b>watch it rise!</b>", short: "Ooh it's rising… 🔥", run(S, next) { S.baking = true; const t0 = performance.now();
+        const tick = () => { const k = Math.min(1, (performance.now() - t0) / 4200); S.rise = k; const left = Math.ceil(30 * (1 - k)); S.screen = `${left}:00`; S.timer = left; if (k < 1) requestAnimationFrame(tick); else { S.baking = false; S.done = true; S.ding = true; S.screen = "DONE"; next(); } }; tick(); },
+      apply: (S, instant) => { if (instant) { S.inOven = true; S.done = true; S.rise = 1; S.screen = "DONE"; S.timer = 0; } }, cheer: "Ding! It's ready! 🔔" },
+    { kind: "tap", to: "oven", text: "<b>Tap the oven</b> to take the cake out", short: "Take it out! 🧤", oops: "Tap the oven door!", tap: S => true, apply: S => { S.inOven = false; S.ding = false; S.out = true; S.done = false; S.screen = "OFF"; } },
+    { kind: "auto", text: "Let it <b>cool</b> for a minute…", short: "Smells amazing… let it cool 😋", run(S, next) { setTimeout(next, 1600); }, cheer: "Perfectly baked! 🎉", burst: true },
+  ];
+  function fxFill(S) { const t0 = performance.now(); const step = () => { S.fill = Math.min(1, (performance.now() - t0) / 900); if (S.fill < 1) requestAnimationFrame(step); }; step(); }
+  const OV = [40, 26, 400, 306], osx = OV[2] / 420, osy = OV[3] / 360;
+  const zones = { pan: [46, 452, 210, 90], oven: OV, dial: [OV[0] + 60 * osx - 32, OV[1] + 36 * osy - 32, 64, 64], timer: [OV[0] + 140 * osx - 32, OV[1] + 36 * osy - 32, 64, 64] };
+  return { items, tasks, zones, state: S0,
+    bg(x, S, t) { kCounter(x); kOven(x, OV[0], OV[1], OV[2], OV[3], S, t);
+      
+      if (S.out) { x.save(); x.translate(150, 512); x.beginPath(); x.ellipse(0, 12, 110, 30, 0, 0, 7); x.fillStyle = "#cfd5dd"; x.fill(); kInk(x, 3.5);
+        x.beginPath(); x.moveTo(-84, -40); x.lineTo(-84, 0); x.ellipse(0, 0, 84, 24, 0, Math.PI, 0, true); x.lineTo(84, -40); x.ellipse(0, -40, 84, 24, 0, 0, Math.PI); x.closePath(); x.fillStyle = "#5a2e19"; x.fill(); kInk(x, 4);
+        x.beginPath(); x.ellipse(0, -40, 84, 24, 0, 0, 7); x.fillStyle = "#6d3a20"; x.fill(); kInk(x, 4);
+        x.strokeStyle = "rgba(255,255,255,.75)"; x.lineWidth = 4; for (let i = -1; i <= 1; i++) { const o = Math.sin(t / 300 + i) * 6; x.beginPath(); x.moveTo(i * 30, -70); x.quadraticCurveTo(i * 30 + o, -90, i * 30 - o, -110); x.stroke(); } x.restore(); } },
+    fg() {} };
+}
+function frostScene(d) {
+  const B = { added: [], mix: 0, col: "#fff6ec", base: "#fbf3e6", rot: 0 };
+  const it = (id, kind, xx, yy, w, h, extra = {}) => ({ id, kind, x: xx, y: yy, w, h, ...extra });
+  const items = [it("butter", "butter", 56, 330, 96, 50, { name: "butter" }), it("icing", "bag", 148, 330, 72, 108, { label: "ICING\nSUGAR", col: "#e0606e", name: "icing sugar" }), it("cheese", "tub", 234, 330, 72, 62, { label: "CREAM\nCHEESE", name: "cream cheese" }),
+    ...CK_FROST.map(([n, c], i) => it("col-" + i, "dropper", 304 + (i % 4) * 46, i < 4 ? 222 : 330, 34, 70, { col: c, name: n.toLowerCase(), group: "colour" })),
+    it("mixer", "mixer", 418, 628, 86, 104, { name: "mixer" })];
+  const add = (col, seed) => () => B.added.push(...blobsFor(col, seed));
+  const tasks = [
+    { kind: "pour", take: "butter", to: "bowl", col: "#f7e08f", stream: 600, text: "Make the frosting! Add the <b>soft butter</b>", short: "Frosting time! Butter first", need: "We need the butter.", pour: add("#f7e08f", 11), apply: (S, i) => i && add("#f7e08f", 11)() },
+    { kind: "pour", take: "icing", to: "bowl", col: "#ffffff", text: "Add <b>2 cups of icing sugar</b>", short: "Now the icing sugar ☁️", need: "We need the icing sugar.", pour: add("#ffffff", 12), apply: (S, i) => i && add("#ffffff", 12)() },
+    { kind: "pour", take: "cheese", to: "bowl", col: "#fbf6ee", text: "Add the <b>cream cheese</b>", short: "Cream cheese, yum", need: "We need the cream cheese.", pour: add("#fbf6ee", 13), apply: (S, i) => i && add("#fbf6ee", 13)() },
+    { kind: "pour", take: i => i.group === "colour", to: "bowl", stream: 500, colFor: i => i.col, text: "Add a few drops of <b>colour, any one you like!</b>", short: "Pick ANY colour you like 🎨", need: "",
+      pour: (S, i) => { d.frosting = i.col; B.col = i.col; add(i.col, 14)(); }, apply: (S, i) => { B.col = d.frosting; if (i) add(d.frosting, 14)(); }, cheer: "Ooh, pretty colour!" },
+    { kind: "hold", take: "mixer", to: "bowl", text: "Whip it with the <b>mixer</b>", short: "Grab the mixer!", how: "Press and hold anywhere to whip it! 🌀", need: "We need the mixer.", ms: 2600, cheer: "Fluffy frosting! ☁️", burst: true,
+      progress: (S, k, dt) => { B.mix = Math.min(1, k); B.rot += dt / 120; }, apply: () => { B.mix = 1; } },
+  ];
+  return { items, tasks, zones: { bowl: [96, 400, 288, 160] }, state: { B },
+    bg(x, S, t) { kCounter(x); x.fillStyle = "#e7c59c"; kRect(x, 276, 222, 196, 8, 3); x.fill(); kInk(x, 3); kBowl(x, 240, 470, .7, B, t); },
+    fg(x, S, t, holding) { const m = items[items.length - 1]; if (S.holdOn) { x.save(); x.translate(232, 478); m.spin = holding; KITEM.mixer(x, m, S, t); x.restore(); } } };
+}
+
 function renderBake(view, pv) {
-  const KEY = pv ? "bday-cakemaker-preview" : "bday-cakemaker";
-  const d = Object.assign({ step: "mix", added: [], stir: 0, bake: null, frosting: "#3d1d0e", style: "drip", toppings: [], strokes: [], seed: 1 + (Math.random() * 9999 | 0) }, store.get(KEY) || {});
+  const KEY = pv ? "bday-kitchen-preview" : "bday-kitchen";
+  const d = Object.assign({ step: "mix", task: 0, fphase: null, bake: null, frosting: "#3d1d0e", style: "drip", toppings: [], strokes: [], seed: 1 + (Math.random() * 9999 | 0) }, store.get(KEY) || {});
   const save = () => store.set(KEY, d);
   const game = stage(view, pv, "Day 8 · Bake it together", "Let's make your birthday cake, from scratch.",
     ` · <a href="#" id="bk2-reset">start over</a>`);
@@ -2951,8 +3227,8 @@ function renderBake(view, pv) {
     const vh = (window.visualViewport ? visualViewport.height : innerHeight), top = card.getBoundingClientRect().top + scrollY;
     card.style.height = Math.max(480, vh - top - 12) + "px"; };
   fit(); addEventListener("resize", fit); window.visualViewport && visualViewport.addEventListener("resize", fit);
-  const STEPS = [["mix", "Mix"], ["bake", "Bake"], ["frost", "Frost"], ["top", "Toppings"], ["write", "Write"], ["done", "Done"]];
-  const go = s => { d.step = s; save(); draw(); };
+  const STEPS = [["mix", "Mix"], ["bake", "Bake"], ["frost", "Frosting"], ["top", "Toppings"], ["write", "Write"], ["done", "Done"]];
+  const go = s => { d.step = s; d.task = 0; save(); draw(); };
   const cheer = a => a[Math.random() * a.length | 0];
   let cleanup = () => {};
 
@@ -2964,105 +3240,11 @@ function renderBake(view, pv) {
   }
   const canvasPoint = (cv, e) => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * cv.width, (e.clientY - r.top) / r.height * cv.height]; };
 
-  /* 1 · mix */
-  function stepMix(el) {
-    const ING = [["🍫", "Cocoa", "#5a2c15"], ["🌾", "Flour", "#f4ece0"], ["🥚", "Eggs", "#f6c64a"], ["🧈", "Butter", "#f7e08f"], ["🍬", "Sugar", "#ffffff"], ["🥛", "Milk", "#fbf7ef"]];
-    el.innerHTML = `<p class="bk2-say" id="mx-say"></p>
-      <div class="bk2-stage"><canvas id="mx" width="600" height="400" aria-label="Mixing bowl"></canvas><div class="bk2-meter" id="mx-meter" hidden><i></i></div></div>
-      <div class="bk2-chips" id="mx-ing">${ING.map(([e, n], i) => `<button type="button" class="bk2-chip" data-i="${i}"><span>${e}</span>${n}</button>`).join("")}</div>
-      <div class="bk2-row" id="mx-row" hidden><button class="btn" id="mx-next" type="button" hidden>Into the oven →</button></div>`;
-    const cv = $("#mx"), x = cv.getContext("2d"), BX = 300, BY = 190, R = ckSeed(d.seed);
-    const blobs = []; d.added.forEach(i => addBlobs(i));
-    function addBlobs(i) { for (let k = 0; k < 5; k++) blobs.push({ c: ING[i][2], a: R() * 6.28, r: 20 + R() * 120, s: 14 + R() * 16 }); }
-    let spoon = null;
-    const mixAmt = () => Math.min(1, d.stir / (Math.PI * 2 * 4));
-    function paint() {
-      x.clearRect(0, 0, 600, 400); const m = mixAmt(), rot = d.stir * .6, OL = "#3b2229";
-      const ink = (w = 5) => { x.lineWidth = w; x.strokeStyle = OL; x.lineJoin = "round"; x.lineCap = "round"; x.stroke(); };
-      x.fillStyle = "rgba(59,34,41,.12)"; x.beginPath(); x.ellipse(BX, 322, 150, 16, 0, 0, 7); x.fill();
-      const body = () => { x.beginPath(); x.moveTo(BX - 220, BY); x.bezierCurveTo(BX - 215, 345, BX + 215, 345, BX + 220, BY); x.closePath(); };
-      let g = x.createLinearGradient(BX - 220, 0, BX + 220, 0); [[0, "#7fa9d6"], [.1, "#7fa9d6"], [.1, "#9cc3e8"], [.2, "#9cc3e8"], [.2, "#c7def3"], [.28, "#c7def3"], [.28, "#9cc3e8"], [.8, "#9cc3e8"], [.8, "#7fa9d6"], [1, "#7fa9d6"]].forEach(([o, c]) => g.addColorStop(o, c));
-      body(); x.fillStyle = g; x.fill(); ink();
-      x.strokeStyle = "#fff"; x.lineWidth = 4; x.setLineDash([2, 14]); x.beginPath(); x.moveTo(BX - 180, BY + 70); x.quadraticCurveTo(BX, BY + 120, BX + 180, BY + 70); x.stroke(); x.setLineDash([]);
-      x.beginPath(); x.ellipse(BX, BY, 220, 62, 0, 0, 7); x.fillStyle = "#d8e8f7"; x.fill(); ink();
-      x.save(); x.beginPath(); x.ellipse(BX, BY + 4, 198, 50, 0, 0, 7); x.clip();
-      const empty = !d.added.length;
-      x.fillStyle = empty ? "#b9d3ec" : `rgb(${Math.round(236 - 150 * m)},${Math.round(214 - 160 * m)},${Math.round(186 - 156 * m)})`; x.fillRect(BX - 200, BY - 60, 400, 120);
-      blobs.forEach(bl => { x.globalAlpha = 1 - m; const a = bl.a + rot * (1 - bl.r / 200); x.beginPath(); x.ellipse(BX + Math.cos(a) * bl.r, BY + 4 + Math.sin(a) * bl.r * .25, bl.s, bl.s * .45, 0, 0, 7); x.fillStyle = bl.c; x.fill(); x.lineWidth = 2; x.strokeStyle = "rgba(59,34,41,.6)"; x.stroke(); });
-      x.globalAlpha = 1;
-      if (d.added.length && d.stir > 0) { x.strokeStyle = `rgba(255,255,255,${.25 + .35 * m})`; x.lineWidth = 3.5; x.lineCap = "round"; for (let k = 0; k < 4; k++) { x.beginPath(); x.ellipse(BX, BY + 4, 40 + k * 40, (40 + k * 40) * .25, 0, rot + k, rot + k + 2); x.stroke(); } }
-      x.restore();
-      x.beginPath(); x.ellipse(BX, BY + 4, 198, 50, 0, 0, 7); ink(3);
-      if (spoon) { const [sx, sy] = spoon; x.beginPath(); x.moveTo(sx, sy); x.lineTo(sx + 90, sy - 150); x.lineWidth = 17; x.strokeStyle = OL; x.lineCap = "round"; x.stroke(); x.lineWidth = 10; x.strokeStyle = "#d39a5f"; x.stroke();
-        x.beginPath(); x.ellipse(sx, sy, 22, 13, -1, 0, 7); x.fillStyle = "#d39a5f"; x.fill(); ink(4); }
-    }
-    const say = () => {
-      const left = ING.length - d.added.length;
-      $("#mx-say").textContent = left ? `Tap the ingredients to add them to the bowl (${left} to go)` : mixAmt() < 1 ? "Now stir! Draw circles in the bowl with your finger 🥄" : "Smooth and glossy. Perfect batter ✨";
-      $("#mx-meter").hidden = !!left; $("#mx-meter i").style.width = (mixAmt() * 100) + "%"; $("#mx-next").hidden = mixAmt() < 1; $("#mx-ing").hidden = !left; $("#mx-row").hidden = mixAmt() < 1;
-      el.querySelectorAll(".bk2-chip").forEach(b => b.disabled = d.added.includes(+b.dataset.i));
-    };
-    $("#mx-ing").onclick = e => { const b = e.target.closest(".bk2-chip"); if (!b || b.disabled) return; const i = +b.dataset.i;
-      d.added.push(i); addBlobs(i); save(); say(); paint();
-      const f = document.createElement("span"); f.className = "bk2-drop"; f.textContent = ING[i][0]; f.style.left = (40 + Math.random() * 20) + "%"; cv.parentElement.appendChild(f); setTimeout(() => f.remove(), 900);
-      buddy.bop(cheer([`${ING[i][1]}, in!`, "Plop!", "Ooh", "Yum", "Next!"])); if (d.added.length === ING.length) setTimeout(() => buddy.say("think", "Time to stir! 🥄", { hold: false, ms: 1600 }), 500); };
-    let last = null, turns = 0;
-    const down = e => { if (d.added.length < ING.length || mixAmt() >= 1) return; cv.setPointerCapture(e.pointerId); const [a, b] = canvasPoint(cv, e); last = Math.atan2((b - BY) * 3, a - BX); spoon = [a, b]; };
-    const move = e => { if (last === null) return; const [a, b] = canvasPoint(cv, e), ang = Math.atan2((b - BY) * 3, a - BX); let dA = ang - last; if (dA > Math.PI) dA -= 2 * Math.PI; if (dA < -Math.PI) dA += 2 * Math.PI;
-      d.stir += Math.min(Math.abs(dA), .6); last = ang; spoon = [a, b]; paint(); say();
-      const t = Math.floor(d.stir / (Math.PI * 2)); if (t > turns) { turns = t; buddy.bop(["Stir stir!", "Round and round", "Almost…", "Looking smooth!"][Math.min(t - 1, 3)]); }
-      if (mixAmt() >= 1) { last = null; spoon = null; save(); paint(); buddy.say("joy", "Perfect batter! 🍫", { burst: true, hold: false, ms: 1800 }); } };
-    const up = () => { if (last !== null) { last = null; spoon = null; save(); paint(); } };
-    cv.addEventListener("pointerdown", down); cv.addEventListener("pointermove", move); cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up);
-    $("#mx-next").onclick = () => { buddy.bop("To the oven!"); go("bake"); };
-    say(); paint();
-  }
-
-  /* 2 · bake */
-  function stepBake(el) {
-    el.innerHTML = `<p class="bk2-say" id="ov-say">Watch the cake rise and take it out when the marker hits the golden zone.</p>
-      <div class="bk2-stage"><canvas id="ov" width="600" height="400" aria-label="Oven"></canvas></div>
-      <div class="bk2-gauge" aria-hidden="true"><span class="z1">Gooey</span><span class="z2">Perfect</span><span class="z3">Crispy</span><i id="ov-mark"></i></div>
-      <div class="bk2-row" id="ov-btns"><button class="btn" id="ov-go" type="button">Start baking</button></div>`;
-    const cv = $("#ov"), x = cv.getContext("2d"); let t = d.bake ? { gooey: .3, perfect: .52, crispy: .8 }[d.bake] : 0, raf = 0, running = false, t0 = 0;
-    function paint() {
-      x.clearRect(0, 0, 600, 400); const OL = "#3b2229";
-      const ink = (w = 5) => { x.lineWidth = w; x.strokeStyle = OL; x.lineJoin = "round"; x.lineCap = "round"; x.stroke(); };
-      x.fillStyle = "rgba(59,34,41,.12)"; x.beginPath(); x.ellipse(300, 386, 200, 12, 0, 0, 7); x.fill();
-      let g = x.createLinearGradient(90, 0, 510, 0); [[0, "#e89aae"], [.08, "#e89aae"], [.08, "#f6c3cf"], [.9, "#f6c3cf"], [.9, "#e89aae"], [1, "#e89aae"]].forEach(([o, c]) => g.addColorStop(o, c));
-      x.beginPath(); x.roundRect(90, 20, 420, 360, 30); x.fillStyle = g; x.fill(); ink();
-      x.beginPath(); x.roundRect(90, 20, 420, 64, [30, 30, 0, 0]); x.fillStyle = "#ef9fb3"; x.fill(); ink();
-      ["#fffaf2", "#fffaf2", "#fffaf2"].forEach((c, i) => { x.beginPath(); x.arc(150 + i * 50, 52, 14, 0, 7); x.fillStyle = c; x.fill(); ink(3.5); x.beginPath(); x.moveTo(150 + i * 50, 52); x.lineTo(150 + i * 50 + 6, 42); ink(3); });
-      x.beginPath(); x.roundRect(370, 40, 110, 24, 8); x.fillStyle = "#3b2229"; x.fill(); x.fillStyle = "#ffd166"; x.font = "bold 16px ui-monospace, monospace"; x.textAlign = "center"; x.fillText(running ? "BAKING" : t > 0 ? "DONE" : "180°", 425, 58);
-      x.beginPath(); x.roundRect(170, 96, 260, 16, 8); x.fillStyle = "#fffaf2"; x.fill(); ink(4);
-      const on = running || t > 0;
-      x.beginPath(); x.roundRect(130, 126, 340, 224, 22); x.fillStyle = on ? "#f6a55a" : "#7c5a5e"; x.fill();
-      if (on) { const rg = x.createRadialGradient(300, 240, 10, 300, 240, 170); rg.addColorStop(0, "rgba(255,230,150,.95)"); rg.addColorStop(1, "rgba(255,230,150,0)"); x.fillStyle = rg; x.fill(); }
-      ink();
-      x.strokeStyle = "rgba(255,255,255,.55)"; x.lineWidth = 5; x.lineCap = "round"; x.beginPath(); x.moveTo(160, 150); x.lineTo(200, 150); x.moveTo(160, 166); x.lineTo(180, 166); x.stroke();
-      x.beginPath(); x.moveTo(150, 316); x.lineTo(450, 316); ink(4);
-      // pan, and the cake rising in it
-      const rise = Math.min(1, t / .5), h = 22 + 44 * rise, k = t < .42 ? t / .42 : 1;
-      const col = t < .42 ? `rgb(${Math.round(225 - 120 * k)},${Math.round(180 - 120 * k)},${Math.round(135 - 95 * k)})` : t < .62 ? "#6b3a20" : "#3a1c0c";
-      x.beginPath(); x.moveTo(210, 300); x.lineTo(210, 300 - h); x.bezierCurveTo(240, 300 - h - 24 * rise, 360, 300 - h - 24 * rise, 390, 300 - h); x.lineTo(390, 300); x.closePath(); x.fillStyle = col; x.fill(); ink(4);
-      x.beginPath(); x.moveTo(198, 256); x.lineTo(208, 308); x.lineTo(392, 308); x.lineTo(402, 256); x.lineTo(392, 256); x.lineTo(384, 298); x.lineTo(216, 298); x.lineTo(208, 256); x.closePath(); x.fillStyle = "#c9ced6"; x.fill(); ink(4);
-      $("#ov-mark").style.left = (t * 100) + "%";
-    }
-    const result = () => t < .42 ? "gooey" : t < .62 ? "perfect" : "crispy";
-    function tick(now) { t = Math.min(1, (now - t0) / 5200); paint(); if (t >= 1) return stop(); raf = requestAnimationFrame(tick); }
-    function stop() {
-      running = false; cancelAnimationFrame(raf); d.bake = result(); save(); paint();
-      const msg = { gooey: ["A little gooey in the middle… still delicious 😋", "think"], perfect: ["PERFECT bake!! Golden and fluffy 🎉", "joy"], crispy: ["Extra crispy edges! Very rustic 😅", "sad"] }[d.bake];
-      $("#ov-say").textContent = msg[0]; buddy.say(msg[1], msg[0], { burst: d.bake === "perfect", hold: false, ms: 2200 });
-      $("#ov-btns").innerHTML = `<button class="btn ghost" id="ov-again" type="button">Bake again</button><button class="btn" id="ov-next" type="button">Frost it →</button>`;
-      $("#ov-again").onclick = () => { buddy.bop("Round two!"); d.bake = null; t = 0; start(); };
-      $("#ov-next").onclick = () => { buddy.bop("Frosting time!"); go("frost"); };
-    }
-    function start() { running = true; t0 = performance.now(); $("#ov-say").textContent = "Baking… take it out in the golden zone!"; $("#ov-btns").innerHTML = `<button class="btn" id="ov-out" type="button">Take it out! 🧤</button>`; $("#ov-out").onclick = () => { buddy.bop("Out it comes!"); stop(); }; raf = requestAnimationFrame(tick); }
-    $("#ov-go").onclick = () => { buddy.bop("Oven's hot! 🔥"); start(); };
-    if (d.bake) { running = false; paint(); stop(); } else paint();
-    cleanup = () => cancelAnimationFrame(raf);
-  }
+  /* 1–3 · the recipe, step by step */
+  const run = (sc, done) => { const stop = kitchenScene(el0(), buddy, { ...sc, start: d.task || 0, onStep: i => { d.task = i; save(); }, done }); cleanup = stop; };
+  let host = null; const el0 = () => host;
+  function stepMix(el) { host = el; run(mixScene(d), () => { d.bake = "perfect"; go("bake"); }); }
+  function stepBake(el) { host = el; run(bakeScene(d), () => { d.fphase = "bowl"; go("frost"); }); }
 
   /* shared big cake canvas for frost / toppings / write / done */
   function cakeStage(el, extra = "") {
@@ -3070,19 +3252,41 @@ function renderBake(view, pv) {
     const cv = $("#ck"); return { cv, x: cv.getContext("2d") };
   }
 
-  /* 3 · frost */
   function stepFrost(el) {
-    el.innerHTML = `<p class="bk2-say">Pick the frosting colour and how it goes on.</p>`;
+    host = el;
+    if (d.fphase === "spread") return spreadPhase(el);
+    if (d.fphase === "style") return stylePhase(el);
+    run(frostScene(d), () => { d.fphase = "spread"; d.task = 0; save(); draw(); });
+  }
+  function spreadPhase(el) {
+    el.innerHTML = `<p class="bk2-say"><small>Almost there</small>Spread the frosting: <b>rub it all over the cake</b></p>`;
+    const { cv, x } = cakeStage(el, `<div class="bk2-meter" id="sp-meter"><i></i></div>`);
+    buddy.say("idle", "Rub the frosting all over! 🧁");
+    const frosted = document.createElement("canvas"); frosted.width = CKG.W; frosted.height = CKG.H; ckCake(frosted.getContext("2d"), { ...d, style: "smooth", toppings: [], strokes: [] });
+    let cov = 0, last = null, tool = null, said = 0;
+    const paint = () => { ckCake(x, { ...d, style: "bare", toppings: [], strokes: [] }); x.globalAlpha = Math.min(1, cov); x.drawImage(frosted, 0, 0); x.globalAlpha = 1;
+      if (tool) { x.save(); x.translate(tool[0] + 10, tool[1] + 30); KITEM.spatula(x); x.restore(); } $("#sp-meter i").style.width = Math.min(100, cov * 100) + "%"; };
+    const onCake = ([px, py]) => Math.abs(px - CKG.CX) < CKG.RX + 10 && py > CKG.TOP - CKG.RY - 10 && py < CKG.BOT + CKG.RY;
+    const pt = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * CKG.W, (e.clientY - r.top) / r.height * CKG.H]; };
+    cv.addEventListener("pointerdown", e => { cv.setPointerCapture(e.pointerId); last = pt(e); tool = last; paint(); buddy.bop("Spread spread!"); });
+    cv.addEventListener("pointermove", e => { if (!last) return; const p = pt(e); if (onCake(p)) cov += Math.hypot(p[0] - last[0], p[1] - last[1]) / 2600; last = p; tool = p; paint();
+      const q = Math.floor(cov * 4); if (q > said && q < 4) { said = q; buddy.bop(["Looking smooth!", "Keep going!", "Almost covered!"][q - 1]); }
+      if (cov >= 1) { last = null; tool = null; d.fphase = "style"; save(); buddy.say("joy", "Beautifully frosted! ✨", { burst: true, hold: false, ms: 1600 }); setTimeout(draw, 900); } });
+    const end = () => { last = null; tool = null; paint(); };
+    cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+    paint();
+  }
+  function stylePhase(el) {
+    el.innerHTML = `<p class="bk2-say"><small>Finishing touch</small>How should the frosting look?</p>`;
     const { x } = cakeStage(el);
-    el.insertAdjacentHTML("beforeend", `<div class="bk2-ctrl"><div class="bk2-swatches" id="fr-col" aria-label="Frosting colour">${CK_FROST.map(([n, c]) => `<button type="button" data-c="${c}" title="${n}" aria-label="${n}" style="--c:${c}"></button>`).join("")}<label class="bk2-custom" title="Any colour"><input type="color" id="fr-any" value="${d.frosting}"><span>🎨</span></label></div>
-      <div class="bk2-chips" id="fr-style" aria-label="Frosting style">${[["drip", "Drip"], ["smooth", "All over"], ["piped", "Piped edge"]].map(([k, n]) => `<button type="button" class="bk2-chip" data-s="${k}">${n}</button>`).join("")}</div>
-      <div class="bk2-row"><button class="btn ghost" id="fr-back" type="button">← Re-bake</button><button class="btn" id="fr-next" type="button">Toppings →</button></div></div>`);
+    el.insertAdjacentHTML("beforeend", `<div class="bk2-ctrl"><div class="bk2-chips" id="fr-style" aria-label="Frosting style">${[["drip", "Drip"], ["smooth", "All over"], ["piped", "Piped edge"]].map(([k, n]) => `<button type="button" class="bk2-chip" data-s="${k}">${n}</button>`).join("")}</div>
+      <div class="bk2-swatches" id="fr-col" aria-label="Frosting colour">${CK_FROST.map(([n, c]) => `<button type="button" data-c="${c}" title="${n}" aria-label="${n}" style="--c:${c}"></button>`).join("")}</div>
+      <div class="bk2-row"><button class="btn" id="fr-next" type="button">Toppings →</button></div></div>`);
     const sync = () => { ckCake(x, d); el.querySelectorAll("#fr-col [data-c]").forEach(b => b.classList.toggle("on", b.dataset.c === d.frosting)); el.querySelectorAll("#fr-style [data-s]").forEach(b => b.classList.toggle("on", b.dataset.s === d.style)); };
-    $("#fr-col").onclick = e => { const b = e.target.closest("[data-c]"); if (!b) return; d.frosting = b.dataset.c; save(); sync(); buddy.bop(cheer([`${b.title}!`, "Ooh pretty", "Yum", "Good choice", "Love it"])); };
-    $("#fr-any").oninput = e => { d.frosting = e.target.value; save(); sync(); }; $("#fr-any").onchange = () => buddy.bop("Your own colour!");
+    $("#fr-col").onclick = e => { const b = e.target.closest("[data-c]"); if (!b) return; d.frosting = b.dataset.c; save(); sync(); buddy.bop(cheer([`${b.title}!`, "Ooh pretty", "Yum", "Good choice"])); };
     $("#fr-style").onclick = e => { const b = e.target.closest("[data-s]"); if (!b) return; d.style = b.dataset.s; save(); sync(); buddy.bop(cheer(["Fancy!", "Ooh", "Nice", "So pro"])); };
-    $("#fr-back").onclick = () => { buddy.bop("Back to the oven"); d.bake = null; go("bake"); };
     $("#fr-next").onclick = () => { buddy.bop("Toppings!!"); go("top"); };
+    buddy.say("idle", "Pick a style. You can change the colour too");
     sync();
   }
 
@@ -3142,12 +3346,12 @@ function renderBake(view, pv) {
     el.insertAdjacentHTML("beforeend", `<div class="bk2-ctrl"><p class="bk2-msg">Made from scratch, by you. It looks delicious 💕<br><strong>Tomorrow's candle lights at midnight.</strong></p>
       <div class="bk2-row"><button class="btn ghost sm" id="dn-edit" type="button">← Change something</button><button class="btn ghost sm" id="dn-new" type="button">Bake a new one</button></div></div>`);
     $("#dn-edit").onclick = () => { buddy.bop("Let's tweak it"); go("write"); };
-    $("#dn-new").onclick = () => { buddy.bop("Another one!"); Object.assign(d, { step: "mix", added: [], stir: 0, bake: null, toppings: [], strokes: [], seed: 1 + (Math.random() * 9999 | 0) }); save(); draw(); };
+    $("#dn-new").onclick = () => { buddy.bop("Another one!"); Object.assign(d, { step: "mix", task: 0, fphase: null, bake: null, frosting: "#3d1d0e", style: "drip", toppings: [], strokes: [], seed: 1 + (Math.random() * 9999 | 0) }); save(); draw(); };
     buddy.say("joy", "We made it together!! 🎂", { burst: "big" });
   }
 
   draw();
-  if (d.step === "mix" && !d.added.length) buddy.say("idle", "Let's bake! Apron on 👨‍🍳");
+  
 }
 
 function renderBakers(view, pv) {
