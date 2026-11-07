@@ -2771,9 +2771,9 @@ function renderCrossword(view, pv) {
 }
 
 /* ---------- Day 8: bake his birthday cake (mix → bake → frost → toppings → write) ---------- */
-const CKG = { W: 680, H: 620, CX: 340, TOP: 236, RX: 250, RY: 64, SIDE: 210 };
+const CKG = { W: 680, H: 640, CX: 340, TOP: 215, RX: 205, RY: 82, SIDE: 215 };
 CKG.BOT = CKG.TOP + CKG.SIDE;
-const CK_CANDLES = { two: [150, 226], seven: [530, 226] };
+const CK_CANDLES = { two: [200, 207], seven: [480, 207] };
 const CK_FROST = [["Chocolate", "#3d1d0e"], ["Vanilla", "#f6ede2"], ["Pink", "#f4b3c6"], ["Red velvet", "#cf4357"], ["Lavender", "#c6b2ea"], ["Mint", "#aee0c9"], ["Baby blue", "#b5d3f1"], ["Caramel", "#d4974e"]];
 const CK_PENS = [["White", "#fffaf2"], ["Gold", "#e8b84a"], ["Pink", "#ef7f9f"], ["Red", "#c8323f"], ["Dark chocolate", "#2a1206"]];
 const CK_TOPS = [["strawberry", "Strawberry"], ["blackberry", "Blackberry"], ["blueberry", "Blueberry"], ["cherry", "Cherry"], ["swirl", "Cream swirl"], ["macaron", "Macaron"], ["heart", "Heart"], ["star", "Star"], ["sprinkles", "Sprinkles"], ["pearls", "Gold pearls"]];
@@ -2785,107 +2785,124 @@ function ckSeed(seed) { let s = seed || 1; return () => (s = (s * 16807) % 21474
 function ckClamp(x, y) { const dx = (x - CKG.CX) / (CKG.RX - 26), dy = (y - CKG.TOP) / (CKG.RY - 10), r = Math.hypot(dx, dy); return r <= 1 ? [x, y] : [CKG.CX + dx / r * (CKG.RX - 26), CKG.TOP + dy / r * (CKG.RY - 10)]; }
 
 function ckTopping(x, kind, px, py, s = 1, seed = 1) {
-  const R = ckSeed(seed * 97 + 13);
-  x.save(); x.translate(px, py); x.scale(s, s);
-  const blob = (cx, cy, r, c, hl = .45) => { const g = x.createRadialGradient(cx - r * .35, cy - r * .4, r * .1, cx, cy, r); g.addColorStop(0, ckTint(c, hl)); g.addColorStop(.55, c); g.addColorStop(1, ckTint(c, -.35)); x.fillStyle = g; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill(); };
-  const shadow = (w = 18, h = 6) => { x.fillStyle = "rgba(20,8,2,.22)"; x.beginPath(); x.ellipse(2, 4, w, h, 0, 0, 7); x.fill(); };
+  const R = ckSeed(seed * 97 + 13), OL = "#3b2229";
+  x.save(); x.translate(px, py); x.scale(s, s); x.lineJoin = "round"; x.lineCap = "round";
+  const ink = (fill, w = 2.4) => { x.fillStyle = fill; x.fill(); x.lineWidth = w; x.strokeStyle = OL; x.stroke(); };
+  const hl = (a, b, w, h, r = -.6) => { x.fillStyle = "rgba(255,255,255,.85)"; x.beginPath(); x.ellipse(a, b, w, h, r, 0, 7); x.fill(); };
+  const shadow = (w = 16, h = 5) => { x.fillStyle = "rgba(40,15,20,.18)"; x.beginPath(); x.ellipse(2, 3, w, h, 0, 0, 7); x.fill(); };
   if (kind === "strawberry") {
-    shadow(17, 6); x.rotate((R() - .5) * .6);
-    const g = x.createRadialGradient(-6, -14, 2, 0, -8, 24); g.addColorStop(0, "#ff8a8a"); g.addColorStop(.5, "#e3263a"); g.addColorStop(1, "#9c1020");
-    x.fillStyle = g; x.beginPath(); x.moveTo(0, 6); x.bezierCurveTo(-20, -4, -18, -30, 0, -28); x.bezierCurveTo(18, -30, 20, -4, 0, 6); x.fill();
-    x.fillStyle = "#ffe08a"; for (let i = 0; i < 9; i++) { const a = R() * 6.28, r = R() * 11; x.beginPath(); x.ellipse(Math.cos(a) * r * .9, -12 + Math.sin(a) * r * .8, 1.2, 1.8, a, 0, 7); x.fill(); }
-    x.fillStyle = "#3f8a3a"; for (let i = -2; i <= 2; i++) { x.beginPath(); x.ellipse(i * 4.5, -28, 3.2, 8, i * .5, 0, 7); x.fill(); }
-    x.fillStyle = "#2f6d2c"; x.fillRect(-1, -38, 2.5, 8);
+    shadow(15, 5); x.rotate((R() - .5) * .5);
+    x.beginPath(); x.moveTo(0, 4); x.bezierCurveTo(-19, -5, -17, -29, 0, -27); x.bezierCurveTo(17, -29, 19, -5, 0, 4); ink("#e8394b");
+    x.fillStyle = "#b8202f"; x.beginPath(); x.moveTo(6, 0); x.bezierCurveTo(15, -8, 15, -22, 9, -26); x.bezierCurveTo(14, -16, 12, -6, 6, 0); x.fill();
+    x.fillStyle = "#ffe08a"; for (let i = 0; i < 8; i++) { const a = R() * 6.28, r = R() * 10; x.beginPath(); x.ellipse(Math.cos(a) * r * .9, -12 + Math.sin(a) * r * .8, 1.2, 1.9, a, 0, 7); x.fill(); }
+    hl(-8, -19, 3, 1.8);
+    x.beginPath(); for (let i = 0; i < 5; i++) { const a = Math.PI + i * Math.PI / 4; x.lineTo(Math.cos(a) * 10, -27 + Math.sin(a) * 5); x.lineTo(Math.cos(a + .4) * 3, -27 + Math.sin(a + .4) * 2); } x.closePath(); ink("#57a548", 2);
   } else if (kind === "blackberry") {
-    shadow(14, 5); for (const [a, b] of [[0, -6], [-7, -10], [7, -10], [-6, -2], [6, -2], [0, -14], [-3, -18], [4, -18], [0, 1]]) blob(a, b, 5.2, "#3a1f4d", .35);
+    shadow(13, 5); for (const [a, b] of [[0, 0], [-7, -4], [7, -4], [-6, -11], [6, -11], [0, -8], [-2, -17], [4, -17]]) { x.beginPath(); x.arc(a, b - 4, 5.2, 0, 7); ink("#4a2a63", 1.6); hl(a - 1.5, b - 6, 1.5, 1); }
   } else if (kind === "blueberry") {
-    shadow(12, 5); blob(0, -9, 11, "#3c4f96", .35); x.fillStyle = "rgba(20,25,60,.7)"; x.beginPath(); x.arc(0, -14, 3, 0, 7); x.fill(); x.fillStyle = "rgba(255,255,255,.35)"; x.beginPath(); x.ellipse(-4, -13, 3, 1.6, -.6, 0, 7); x.fill();
+    shadow(11, 4); x.beginPath(); x.arc(0, -9, 10.5, 0, 7); ink("#4a63b5"); x.fillStyle = "#2a3466"; x.beginPath(); for (let i = 0; i < 10; i++) { const r = i % 2 ? 1.4 : 3.6, a = i * Math.PI / 5; x.lineTo(Math.cos(a) * r, -13 + Math.sin(a) * r * .6); } x.fill(); hl(-4, -13, 2.6, 1.6);
   } else if (kind === "cherry") {
-    shadow(13, 5); x.strokeStyle = "#5a3a1c"; x.lineWidth = 2.5; x.lineCap = "round"; x.beginPath(); x.moveTo(0, -18); x.quadraticCurveTo(4, -34, 13, -40); x.stroke();
-    blob(0, -10, 12, "#c3122c", .5); x.fillStyle = "rgba(255,255,255,.7)"; x.beginPath(); x.ellipse(-4, -15, 3.5, 2, -.6, 0, 7); x.fill();
+    shadow(12, 4); x.strokeStyle = OL; x.lineWidth = 4.5; x.beginPath(); x.moveTo(0, -18); x.quadraticCurveTo(3, -34, 12, -42); x.stroke(); x.strokeStyle = "#7a5a2c"; x.lineWidth = 2; x.stroke();
+    x.beginPath(); x.arc(0, -9, 12, 0, 7); ink("#d81f3a"); x.fillStyle = "#a3122a"; x.beginPath(); x.arc(0, -9, 12, -.6, 1.6); x.arc(-2, -11, 9, 1.6, -.6, true); x.fill(); x.lineWidth = 2.4; x.strokeStyle = OL; x.beginPath(); x.arc(0, -9, 12, 0, 7); x.stroke(); hl(-5, -14, 3.6, 2);
   } else if (kind === "swirl") {
-    shadow(19, 6); const c = "#fbf4ea";
-    [[0, -2, 19, 8], [0, -11, 15, 7], [0, -19, 10, 6], [1, -26, 5, 5]].forEach(([a, b, w, h]) => { const g = x.createLinearGradient(0, b - h, 0, b + h); g.addColorStop(0, "#ffffff"); g.addColorStop(1, "#e2d3c2"); x.fillStyle = g; x.beginPath(); x.ellipse(a, b, w, h, 0, 0, 7); x.fill(); });
-    x.strokeStyle = "rgba(170,140,115,.45)"; x.lineWidth = 1.2; [[-2, 18, 7], [-11, 14, 6], [-19, 9, 5]].forEach(([b, w, h]) => { x.beginPath(); x.ellipse(0, b, w, h * .6, 0, .2, 2.6); x.stroke(); }); void c;
+    shadow(18, 5);
+    [[0, -3, 18, 8], [0, -12, 14, 7], [0, -20, 9, 6], [1, -27, 4.5, 4.5]].forEach(([a, b, w, h]) => { x.beginPath(); x.ellipse(a, b, w, h, 0, 0, 7); ink("#fffaf2", 2); });
+    x.strokeStyle = "rgba(160,120,110,.6)"; x.lineWidth = 1.4; [[-3, 13, 6], [-12, 10, 5], [-20, 6, 4]].forEach(([b, w, h]) => { x.beginPath(); x.ellipse(0, b, w, h * .55, 0, .3, 2.6); x.stroke(); });
   } else if (kind === "macaron") {
-    shadow(17, 6); const col = ["#f4a7bd", "#bfe3c9", "#cdb8f0", "#f7d58a"][seed % 4];
-    const shell = (b) => { const g = x.createLinearGradient(0, b - 7, 0, b + 7); g.addColorStop(0, ckTint(col, .35)); g.addColorStop(1, ckTint(col, -.15)); x.fillStyle = g; x.beginPath(); x.ellipse(0, b, 17, 7, 0, 0, 7); x.fill(); };
-    shell(-4); x.fillStyle = "#fff7ec"; x.fillRect(-15, -14, 30, 5); shell(-17);
+    shadow(16, 5); const col = ["#f4a7bd", "#a9dcc0", "#c9b4ef", "#f6cf7f"][seed % 4];
+    x.beginPath(); x.ellipse(0, -5, 16, 7, 0, 0, 7); ink(col); x.beginPath(); x.rect(-14, -14, 28, 6); ink("#fff7ec", 2); x.beginPath(); x.ellipse(0, -17, 16, 7, 0, 0, 7); ink(col); hl(-6, -20, 4, 1.6, 0);
   } else if (kind === "heart") {
-    shadow(14, 5); const g = x.createLinearGradient(0, -26, 0, 4); g.addColorStop(0, "#ff8fa8"); g.addColorStop(1, "#c8284a");
-    x.fillStyle = g; x.beginPath(); x.moveTo(0, 2); x.bezierCurveTo(-22, -12, -12, -30, 0, -19); x.bezierCurveTo(12, -30, 22, -12, 0, 2); x.fill();
-    x.fillStyle = "rgba(255,255,255,.55)"; x.beginPath(); x.ellipse(-7, -18, 3.5, 2, -.7, 0, 7); x.fill();
+    shadow(13, 4); x.beginPath(); x.moveTo(0, 2); x.bezierCurveTo(-22, -12, -12, -30, 0, -19); x.bezierCurveTo(12, -30, 22, -12, 0, 2); ink("#ef5b7c"); hl(-7, -18, 3.4, 2);
   } else if (kind === "star") {
-    shadow(14, 5); const g = x.createLinearGradient(0, -30, 0, 2); g.addColorStop(0, "#fff1b8"); g.addColorStop(.5, "#f0c24a"); g.addColorStop(1, "#b98614");
-    x.fillStyle = g; x.beginPath(); for (let i = 0; i < 10; i++) { const r = i % 2 ? 7 : 16, a = -Math.PI / 2 + i * Math.PI / 5; x.lineTo(Math.cos(a) * r, -13 + Math.sin(a) * r); } x.closePath(); x.fill();
+    shadow(13, 4); x.beginPath(); for (let i = 0; i < 10; i++) { const r = i % 2 ? 7 : 16, a = -Math.PI / 2 + i * Math.PI / 5; x.lineTo(Math.cos(a) * r, -13 + Math.sin(a) * r); } x.closePath(); ink("#f6c84c"); hl(-4, -18, 2.6, 1.6);
   } else if (kind === "sprinkles") {
-    const cols = ["#f06a8a", "#ffd166", "#7bd3b0", "#8fb8f2", "#ffffff", "#c9a5f0"];
-    for (let i = 0; i < 22; i++) { const a = R() * 6.28, r = Math.sqrt(R()) * 38; x.save(); x.translate(Math.cos(a) * r, Math.sin(a) * r * .45); x.rotate(R() * 3.14); x.fillStyle = cols[i % cols.length]; x.beginPath(); x.roundRect ? x.roundRect(-4.5, -1.5, 9, 3, 1.5) : x.rect(-4.5, -1.5, 9, 3); x.fill(); x.restore(); }
+    const cols = ["#f06a8a", "#ffd166", "#6fcf9f", "#7fb0f0", "#ffffff", "#c49af0"];
+    for (let i = 0; i < 24; i++) { const a = R() * 6.28, r = Math.sqrt(R()) * 40; x.save(); x.translate(Math.cos(a) * r, Math.sin(a) * r * .55); x.rotate(R() * 3.14); x.beginPath(); x.roundRect ? x.roundRect(-5, -1.8, 10, 3.6, 1.8) : x.rect(-5, -1.8, 10, 3.6); x.fillStyle = cols[i % cols.length]; x.fill(); x.lineWidth = .8; x.strokeStyle = "rgba(59,34,41,.5)"; x.stroke(); x.restore(); }
   } else if (kind === "pearls") {
-    for (let i = 0; i < 12; i++) { const a = R() * 6.28, r = Math.sqrt(R()) * 30; blob(Math.cos(a) * r, Math.sin(a) * r * .45, 3.4 + R() * 1.6, "#e2b24a", .6); }
+    for (let i = 0; i < 12; i++) { const a = R() * 6.28, r = Math.sqrt(R()) * 30, cx = Math.cos(a) * r, cy = Math.sin(a) * r * .55, rr = 3.6 + R() * 1.6; x.beginPath(); x.arc(cx, cy, rr, 0, 7); ink("#f0c04e", 1.3); hl(cx - 1.2, cy - 1.4, 1.2, .8); }
   }
   x.restore();
 }
 
 function ckCake(x, d, o = {}) {
-  const { CX, TOP, RX, RY, BOT } = CKG, fr = d.frosting || "#3d1d0e", sponge = CK_SPONGE[d.bake] || CK_SPONGE.perfect, style = d.style || "drip";
+  const { CX, TOP, RX, RY, BOT } = CKG, OL = "#3b2229", fr = d.frosting || "#3d1d0e", sponge = CK_SPONGE[d.bake] || CK_SPONGE.perfect, style = d.style || "drip";
+  const light = h => { const [r, g, b] = ckRgb(h); return (r * .3 + g * .59 + b * .11) / 255 > .62; };
+  const band = base => { const g = x.createLinearGradient(CX - RX, 0, CX + RX, 0), dk = ckTint(base, -.22), lt = ckTint(base, .2);
+    [[0, dk], [.07, dk], [.07, base], [.15, base], [.15, lt], [.23, lt], [.23, base], [.8, base], [.8, dk], [1, dk]].forEach(([o, c]) => g.addColorStop(o, c)); return g; };
+  const ink = (w = 5) => { x.lineWidth = w; x.strokeStyle = OL; x.lineJoin = "round"; x.lineCap = "round"; x.stroke(); };
+  const silhouette = () => { x.beginPath(); x.moveTo(CX - RX, TOP); x.ellipse(CX, TOP, RX, RY, 0, Math.PI, 0, false); x.lineTo(CX + RX, BOT); x.ellipse(CX, BOT, RX, RY, 0, 0, Math.PI, false); x.closePath(); };
+  const sidePath = () => { x.beginPath(); x.moveTo(CX - RX, TOP); x.lineTo(CX - RX, BOT); x.ellipse(CX, BOT, RX, RY, 0, Math.PI, 0, true); x.lineTo(CX + RX, TOP); x.ellipse(CX, TOP, RX, RY, 0, 0, Math.PI, false); x.closePath(); };
+  const rosette = (px, py, s, col) => { x.beginPath(); x.arc(px, py, 12 * s, 0, 7); x.fillStyle = col; x.fill(); x.lineWidth = 2.2; x.strokeStyle = OL; x.stroke();
+    x.beginPath(); x.arc(px - 1 * s, py - 1 * s, 6 * s, .3, 4.6); x.lineWidth = 1.6; x.strokeStyle = ckTint(col, -.3); x.stroke(); x.fillStyle = "rgba(255,255,255,.75)"; x.beginPath(); x.ellipse(px - 4 * s, py - 5 * s, 2.6 * s, 1.5 * s, -.6, 0, 7); x.fill(); };
   x.clearRect(0, 0, CKG.W, CKG.H);
-  // plate
-  x.fillStyle = "rgba(30,14,6,.18)"; x.beginPath(); x.ellipse(CX, BOT + 38, 318, 70, 0, 0, 7); x.fill();
-  let g = x.createLinearGradient(0, BOT - 60, 0, BOT + 100); g.addColorStop(0, "#ffffff"); g.addColorStop(1, "#e9e1d6");
-  x.fillStyle = g; x.beginPath(); x.ellipse(CX, BOT + 22, 312, 84, 0, 0, 7); x.fill();
-  x.strokeStyle = "#d9cfc2"; x.lineWidth = 3; x.beginPath(); x.ellipse(CX, BOT + 18, 278, 66, 0, 0, 7); x.stroke();
-  x.fillStyle = "rgba(60,30,10,.25)"; x.beginPath(); x.ellipse(CX, BOT + 6, RX + 8, RY * .8, 0, 0, 7); x.fill();
-  // side of the cake
-  const side = () => { x.beginPath(); x.moveTo(CX - RX, TOP); x.lineTo(CX - RX, BOT); x.ellipse(CX, BOT, RX, RY, 0, Math.PI, 0, true); x.lineTo(CX + RX, TOP); x.ellipse(CX, TOP, RX, RY, 0, 0, Math.PI, false); x.closePath(); };
-  const shadeSide = (base) => { const s = x.createLinearGradient(CX - RX, 0, CX + RX, 0); s.addColorStop(0, ckTint(base, -.45)); s.addColorStop(.18, ckTint(base, -.1)); s.addColorStop(.36, ckTint(base, .12)); s.addColorStop(.62, base); s.addColorStop(1, ckTint(base, -.5)); return s; };
-  x.save(); side(); x.clip();
-  if (style === "smooth") { x.fillStyle = shadeSide(fr); x.fillRect(CX - RX, TOP - RY, RX * 2, BOT - TOP + RY * 2); }
-  else {
-    x.fillStyle = shadeSide(sponge); x.fillRect(CX - RX, TOP - RY, RX * 2, BOT - TOP + RY * 2);
-    const fill = ckTint(fr, fr === "#3d1d0e" ? .82 : .25);
-    [TOP + 78, TOP + 146].forEach(y => { x.fillStyle = shadeSide(fill.startsWith("rgb") ? ckHex(fill) : fill); x.beginPath(); x.ellipse(CX, y, RX, RY, 0, 0, Math.PI); x.ellipse(CX, y + 16, RX, RY, 0, Math.PI, 0, true); x.closePath(); x.fill(); });
-    // crumb texture
-    const R = ckSeed(d.seed || 3); x.fillStyle = "rgba(0,0,0,.08)"; for (let i = 0; i < 160; i++) { x.beginPath(); x.arc(CX - RX + R() * RX * 2, TOP + R() * (BOT - TOP + RY), 1 + R() * 1.6, 0, 7); x.fill(); }
+
+  // scalloped cake board
+  const by = BOT + 26, brx = RX + 72, bry = RY + 30;
+  const board = (dy) => { x.beginPath(); for (let k = 0; k <= 360; k++) { const t = k / 360 * Math.PI * 2, bump = 1 + .035 * Math.abs(Math.sin(t * 17)); x.lineTo(CX + Math.cos(t) * brx * bump, by + dy + Math.sin(t) * bry * bump); } x.closePath(); };
+  board(10); x.fillStyle = "#b8922f"; x.fill(); ink(4.5);
+  board(0); x.fillStyle = "#e3bf55"; x.fill(); ink(4.5);
+  x.fillStyle = "#fff6d8"; for (let k = 0; k < 34; k++) { const t = k / 34 * Math.PI * 2; x.beginPath(); x.arc(CX + Math.cos(t) * (brx - 16), by + Math.sin(t) * (bry - 10), 3, 0, 7); x.fill(); }
+  x.fillStyle = "rgba(60,25,15,.22)"; x.beginPath(); x.ellipse(CX, BOT + 8, RX + 6, RY + 4, 0, 0, 7); x.fill();
+
+  // side
+  const sideCol = style === "smooth" ? fr : sponge;
+  sidePath(); x.fillStyle = band(sideCol); x.fill();
+  x.save(); sidePath(); x.clip();
+  if (style !== "smooth") {
+    const fillCol = fr === "#3d1d0e" ? "#f3dcc4" : ckHex(ckTint(fr, .15));
+    [TOP + 72, TOP + 144].forEach(y => { x.beginPath(); x.ellipse(CX, y, RX, RY, 0, 0, Math.PI); x.ellipse(CX, y + 18, RX, RY, 0, Math.PI, 0, true); x.closePath(); x.fillStyle = band(fillCol); x.fill();
+      x.lineWidth = 2; x.strokeStyle = "rgba(59,34,41,.55)"; x.beginPath(); x.ellipse(CX, y, RX, RY, 0, 0, Math.PI); x.stroke(); x.beginPath(); x.ellipse(CX, y + 18, RX, RY, 0, 0, Math.PI); x.stroke(); });
+    const R = ckSeed(d.seed || 3); x.strokeStyle = ckTint(sponge, -.35); x.lineWidth = 2;
+    for (let i = 0; i < 70; i++) { const px = CX - RX + 20 + R() * (RX * 2 - 40), py = TOP + 30 + R() * (BOT - TOP + RY - 40); x.beginPath(); x.moveTo(px, py); x.lineTo(px + 3 + R() * 4, py + 4 + R() * 5); x.stroke(); }
+  } else {
+    // swags and dots, like a piped vintage cake
+    const swag = light(fr) ? ckHex(ckTint(fr, -.45)) : "#fff6ec", swag2 = light(fr) ? "#ffffff" : ckHex(ckTint(fr, .45));
+    const row = (y0, col, n, off) => { const pts = []; for (let i = 0; i <= n; i++) { const t = Math.PI * (i + off) / n; if (t > Math.PI) break; pts.push([CX + RX * Math.cos(t), y0 + RY * Math.sin(t)]); }
+      x.strokeStyle = col; x.lineWidth = 3.5; for (let i = 0; i < pts.length - 1; i++) { const [a, b] = pts[i], [c, e] = pts[i + 1]; x.beginPath(); x.moveTo(a, b); x.quadraticCurveTo((a + c) / 2, (b + e) / 2 + 30, c, e); x.stroke(); }
+      x.fillStyle = col; pts.forEach(([a, b]) => { x.beginPath(); x.arc(a, b, 4.5, 0, 7); x.fill(); }); };
+    row(TOP + 46, swag, 8, 0); row(TOP + 116, swag2, 8, .5);
   }
   x.restore();
-  // drips over the front edge
+  sidePath(); ink();
+
+  // drips
   if (style === "drip") {
-    const R = ckSeed((d.seed || 3) + 5), bumps = Array.from({ length: 11 }, (_, i) => [(.15 + i * .28 + (R() - .5) * .12), .05 + R() * .03, 25 + R() * 70]);
+    const R = ckSeed((d.seed || 3) + 5), bumps = Array.from({ length: 9 }, (_, i) => [(.2 + i * .34 + (R() - .5) * .14), .06 + R() * .03, 30 + R() * 75]);
     const N = 200, top = [], bot = [];
-    for (let k = 0; k <= N; k++) { const t = k / N * Math.PI, px = CX + RX * Math.cos(t), py = TOP + RY * Math.sin(t); let dd = 14; for (const [c, w, l] of bumps) dd += l * Math.exp(-(((t - c) / w) ** 2)); top.push([px, py]); bot.push([px, py + dd * Math.sin(Math.min(1, t * 6, (Math.PI - t) * 6) * Math.PI / 2)]); }
-    const dg = x.createLinearGradient(CX - RX, 0, CX + RX, 0); dg.addColorStop(0, ckTint(fr, -.4)); dg.addColorStop(.35, ckTint(fr, .1)); dg.addColorStop(.7, fr); dg.addColorStop(1, ckTint(fr, -.45));
-    x.fillStyle = dg; x.beginPath(); top.forEach(([a, b], i) => i ? x.lineTo(a, b) : x.moveTo(a, b)); bot.slice().reverse().forEach(([a, b]) => x.lineTo(a, b)); x.closePath(); x.fill();
-    x.strokeStyle = "rgba(255,255,255,.25)"; x.lineWidth = 3; x.lineCap = "round"; x.beginPath(); bot.slice(110, 160).forEach(([a, b], i) => i ? x.lineTo(a, b - 6) : x.moveTo(a, b - 6)); x.stroke();
+    for (let k = 0; k <= N; k++) { const t = k / N * Math.PI, px = CX + RX * Math.cos(t), py = TOP + RY * Math.sin(t); let dd = 16; for (const [c, w, l] of bumps) dd += l * Math.exp(-(((t - c) / w) ** 2)); top.push([px, py]); bot.push([px, py + dd * Math.sin(Math.min(1, t * 8, (Math.PI - t) * 8) * Math.PI / 2)]); }
+    x.beginPath(); top.forEach(([a, b], i) => i ? x.lineTo(a, b) : x.moveTo(a, b)); bot.slice().reverse().forEach(([a, b]) => x.lineTo(a, b)); x.closePath();
+    const dg = x.createLinearGradient(CX - RX, 0, CX + RX, 0); [[0, ckTint(fr, -.3)], [.08, ckTint(fr, -.3)], [.08, ckTint(fr, -.08)], [.8, ckTint(fr, -.08)], [.8, ckTint(fr, -.3)], [1, ckTint(fr, -.3)]].forEach(([o, c]) => dg.addColorStop(o, c));
+    x.fillStyle = dg; x.fill();
+    x.beginPath(); bot.forEach(([a, b], i) => i ? x.lineTo(a, b) : x.moveTo(a, b)); ink(4.5);
+    x.strokeStyle = "rgba(255,255,255,.8)"; x.lineWidth = 3.5; bumps.forEach(([c, , l]) => { if (l < 45) return; const k = Math.round(c / Math.PI * N); if (k < 22 || k > N - 22 || bot[k][1] - top[k][1] < 45) return; const [a, b] = top[k]; x.beginPath(); x.moveTo(a - 5, b + 12); x.lineTo(a - 5, b + (bot[k][1] - top[k][1]) * .6); x.stroke(); });
   }
-  // writing, piped onto the front
-  x.save(); side(); x.clip();
-  (d.strokes || []).forEach(s => ckPipe(x, s));
-  if (o.live) ckPipe(x, o.live);
-  x.restore();
+
   // top
-  g = x.createRadialGradient(CX - 60, TOP - 20, 10, CX, TOP, RX); g.addColorStop(0, ckTint(fr, .22)); g.addColorStop(.7, fr); g.addColorStop(1, ckTint(fr, -.25));
-  x.fillStyle = g; x.beginPath(); x.ellipse(CX, TOP, RX, RY, 0, 0, 7); x.fill();
-  x.strokeStyle = "rgba(255,255,255,.18)"; x.lineWidth = 2; x.beginPath(); x.ellipse(CX, TOP - 2, RX - 6, RY - 4, 0, Math.PI * 1.05, Math.PI * 1.6); x.stroke();
-  // piped border
-  const rosette = (px, py, s) => { const c = style === "smooth" ? ckTint(fr, .35) : fr; const rg = x.createRadialGradient(px - 4 * s, py - 5 * s, 1, px, py, 12 * s); rg.addColorStop(0, ckTint(c, .45)); rg.addColorStop(1, ckTint(c, -.2)); x.fillStyle = rg; x.beginPath(); x.ellipse(px, py, 13 * s, 10 * s, 0, 0, 7); x.fill(); x.strokeStyle = "rgba(0,0,0,.12)"; x.lineWidth = 1.2; x.beginPath(); x.arc(px, py - 2 * s, 6 * s, .4, 4.2); x.stroke(); };
-  const ring = (front) => { for (let i = 0; i < 26; i++) { const t = i / 26 * Math.PI * 2; if ((Math.sin(t) > 0) !== front) continue; rosette(CX + (RX - 10) * Math.cos(t), TOP + (RY - 6) * Math.sin(t) - 4, .85 + .2 * Math.sin(t)); } };
-  if (style === "piped" || style === "smooth") ring(false);
-  // candle spots (only while decorating)
-  if (o.spots) { x.setLineDash([6, 6]); x.strokeStyle = "rgba(255,255,255,.7)"; x.lineWidth = 2; Object.values(CK_CANDLES).forEach(([a, b]) => { x.beginPath(); x.ellipse(a, b, 26, 9, 0, 0, 7); x.stroke(); }); x.setLineDash([]); }
-  // toppings, back to front
-  (d.toppings || []).slice().sort((a, b) => a[2] - b[2]).forEach(([k, px, py, sd]) => ckTopping(x, k, px, py, 1.25 + .4 * ((py - (TOP - RY)) / (RY * 2)), sd));
-  if (style === "piped" || style === "smooth") ring(true);
-  if (style === "smooth") { for (let i = 0; i < 30; i++) { const t = i / 29 * Math.PI; rosette(CX + RX * Math.cos(t), BOT + RY * Math.sin(t) - 6, .7 + .15 * Math.sin(t)); } }
+  x.beginPath(); x.ellipse(CX, TOP, RX, RY, 0, 0, 7); x.fillStyle = fr; x.fill();
+  x.save(); x.beginPath(); x.ellipse(CX, TOP, RX, RY, 0, 0, 7); x.clip(); x.fillStyle = ckTint(fr, -.12); x.beginPath(); x.ellipse(CX + 30, TOP + 22, RX, RY, 0, 0, 7); x.ellipse(CX, TOP, RX + 60, RY + 60, 0, 0, 7, true); x.fill("evenodd"); x.restore();
+  x.strokeStyle = "rgba(255,255,255,.55)"; x.lineWidth = 4; x.beginPath(); x.ellipse(CX, TOP, RX - 22, RY - 16, 0, Math.PI * 1.08, Math.PI * 1.42); x.stroke();
+  x.beginPath(); x.ellipse(CX, TOP, RX, RY, 0, 0, 7); ink();
+
+
+  // piped edges
+  const cream = light(fr) ? "#fffaf2" : "#fff3e4";
+  const ring = (front) => { for (let i = 0; i < 20; i++) { const t = i / 20 * Math.PI * 2; if ((Math.sin(t) > 0) !== front) continue; rosette(CX + (RX - 14) * Math.cos(t), TOP + (RY - 10) * Math.sin(t) - 3, 1 + .25 * Math.sin(t), cream); } };
+  if (style === "piped") ring(false);
+  if (o.spots) { x.setLineDash([7, 7]); x.strokeStyle = light(fr) ? "rgba(59,34,41,.5)" : "rgba(255,255,255,.75)"; x.lineWidth = 2.5; Object.values(CK_CANDLES).forEach(([a, b]) => { x.beginPath(); x.ellipse(a, b, 26, 11, 0, 0, 7); x.stroke(); }); x.setLineDash([]); }
+  (d.toppings || []).slice().sort((a, b) => a[2] - b[2]).forEach(([k, px, py, sd]) => ckTopping(x, k, px, py, 1.45 + .4 * ((py - (TOP - RY)) / (RY * 2)), sd));
+  if (style === "piped") ring(true);
+  if (style === "smooth" || style === "piped") { const bc = style === "smooth" ? (light(fr) ? "#b9c4f0" : cream) : cream; for (let i = 0; i <= 22; i++) { const t = i / 22 * Math.PI; rosette(CX + RX * Math.cos(t), BOT + RY * Math.sin(t) - 4, .8 + .2 * Math.sin(t), bc); } }
+  // writing goes on last, so it's never hidden under a topping
+  x.save(); silhouette(); x.clip(); (d.strokes || []).forEach(s => ckPipe(x, s)); if (o.live) ckPipe(x, o.live); x.restore();
 }
 function ckHex(s) { const m = s.match(/\d+/g).map(Number); return "#" + m.map(v => v.toString(16).padStart(2, "0")).join(""); }
 function ckPipe(x, s) {
   if (!s || !s.p || !s.p.length) return;
   const path = (dx, dy) => { x.beginPath(); s.p.forEach(([a, b], i) => i ? x.lineTo(a + dx, b + dy) : x.moveTo(a + dx, b + dy)); if (s.p.length === 1) x.lineTo(s.p[0][0] + dx + .1, s.p[0][1] + dy); };
   x.lineCap = "round"; x.lineJoin = "round";
-  x.strokeStyle = "rgba(0,0,0,.28)"; x.lineWidth = 10; path(0, 3); x.stroke();
-  x.strokeStyle = s.c; x.lineWidth = 9; path(0, 0); x.stroke();
-  x.strokeStyle = "rgba(255,255,255,.45)"; x.lineWidth = 2.5; path(-1.5, -2.5); x.stroke();
+  x.strokeStyle = "#3b2229"; x.lineWidth = 12; path(0, 1); x.stroke();
+  x.strokeStyle = s.c; x.lineWidth = 7.5; path(0, 0); x.stroke();
+  x.strokeStyle = "rgba(255,255,255,.55)"; x.lineWidth = 2; path(-1.2, -1.8); x.stroke();
 }
 
 function renderBake(view, pv) {
@@ -3047,7 +3064,7 @@ function renderBake(view, pv) {
   /* 5 · write */
   function stepWrite(el) {
     let pen = d.pen || CK_PENS[0][1], live = null;
-    el.innerHTML = `<p class="bk2-say">Write something on the front with your finger or mouse. It's piped on like icing.</p>`;
+    el.innerHTML = `<p class="bk2-say">Write on the top or the front with your finger or mouse. It's piped on like icing.</p>`;
     const { cv, x } = cakeStage(el);
     el.insertAdjacentHTML("beforeend", `<div class="bk2-pick"><span>Icing</span><div class="bk2-swatches" id="wr-pen">${CK_PENS.map(([n, c]) => `<button type="button" data-c="${c}" title="${n}" aria-label="${n}" style="--c:${c}"></button>`).join("")}</div></div>
       <div class="bk2-row"><button class="btn ghost" id="wr-undo" type="button">↶ Undo</button><button class="btn ghost" id="wr-clear" type="button">Clear</button></div>
