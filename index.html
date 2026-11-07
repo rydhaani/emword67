@@ -978,7 +978,7 @@ route();
   const im = document.querySelector(".cake-art image"); if (!im) return;
   const box = { x: 30, y: 100, w: 340, h: 310 }, s = Math.min(box.w / c.w, box.h / c.h);
   const ox = box.x + (box.w - c.w * s) / 2, oy = box.y + (box.h - c.h * s) / 2;
-  im.setAttribute("href", c.img); im.style.imageRendering = "pixelated";
+  im.setAttribute("href", c.img); im.style.imageRendering = c.smooth ? "auto" : "pixelated";
   document.querySelector(".cake-art").setAttribute("aria-label", "the chocolate cake you made together, with gold 2 and 7 candles");
   // move the 2 and 7 to where he placed them (each numeral's baseline sits on the cake top)
   [["c2", "two", 104], ["c7", "seven", 300]].forEach(([id, k, nx]) => {

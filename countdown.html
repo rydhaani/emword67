@@ -550,6 +550,47 @@ body.mu-lock { overflow: hidden; }
 .cw-tools .nt-side { height: 40px; font-size: 14px; }
 @media (max-width: 560px) { .cw-lists { grid-template-columns: minmax(0, 1fr); } .cw-grid { gap: 2px; } .cw-cell { border-radius: 4px; border-width: 1px; } }
 @media (prefers-reduced-motion: reduce) { .cw-cell { animation: none !important; transition: none; } }
+
+/* ---------- day 8: bake the cake ---------- */
+.bk2 { display: grid; gap: 14px; min-width: 0; }
+.bk2-steps { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; }
+.bk2-steps li { font: 800 12px var(--body); letter-spacing: .04em; padding: 5px 11px; border-radius: 999px; background: var(--tint, #f7f3f5); color: var(--soft); }
+.bk2-steps li.past { background: #e3f3e8; color: #2f7d4f; }
+.bk2-steps li.now { background: var(--ink); color: #fff; }
+.bk2-say { margin: 0; text-align: center; font-weight: 700; color: var(--ink); min-height: 1.4em; }
+.bk2-say.big { font: 400 32px var(--display); color: var(--ink); }
+.bk2-stage { position: relative; width: 100%; max-width: 560px; justify-self: center; container-type: inline-size; }
+.bk2-stage canvas { display: block; width: 100%; height: auto; touch-action: none; }
+.bk2-stage.cake canvas { cursor: pointer; }
+.bk2-stage.cake canvas.draw { cursor: crosshair; }
+.bk2-drop { position: absolute; top: 0; font-size: 40px; pointer-events: none; animation: bkDrop .8s cubic-bezier(.5,0,.8,.6) forwards; }
+@keyframes bkDrop { to { transform: translateY(150px) scale(.6) rotate(25deg); opacity: 0; } }
+.bk2-meter { position: absolute; left: 20%; right: 20%; bottom: 0; height: 8px; border-radius: 99px; background: #eadfe4; overflow: hidden; }
+.bk2-meter i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #8b4a2b, #4c2615); border-radius: 99px; transition: width .1s; }
+.bk2-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.bk2-chip { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--line); background: #fff; border-radius: 999px; padding: 8px 14px; font: 800 14px var(--body); color: var(--ink); cursor: pointer; }
+.bk2-chip span { font-size: 20px; }
+.bk2-chip:disabled { opacity: .35; cursor: default; }
+.bk2-chip.on { border-color: var(--ink); background: var(--tint, #f7f3f5); }
+.bk2-gauge { position: relative; display: grid; grid-template-columns: 42fr 20fr 38fr; height: 30px; border-radius: 999px; overflow: hidden; max-width: 460px; width: 100%; justify-self: center; font: 800 11px var(--body); text-transform: uppercase; letter-spacing: .08em; }
+.bk2-gauge span { display: grid; place-items: center; color: #fff; }
+.bk2-gauge .z1 { background: #d9b48a; } .bk2-gauge .z2 { background: #e9b84a; color: #5a3a00; } .bk2-gauge .z3 { background: #6b3a20; }
+.bk2-gauge i { position: absolute; top: -2px; bottom: -2px; width: 5px; margin-left: -2.5px; background: var(--ink); border: 2px solid #fff; border-radius: 4px; left: 0; }
+.bk2-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; }
+.bk2-pick { display: grid; justify-items: center; gap: 8px; }
+.bk2-pick > span { font: 800 12px var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--soft); }
+.bk2-swatches { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.bk2-swatches button, .bk2-custom { width: 40px; height: 40px; border-radius: 50%; border: 3px solid #fff; background: var(--c); box-shadow: 0 0 0 1.5px var(--line); cursor: pointer; padding: 0; position: relative; }
+.bk2-swatches button.on { box-shadow: 0 0 0 3px var(--ink); }
+.bk2-custom { background: conic-gradient(#f4b3c6, #f2c14e, #aee0c9, #b5d3f1, #c6b2ea, #f4b3c6); display: grid; place-items: center; overflow: hidden; }
+.bk2-custom input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.bk2-custom span { font-size: 16px; pointer-events: none; }
+.bk2-tops { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; max-width: 560px; width: 100%; justify-self: center; }
+.bk2-tops button { display: grid; justify-items: center; gap: 2px; border: 1.5px solid var(--line); background: #fff; border-radius: 14px; padding: 6px 2px; cursor: pointer; font: 700 11px var(--body); color: var(--ink); }
+.bk2-tops button.on { border-color: var(--ink); background: var(--tint, #f7f3f5); }
+.bk2-tops canvas { width: 44px; height: 44px; }
+.bk2-num { position: absolute; transform: translate(-50%, -100%); font: 400 15cqw/1 Georgia, serif; font-weight: 700; background: linear-gradient(#fff6d2, #f6d26c 30%, #c8952b 58%, #f4cf68 80%, #9a6c12); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 2px 2px rgba(60,30,0,.35)); pointer-events: none; }
+@media (max-width: 480px) { .bk2-tops { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; } .bk2-tops span { font-size: 9.5px; } .bk2-swatches button, .bk2-custom { width: 36px; height: 36px; } }
 </style>
 </head>
 <body>
@@ -1173,7 +1214,7 @@ function route() {
   if (viewing === 5) return renderDay6(view, PV());   // pet theo moved to day 5
   if (viewing === 6) return renderDay7(view, PV());   // sliding puzzle moved to day 6
   if (viewing === 7) return renderCrossword(view, PV());
-  if (viewing === 8) return renderDay8(view, PV());
+  if (viewing === 8) return renderBake(view, PV());
   return renderPlaceholder(view, viewing, PV());
 }
 
@@ -2727,6 +2768,323 @@ function renderCrossword(view, pv) {
 
   paint();
   if (celebrated) finish(true); else buddy.say("idle", Object.keys(st.letters).length ? "Back for more? Let's finish it!" : "Every answer is about you two ✏️");
+}
+
+/* ---------- Day 8: bake his birthday cake (mix → bake → frost → toppings → write) ---------- */
+const CKG = { W: 680, H: 620, CX: 340, TOP: 236, RX: 250, RY: 64, SIDE: 210 };
+CKG.BOT = CKG.TOP + CKG.SIDE;
+const CK_CANDLES = { two: [150, 226], seven: [530, 226] };
+const CK_FROST = [["Chocolate", "#3d1d0e"], ["Vanilla", "#f6ede2"], ["Pink", "#f4b3c6"], ["Red velvet", "#cf4357"], ["Lavender", "#c6b2ea"], ["Mint", "#aee0c9"], ["Baby blue", "#b5d3f1"], ["Caramel", "#d4974e"]];
+const CK_PENS = [["White", "#fffaf2"], ["Gold", "#e8b84a"], ["Pink", "#ef7f9f"], ["Red", "#c8323f"], ["Dark chocolate", "#2a1206"]];
+const CK_TOPS = [["strawberry", "Strawberry"], ["blackberry", "Blackberry"], ["blueberry", "Blueberry"], ["cherry", "Cherry"], ["swirl", "Cream swirl"], ["macaron", "Macaron"], ["heart", "Heart"], ["star", "Star"], ["sprinkles", "Sprinkles"], ["pearls", "Gold pearls"]];
+const CK_SPONGE = { gooey: "#6e3c22", perfect: "#4c2615", crispy: "#2f160a" };
+
+function ckRgb(h) { const n = parseInt(h.slice(1), 16); return [n >> 16, n >> 8 & 255, n & 255]; }
+function ckTint(h, f) { const [r, g, b] = ckRgb(h), m = (c) => Math.round(f >= 0 ? c + (255 - c) * f : c * (1 + f)); return `rgb(${m(r)},${m(g)},${m(b)})`; }
+function ckSeed(seed) { let s = seed || 1; return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+function ckClamp(x, y) { const dx = (x - CKG.CX) / (CKG.RX - 26), dy = (y - CKG.TOP) / (CKG.RY - 10), r = Math.hypot(dx, dy); return r <= 1 ? [x, y] : [CKG.CX + dx / r * (CKG.RX - 26), CKG.TOP + dy / r * (CKG.RY - 10)]; }
+
+function ckTopping(x, kind, px, py, s = 1, seed = 1) {
+  const R = ckSeed(seed * 97 + 13);
+  x.save(); x.translate(px, py); x.scale(s, s);
+  const blob = (cx, cy, r, c, hl = .45) => { const g = x.createRadialGradient(cx - r * .35, cy - r * .4, r * .1, cx, cy, r); g.addColorStop(0, ckTint(c, hl)); g.addColorStop(.55, c); g.addColorStop(1, ckTint(c, -.35)); x.fillStyle = g; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill(); };
+  const shadow = (w = 18, h = 6) => { x.fillStyle = "rgba(20,8,2,.22)"; x.beginPath(); x.ellipse(2, 4, w, h, 0, 0, 7); x.fill(); };
+  if (kind === "strawberry") {
+    shadow(17, 6); x.rotate((R() - .5) * .6);
+    const g = x.createRadialGradient(-6, -14, 2, 0, -8, 24); g.addColorStop(0, "#ff8a8a"); g.addColorStop(.5, "#e3263a"); g.addColorStop(1, "#9c1020");
+    x.fillStyle = g; x.beginPath(); x.moveTo(0, 6); x.bezierCurveTo(-20, -4, -18, -30, 0, -28); x.bezierCurveTo(18, -30, 20, -4, 0, 6); x.fill();
+    x.fillStyle = "#ffe08a"; for (let i = 0; i < 9; i++) { const a = R() * 6.28, r = R() * 11; x.beginPath(); x.ellipse(Math.cos(a) * r * .9, -12 + Math.sin(a) * r * .8, 1.2, 1.8, a, 0, 7); x.fill(); }
+    x.fillStyle = "#3f8a3a"; for (let i = -2; i <= 2; i++) { x.beginPath(); x.ellipse(i * 4.5, -28, 3.2, 8, i * .5, 0, 7); x.fill(); }
+    x.fillStyle = "#2f6d2c"; x.fillRect(-1, -38, 2.5, 8);
+  } else if (kind === "blackberry") {
+    shadow(14, 5); for (const [a, b] of [[0, -6], [-7, -10], [7, -10], [-6, -2], [6, -2], [0, -14], [-3, -18], [4, -18], [0, 1]]) blob(a, b, 5.2, "#3a1f4d", .35);
+  } else if (kind === "blueberry") {
+    shadow(12, 5); blob(0, -9, 11, "#3c4f96", .35); x.fillStyle = "rgba(20,25,60,.7)"; x.beginPath(); x.arc(0, -14, 3, 0, 7); x.fill(); x.fillStyle = "rgba(255,255,255,.35)"; x.beginPath(); x.ellipse(-4, -13, 3, 1.6, -.6, 0, 7); x.fill();
+  } else if (kind === "cherry") {
+    shadow(13, 5); x.strokeStyle = "#5a3a1c"; x.lineWidth = 2.5; x.lineCap = "round"; x.beginPath(); x.moveTo(0, -18); x.quadraticCurveTo(4, -34, 13, -40); x.stroke();
+    blob(0, -10, 12, "#c3122c", .5); x.fillStyle = "rgba(255,255,255,.7)"; x.beginPath(); x.ellipse(-4, -15, 3.5, 2, -.6, 0, 7); x.fill();
+  } else if (kind === "swirl") {
+    shadow(19, 6); const c = "#fbf4ea";
+    [[0, -2, 19, 8], [0, -11, 15, 7], [0, -19, 10, 6], [1, -26, 5, 5]].forEach(([a, b, w, h]) => { const g = x.createLinearGradient(0, b - h, 0, b + h); g.addColorStop(0, "#ffffff"); g.addColorStop(1, "#e2d3c2"); x.fillStyle = g; x.beginPath(); x.ellipse(a, b, w, h, 0, 0, 7); x.fill(); });
+    x.strokeStyle = "rgba(170,140,115,.45)"; x.lineWidth = 1.2; [[-2, 18, 7], [-11, 14, 6], [-19, 9, 5]].forEach(([b, w, h]) => { x.beginPath(); x.ellipse(0, b, w, h * .6, 0, .2, 2.6); x.stroke(); }); void c;
+  } else if (kind === "macaron") {
+    shadow(17, 6); const col = ["#f4a7bd", "#bfe3c9", "#cdb8f0", "#f7d58a"][seed % 4];
+    const shell = (b) => { const g = x.createLinearGradient(0, b - 7, 0, b + 7); g.addColorStop(0, ckTint(col, .35)); g.addColorStop(1, ckTint(col, -.15)); x.fillStyle = g; x.beginPath(); x.ellipse(0, b, 17, 7, 0, 0, 7); x.fill(); };
+    shell(-4); x.fillStyle = "#fff7ec"; x.fillRect(-15, -14, 30, 5); shell(-17);
+  } else if (kind === "heart") {
+    shadow(14, 5); const g = x.createLinearGradient(0, -26, 0, 4); g.addColorStop(0, "#ff8fa8"); g.addColorStop(1, "#c8284a");
+    x.fillStyle = g; x.beginPath(); x.moveTo(0, 2); x.bezierCurveTo(-22, -12, -12, -30, 0, -19); x.bezierCurveTo(12, -30, 22, -12, 0, 2); x.fill();
+    x.fillStyle = "rgba(255,255,255,.55)"; x.beginPath(); x.ellipse(-7, -18, 3.5, 2, -.7, 0, 7); x.fill();
+  } else if (kind === "star") {
+    shadow(14, 5); const g = x.createLinearGradient(0, -30, 0, 2); g.addColorStop(0, "#fff1b8"); g.addColorStop(.5, "#f0c24a"); g.addColorStop(1, "#b98614");
+    x.fillStyle = g; x.beginPath(); for (let i = 0; i < 10; i++) { const r = i % 2 ? 7 : 16, a = -Math.PI / 2 + i * Math.PI / 5; x.lineTo(Math.cos(a) * r, -13 + Math.sin(a) * r); } x.closePath(); x.fill();
+  } else if (kind === "sprinkles") {
+    const cols = ["#f06a8a", "#ffd166", "#7bd3b0", "#8fb8f2", "#ffffff", "#c9a5f0"];
+    for (let i = 0; i < 22; i++) { const a = R() * 6.28, r = Math.sqrt(R()) * 38; x.save(); x.translate(Math.cos(a) * r, Math.sin(a) * r * .45); x.rotate(R() * 3.14); x.fillStyle = cols[i % cols.length]; x.beginPath(); x.roundRect ? x.roundRect(-4.5, -1.5, 9, 3, 1.5) : x.rect(-4.5, -1.5, 9, 3); x.fill(); x.restore(); }
+  } else if (kind === "pearls") {
+    for (let i = 0; i < 12; i++) { const a = R() * 6.28, r = Math.sqrt(R()) * 30; blob(Math.cos(a) * r, Math.sin(a) * r * .45, 3.4 + R() * 1.6, "#e2b24a", .6); }
+  }
+  x.restore();
+}
+
+function ckCake(x, d, o = {}) {
+  const { CX, TOP, RX, RY, BOT } = CKG, fr = d.frosting || "#3d1d0e", sponge = CK_SPONGE[d.bake] || CK_SPONGE.perfect, style = d.style || "drip";
+  x.clearRect(0, 0, CKG.W, CKG.H);
+  // plate
+  x.fillStyle = "rgba(30,14,6,.18)"; x.beginPath(); x.ellipse(CX, BOT + 38, 318, 70, 0, 0, 7); x.fill();
+  let g = x.createLinearGradient(0, BOT - 60, 0, BOT + 100); g.addColorStop(0, "#ffffff"); g.addColorStop(1, "#e9e1d6");
+  x.fillStyle = g; x.beginPath(); x.ellipse(CX, BOT + 22, 312, 84, 0, 0, 7); x.fill();
+  x.strokeStyle = "#d9cfc2"; x.lineWidth = 3; x.beginPath(); x.ellipse(CX, BOT + 18, 278, 66, 0, 0, 7); x.stroke();
+  x.fillStyle = "rgba(60,30,10,.25)"; x.beginPath(); x.ellipse(CX, BOT + 6, RX + 8, RY * .8, 0, 0, 7); x.fill();
+  // side of the cake
+  const side = () => { x.beginPath(); x.moveTo(CX - RX, TOP); x.lineTo(CX - RX, BOT); x.ellipse(CX, BOT, RX, RY, 0, Math.PI, 0, true); x.lineTo(CX + RX, TOP); x.ellipse(CX, TOP, RX, RY, 0, 0, Math.PI, false); x.closePath(); };
+  const shadeSide = (base) => { const s = x.createLinearGradient(CX - RX, 0, CX + RX, 0); s.addColorStop(0, ckTint(base, -.45)); s.addColorStop(.18, ckTint(base, -.1)); s.addColorStop(.36, ckTint(base, .12)); s.addColorStop(.62, base); s.addColorStop(1, ckTint(base, -.5)); return s; };
+  x.save(); side(); x.clip();
+  if (style === "smooth") { x.fillStyle = shadeSide(fr); x.fillRect(CX - RX, TOP - RY, RX * 2, BOT - TOP + RY * 2); }
+  else {
+    x.fillStyle = shadeSide(sponge); x.fillRect(CX - RX, TOP - RY, RX * 2, BOT - TOP + RY * 2);
+    const fill = ckTint(fr, fr === "#3d1d0e" ? .82 : .25);
+    [TOP + 78, TOP + 146].forEach(y => { x.fillStyle = shadeSide(fill.startsWith("rgb") ? ckHex(fill) : fill); x.beginPath(); x.ellipse(CX, y, RX, RY, 0, 0, Math.PI); x.ellipse(CX, y + 16, RX, RY, 0, Math.PI, 0, true); x.closePath(); x.fill(); });
+    // crumb texture
+    const R = ckSeed(d.seed || 3); x.fillStyle = "rgba(0,0,0,.08)"; for (let i = 0; i < 160; i++) { x.beginPath(); x.arc(CX - RX + R() * RX * 2, TOP + R() * (BOT - TOP + RY), 1 + R() * 1.6, 0, 7); x.fill(); }
+  }
+  x.restore();
+  // drips over the front edge
+  if (style === "drip") {
+    const R = ckSeed((d.seed || 3) + 5), bumps = Array.from({ length: 11 }, (_, i) => [(.15 + i * .28 + (R() - .5) * .12), .05 + R() * .03, 25 + R() * 70]);
+    const N = 200, top = [], bot = [];
+    for (let k = 0; k <= N; k++) { const t = k / N * Math.PI, px = CX + RX * Math.cos(t), py = TOP + RY * Math.sin(t); let dd = 14; for (const [c, w, l] of bumps) dd += l * Math.exp(-(((t - c) / w) ** 2)); top.push([px, py]); bot.push([px, py + dd * Math.sin(Math.min(1, t * 6, (Math.PI - t) * 6) * Math.PI / 2)]); }
+    const dg = x.createLinearGradient(CX - RX, 0, CX + RX, 0); dg.addColorStop(0, ckTint(fr, -.4)); dg.addColorStop(.35, ckTint(fr, .1)); dg.addColorStop(.7, fr); dg.addColorStop(1, ckTint(fr, -.45));
+    x.fillStyle = dg; x.beginPath(); top.forEach(([a, b], i) => i ? x.lineTo(a, b) : x.moveTo(a, b)); bot.slice().reverse().forEach(([a, b]) => x.lineTo(a, b)); x.closePath(); x.fill();
+    x.strokeStyle = "rgba(255,255,255,.25)"; x.lineWidth = 3; x.lineCap = "round"; x.beginPath(); bot.slice(110, 160).forEach(([a, b], i) => i ? x.lineTo(a, b - 6) : x.moveTo(a, b - 6)); x.stroke();
+  }
+  // writing, piped onto the front
+  x.save(); side(); x.clip();
+  (d.strokes || []).forEach(s => ckPipe(x, s));
+  if (o.live) ckPipe(x, o.live);
+  x.restore();
+  // top
+  g = x.createRadialGradient(CX - 60, TOP - 20, 10, CX, TOP, RX); g.addColorStop(0, ckTint(fr, .22)); g.addColorStop(.7, fr); g.addColorStop(1, ckTint(fr, -.25));
+  x.fillStyle = g; x.beginPath(); x.ellipse(CX, TOP, RX, RY, 0, 0, 7); x.fill();
+  x.strokeStyle = "rgba(255,255,255,.18)"; x.lineWidth = 2; x.beginPath(); x.ellipse(CX, TOP - 2, RX - 6, RY - 4, 0, Math.PI * 1.05, Math.PI * 1.6); x.stroke();
+  // piped border
+  const rosette = (px, py, s) => { const c = style === "smooth" ? ckTint(fr, .35) : fr; const rg = x.createRadialGradient(px - 4 * s, py - 5 * s, 1, px, py, 12 * s); rg.addColorStop(0, ckTint(c, .45)); rg.addColorStop(1, ckTint(c, -.2)); x.fillStyle = rg; x.beginPath(); x.ellipse(px, py, 13 * s, 10 * s, 0, 0, 7); x.fill(); x.strokeStyle = "rgba(0,0,0,.12)"; x.lineWidth = 1.2; x.beginPath(); x.arc(px, py - 2 * s, 6 * s, .4, 4.2); x.stroke(); };
+  const ring = (front) => { for (let i = 0; i < 26; i++) { const t = i / 26 * Math.PI * 2; if ((Math.sin(t) > 0) !== front) continue; rosette(CX + (RX - 10) * Math.cos(t), TOP + (RY - 6) * Math.sin(t) - 4, .85 + .2 * Math.sin(t)); } };
+  if (style === "piped" || style === "smooth") ring(false);
+  // candle spots (only while decorating)
+  if (o.spots) { x.setLineDash([6, 6]); x.strokeStyle = "rgba(255,255,255,.7)"; x.lineWidth = 2; Object.values(CK_CANDLES).forEach(([a, b]) => { x.beginPath(); x.ellipse(a, b, 26, 9, 0, 0, 7); x.stroke(); }); x.setLineDash([]); }
+  // toppings, back to front
+  (d.toppings || []).slice().sort((a, b) => a[2] - b[2]).forEach(([k, px, py, sd]) => ckTopping(x, k, px, py, 1.25 + .4 * ((py - (TOP - RY)) / (RY * 2)), sd));
+  if (style === "piped" || style === "smooth") ring(true);
+  if (style === "smooth") { for (let i = 0; i < 30; i++) { const t = i / 29 * Math.PI; rosette(CX + RX * Math.cos(t), BOT + RY * Math.sin(t) - 6, .7 + .15 * Math.sin(t)); } }
+}
+function ckHex(s) { const m = s.match(/\d+/g).map(Number); return "#" + m.map(v => v.toString(16).padStart(2, "0")).join(""); }
+function ckPipe(x, s) {
+  if (!s || !s.p || !s.p.length) return;
+  const path = (dx, dy) => { x.beginPath(); s.p.forEach(([a, b], i) => i ? x.lineTo(a + dx, b + dy) : x.moveTo(a + dx, b + dy)); if (s.p.length === 1) x.lineTo(s.p[0][0] + dx + .1, s.p[0][1] + dy); };
+  x.lineCap = "round"; x.lineJoin = "round";
+  x.strokeStyle = "rgba(0,0,0,.28)"; x.lineWidth = 10; path(0, 3); x.stroke();
+  x.strokeStyle = s.c; x.lineWidth = 9; path(0, 0); x.stroke();
+  x.strokeStyle = "rgba(255,255,255,.45)"; x.lineWidth = 2.5; path(-1.5, -2.5); x.stroke();
+}
+
+function renderBake(view, pv) {
+  const KEY = pv ? "bday-cakemaker-preview" : "bday-cakemaker";
+  const d = Object.assign({ step: "mix", added: [], stir: 0, bake: null, frosting: "#3d1d0e", style: "drip", toppings: [], strokes: [], seed: 1 + (Math.random() * 9999 | 0) }, store.get(KEY) || {});
+  const save = () => store.set(KEY, d);
+  const game = stage(view, pv, "Day 8 · Bake it together", "Let's make your birthday cake. Whatever you make today is the one waiting for you on the 10th.",
+    ` · <a href="#" id="bk2-reset">start over</a>`);
+  if (pv) $("#bk2-reset").onclick = e => { e.preventDefault(); store.del(KEY); route(); };
+  const STEPS = [["mix", "Mix"], ["bake", "Bake"], ["frost", "Frost"], ["top", "Toppings"], ["write", "Write"], ["done", "Done"]];
+  const go = s => { d.step = s; save(); draw(); game.scrollIntoView({ behavior: "smooth", block: "start" }); };
+  const cheer = a => a[Math.random() * a.length | 0];
+  let cleanup = () => {};
+
+  function draw() {
+    cleanup(); cleanup = () => {};
+    const at = STEPS.findIndex(s => s[0] === d.step);
+    game.innerHTML = `<div class="bk2"><ol class="bk2-steps">${STEPS.map(([k, n], i) => `<li class="${i < at ? "past" : i === at ? "now" : ""}">${n}</li>`).join("")}</ol><div id="bk2-body"></div></div>`;
+    ({ mix: stepMix, bake: stepBake, frost: stepFrost, top: stepTop, write: stepWrite, done: stepDone })[d.step]($("#bk2-body"));
+  }
+  const canvasPoint = (cv, e) => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * cv.width, (e.clientY - r.top) / r.height * cv.height]; };
+
+  /* 1 · mix */
+  function stepMix(el) {
+    const ING = [["🍫", "Cocoa", "#5a2c15"], ["🌾", "Flour", "#f4ece0"], ["🥚", "Eggs", "#f6c64a"], ["🧈", "Butter", "#f7e08f"], ["🍬", "Sugar", "#ffffff"], ["🥛", "Milk", "#fbf7ef"]];
+    el.innerHTML = `<p class="bk2-say" id="mx-say"></p>
+      <div class="bk2-stage"><canvas id="mx" width="600" height="400" aria-label="Mixing bowl"></canvas><div class="bk2-meter" id="mx-meter" hidden><i></i></div></div>
+      <div class="bk2-chips" id="mx-ing">${ING.map(([e, n], i) => `<button type="button" class="bk2-chip" data-i="${i}"><span>${e}</span>${n}</button>`).join("")}</div>
+      <div class="bk2-row"><button class="btn" id="mx-next" type="button" hidden>Into the oven →</button></div>`;
+    const cv = $("#mx"), x = cv.getContext("2d"), BX = 300, BY = 190, R = ckSeed(d.seed);
+    const blobs = []; d.added.forEach(i => addBlobs(i));
+    function addBlobs(i) { for (let k = 0; k < 5; k++) blobs.push({ c: ING[i][2], a: R() * 6.28, r: 20 + R() * 120, s: 14 + R() * 16 }); }
+    let spoon = null;
+    const mixAmt = () => Math.min(1, d.stir / (Math.PI * 2 * 4));
+    function paint() {
+      x.clearRect(0, 0, 600, 400); const m = mixAmt(), rot = d.stir * .6;
+      x.fillStyle = "rgba(40,20,10,.12)"; x.beginPath(); x.ellipse(BX, 318, 160, 16, 0, 0, 7); x.fill();
+      let g = x.createLinearGradient(BX - 220, 0, BX + 220, 0); g.addColorStop(0, "#8fb3d9"); g.addColorStop(.35, "#d6e7f7"); g.addColorStop(1, "#7aa0c8");
+      x.fillStyle = g; x.beginPath(); x.moveTo(BX - 220, BY); x.bezierCurveTo(BX - 210, 350, BX + 210, 350, BX + 220, BY); x.closePath(); x.fill();
+      x.fillStyle = "#a9c6e4"; x.beginPath(); x.ellipse(BX, BY, 220, 62, 0, 0, 7); x.fill();
+      x.save(); x.beginPath(); x.ellipse(BX, BY + 4, 200, 52, 0, 0, 7); x.clip();
+      const empty = !d.added.length;
+      x.fillStyle = empty ? "#e5eef7" : `rgb(${Math.round(232 - 140 * m)},${Math.round(214 - 150 * m)},${Math.round(190 - 150 * m)})`; x.fillRect(BX - 200, BY - 60, 400, 120);
+      blobs.forEach(b => { x.globalAlpha = 1 - m; x.fillStyle = b.c; const a = b.a + rot * (1 - b.r / 200); x.beginPath(); x.ellipse(BX + Math.cos(a) * b.r, BY + 4 + Math.sin(a) * b.r * .25, b.s, b.s * .45, 0, 0, 7); x.fill(); });
+      x.globalAlpha = 1;
+      if (d.added.length && d.stir > 0) { x.strokeStyle = `rgba(255,255,255,${.12 + .2 * m})`; x.lineWidth = 3; for (let k = 0; k < 4; k++) { x.beginPath(); x.ellipse(BX, BY + 4, 40 + k * 40, (40 + k * 40) * .25, 0, rot + k, rot + k + 2.2); x.stroke(); } }
+      x.restore();
+      x.strokeStyle = "#c9dcef"; x.lineWidth = 6; x.beginPath(); x.ellipse(BX, BY, 218, 61, 0, 0, 7); x.stroke();
+      if (spoon) { const [sx, sy] = spoon; x.strokeStyle = "#b07a45"; x.lineWidth = 12; x.lineCap = "round"; x.beginPath(); x.moveTo(sx, sy); x.lineTo(sx + 90, sy - 150); x.stroke(); x.fillStyle = "#c48c55"; x.beginPath(); x.ellipse(sx, sy, 20, 12, -1, 0, 7); x.fill(); }
+    }
+    const say = () => {
+      const left = ING.length - d.added.length;
+      $("#mx-say").textContent = left ? `Tap the ingredients to add them to the bowl (${left} to go)` : mixAmt() < 1 ? "Now stir! Draw circles in the bowl with your finger 🥄" : "Smooth and glossy. Perfect batter ✨";
+      $("#mx-meter").hidden = !!left; $("#mx-meter i").style.width = (mixAmt() * 100) + "%"; $("#mx-next").hidden = mixAmt() < 1;
+      el.querySelectorAll(".bk2-chip").forEach(b => b.disabled = d.added.includes(+b.dataset.i));
+    };
+    $("#mx-ing").onclick = e => { const b = e.target.closest(".bk2-chip"); if (!b || b.disabled) return; const i = +b.dataset.i;
+      d.added.push(i); addBlobs(i); save(); say(); paint();
+      const f = document.createElement("span"); f.className = "bk2-drop"; f.textContent = ING[i][0]; f.style.left = (40 + Math.random() * 20) + "%"; cv.parentElement.appendChild(f); setTimeout(() => f.remove(), 900);
+      buddy.bop(cheer([`${ING[i][1]}, in!`, "Plop!", "Ooh", "Yum", "Next!"])); if (d.added.length === ING.length) setTimeout(() => buddy.say("think", "Time to stir! 🥄", { hold: false, ms: 1600 }), 500); };
+    let last = null, turns = 0;
+    const down = e => { if (d.added.length < ING.length || mixAmt() >= 1) return; cv.setPointerCapture(e.pointerId); const [a, b] = canvasPoint(cv, e); last = Math.atan2((b - BY) * 3, a - BX); spoon = [a, b]; };
+    const move = e => { if (last === null) return; const [a, b] = canvasPoint(cv, e), ang = Math.atan2((b - BY) * 3, a - BX); let dA = ang - last; if (dA > Math.PI) dA -= 2 * Math.PI; if (dA < -Math.PI) dA += 2 * Math.PI;
+      d.stir += Math.min(Math.abs(dA), .6); last = ang; spoon = [a, b]; paint(); say();
+      const t = Math.floor(d.stir / (Math.PI * 2)); if (t > turns) { turns = t; buddy.bop(["Stir stir!", "Round and round", "Almost…", "Looking smooth!"][Math.min(t - 1, 3)]); }
+      if (mixAmt() >= 1) { last = null; spoon = null; save(); paint(); buddy.say("joy", "Perfect batter! 🍫", { burst: true, hold: false, ms: 1800 }); } };
+    const up = () => { if (last !== null) { last = null; spoon = null; save(); paint(); } };
+    cv.addEventListener("pointerdown", down); cv.addEventListener("pointermove", move); cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up);
+    $("#mx-next").onclick = () => { buddy.bop("To the oven!"); go("bake"); };
+    say(); paint();
+  }
+
+  /* 2 · bake */
+  function stepBake(el) {
+    el.innerHTML = `<p class="bk2-say" id="ov-say">Watch the cake rise and take it out when the marker hits the golden zone.</p>
+      <div class="bk2-stage"><canvas id="ov" width="600" height="400" aria-label="Oven"></canvas></div>
+      <div class="bk2-gauge" aria-hidden="true"><span class="z1">Gooey</span><span class="z2">Perfect</span><span class="z3">Crispy</span><i id="ov-mark"></i></div>
+      <div class="bk2-row" id="ov-btns"><button class="btn" id="ov-go" type="button">Start baking</button></div>`;
+    const cv = $("#ov"), x = cv.getContext("2d"); let t = d.bake ? { gooey: .3, perfect: .52, crispy: .8 }[d.bake] : 0, raf = 0, running = false, t0 = 0;
+    function paint() {
+      x.clearRect(0, 0, 600, 400);
+      let g = x.createLinearGradient(0, 20, 0, 380); g.addColorStop(0, "#4a4f5a"); g.addColorStop(1, "#2b2e35"); x.fillStyle = g; x.beginPath(); x.roundRect(90, 20, 420, 360, 28); x.fill();
+      x.fillStyle = "#1f2127"; x.beginPath(); x.roundRect(90, 20, 420, 56, [28, 28, 0, 0]); x.fill();
+      ["#e0606e", "#f2c14e", "#7bd3b0"].forEach((c, i) => { x.fillStyle = c; x.beginPath(); x.arc(150 + i * 46, 48, 11, 0, 7); x.fill(); });
+      x.fillStyle = "#9aa3b2"; x.fillRect(380, 42, 100, 12);
+      const glow = running || t > 0 ? .9 : .25; g = x.createRadialGradient(300, 230, 20, 300, 230, 200); g.addColorStop(0, `rgba(255,180,90,${glow})`); g.addColorStop(1, "rgba(120,40,10,.95)");
+      x.fillStyle = g; x.beginPath(); x.roundRect(130, 100, 340, 240, 22); x.fill();
+      x.strokeStyle = "rgba(255,255,255,.15)"; x.lineWidth = 3; x.beginPath(); x.moveTo(150, 300); x.lineTo(450, 300); x.stroke();
+      // the pan, and the cake rising in it
+      const rise = Math.min(1, t / .5), h = 26 + 46 * rise, sp = t < .42 ? [196, 130, 92] : t < .62 ? [90, 44, 24] : [45, 22, 10];
+      const k = t < .42 ? t / .42 : 1; const col = t < .42 ? `rgb(${Math.round(210 - 100 * k)},${Math.round(160 - 100 * k)},${Math.round(120 - 80 * k)})` : `rgb(${sp})`;
+      x.fillStyle = col; x.beginPath(); x.moveTo(206, 296); x.lineTo(206, 296 - h); x.bezierCurveTo(230, 296 - h - 22 * rise, 370, 296 - h - 22 * rise, 394, 296 - h); x.lineTo(394, 296); x.fill();
+      g = x.createLinearGradient(196, 0, 404, 0); g.addColorStop(0, "#8e949e"); g.addColorStop(.4, "#dfe3e8"); g.addColorStop(1, "#7d838d"); x.fillStyle = g; x.beginPath(); x.moveTo(196, 250); x.lineTo(206, 300); x.lineTo(394, 300); x.lineTo(404, 250); x.lineTo(396, 250); x.lineTo(388, 292); x.lineTo(212, 292); x.lineTo(204, 250); x.fill();
+      x.strokeStyle = "#cfd5dd"; x.lineWidth = 8; x.beginPath(); x.moveTo(150, 350); x.lineTo(450, 350); x.stroke();
+      $("#ov-mark").style.left = (t * 100) + "%";
+    }
+    const result = () => t < .42 ? "gooey" : t < .62 ? "perfect" : "crispy";
+    function tick(now) { t = Math.min(1, (now - t0) / 5200); paint(); if (t >= 1) return stop(); raf = requestAnimationFrame(tick); }
+    function stop() {
+      running = false; cancelAnimationFrame(raf); d.bake = result(); save(); paint();
+      const msg = { gooey: ["A little gooey in the middle… still delicious 😋", "think"], perfect: ["PERFECT bake!! Golden and fluffy 🎉", "joy"], crispy: ["Extra crispy edges! Very rustic 😅", "sad"] }[d.bake];
+      $("#ov-say").textContent = msg[0]; buddy.say(msg[1], msg[0], { burst: d.bake === "perfect", hold: false, ms: 2200 });
+      $("#ov-btns").innerHTML = `<button class="btn ghost" id="ov-again" type="button">Bake again</button><button class="btn" id="ov-next" type="button">Frost it →</button>`;
+      $("#ov-again").onclick = () => { buddy.bop("Round two!"); d.bake = null; t = 0; start(); };
+      $("#ov-next").onclick = () => { buddy.bop("Frosting time!"); go("frost"); };
+    }
+    function start() { running = true; t0 = performance.now(); $("#ov-say").textContent = "Baking… take it out in the golden zone!"; $("#ov-btns").innerHTML = `<button class="btn" id="ov-out" type="button">Take it out! 🧤</button>`; $("#ov-out").onclick = () => { buddy.bop("Out it comes!"); stop(); }; raf = requestAnimationFrame(tick); }
+    $("#ov-go").onclick = () => { buddy.bop("Oven's hot! 🔥"); start(); };
+    if (d.bake) { running = false; paint(); stop(); } else paint();
+    cleanup = () => cancelAnimationFrame(raf);
+  }
+
+  /* shared big cake canvas for frost / toppings / write / done */
+  function cakeStage(el, extra = "") {
+    el.insertAdjacentHTML("beforeend", `<div class="bk2-stage cake"><canvas id="ck" width="${CKG.W}" height="${CKG.H}" aria-label="Your cake"></canvas>${extra}</div>`);
+    const cv = $("#ck"); return { cv, x: cv.getContext("2d") };
+  }
+
+  /* 3 · frost */
+  function stepFrost(el) {
+    el.innerHTML = `<p class="bk2-say">Pick the frosting colour and how it goes on.</p>`;
+    const { x } = cakeStage(el);
+    el.insertAdjacentHTML("beforeend", `<div class="bk2-pick"><span>Colour</span><div class="bk2-swatches" id="fr-col">${CK_FROST.map(([n, c]) => `<button type="button" data-c="${c}" title="${n}" aria-label="${n}" style="--c:${c}"></button>`).join("")}<label class="bk2-custom" title="Any colour"><input type="color" id="fr-any" value="${d.frosting}"><span>🎨</span></label></div></div>
+      <div class="bk2-pick"><span>Style</span><div class="bk2-chips" id="fr-style">${[["drip", "Drip"], ["smooth", "All over"], ["piped", "Piped edge"]].map(([k, n]) => `<button type="button" class="bk2-chip" data-s="${k}">${n}</button>`).join("")}</div></div>
+      <div class="bk2-row"><button class="btn ghost" id="fr-back" type="button">← Re-bake</button><button class="btn" id="fr-next" type="button">Add toppings →</button></div>`);
+    const sync = () => { ckCake(x, d); el.querySelectorAll("#fr-col [data-c]").forEach(b => b.classList.toggle("on", b.dataset.c === d.frosting)); el.querySelectorAll("#fr-style [data-s]").forEach(b => b.classList.toggle("on", b.dataset.s === d.style)); };
+    $("#fr-col").onclick = e => { const b = e.target.closest("[data-c]"); if (!b) return; d.frosting = b.dataset.c; save(); sync(); buddy.bop(cheer([`${b.title}!`, "Ooh pretty", "Yum", "Good choice", "Love it"])); };
+    $("#fr-any").oninput = e => { d.frosting = e.target.value; save(); sync(); }; $("#fr-any").onchange = () => buddy.bop("Your own colour!");
+    $("#fr-style").onclick = e => { const b = e.target.closest("[data-s]"); if (!b) return; d.style = b.dataset.s; save(); sync(); buddy.bop(cheer(["Fancy!", "Ooh", "Nice", "So pro"])); };
+    $("#fr-back").onclick = () => { buddy.bop("Back to the oven"); d.bake = null; go("bake"); };
+    $("#fr-next").onclick = () => { buddy.bop("Toppings!!"); go("top"); };
+    sync();
+  }
+
+  /* 4 · toppings */
+  function stepTop(el) {
+    let pick = d.lastTop || "strawberry";
+    el.innerHTML = `<p class="bk2-say">Pick a topping, then tap the top of the cake to place it. The dashed spots are where your 2 and 7 candles go.</p>`;
+    const { cv, x } = cakeStage(el);
+    el.insertAdjacentHTML("beforeend", `<div class="bk2-tops" id="tp">${CK_TOPS.map(([k, n]) => `<button type="button" data-k="${k}" aria-label="${n}"><canvas width="88" height="88"></canvas><span>${n}</span></button>`).join("")}</div>
+      <div class="bk2-row"><button class="btn ghost" id="tp-undo" type="button">↶ Undo</button><button class="btn ghost" id="tp-clear" type="button">Clear</button></div>
+      <div class="bk2-row"><button class="btn ghost" id="tp-back" type="button">← Frosting</button><button class="btn" id="tp-next" type="button">Write on it →</button></div>`);
+    el.querySelectorAll("#tp canvas").forEach((c, i) => { const k = CK_TOPS[i][0], g = c.getContext("2d"); g.scale(2, 2); ckTopping(g, k, 22, ["sprinkles", "pearls"].includes(k) ? 22 : 34, 1, 4); });
+    const sync = () => { ckCake(x, d, { spots: true }); el.querySelectorAll("#tp [data-k]").forEach(b => b.classList.toggle("on", b.dataset.k === pick)); };
+    $("#tp").onclick = e => { const b = e.target.closest("[data-k]"); if (!b) return; pick = d.lastTop = b.dataset.k; save(); sync(); buddy.bop(cheer(["Ooh, that one", "Yum!", "Good pick", "Cute!"])); };
+    cv.addEventListener("pointerdown", e => { const [px, py] = canvasPoint(cv, e);
+      if (py > CKG.TOP + CKG.RY + 30 || py < CKG.TOP - CKG.RY - 40) { buddy.bop("On top of the cake!"); return; }
+      const [a, b] = ckClamp(px, py + (["sprinkles", "pearls"].includes(pick) ? 0 : 8));
+      if (d.toppings.length >= 60) { buddy.bop("It's getting full!"); return; }
+      d.toppings.push([pick, Math.round(a), Math.round(b), 1 + (Math.random() * 999 | 0)]); save(); sync();
+      buddy.bop(cheer(["Plop!", "Perfect spot", "Yum", "More!", "Pretty", "✨", "Looking good"])); });
+    $("#tp-undo").onclick = () => { d.toppings.pop(); save(); sync(); buddy.bop("Oops, undo!"); };
+    $("#tp-clear").onclick = () => { d.toppings = []; save(); sync(); buddy.bop("Fresh start"); };
+    $("#tp-back").onclick = () => { buddy.bop("Back to frosting"); go("frost"); };
+    $("#tp-next").onclick = () => { buddy.bop(d.toppings.length ? "Now write something!" : "Simple and classy!"); go("write"); };
+    sync();
+  }
+
+  /* 5 · write */
+  function stepWrite(el) {
+    let pen = d.pen || CK_PENS[0][1], live = null;
+    el.innerHTML = `<p class="bk2-say">Write something on the front with your finger or mouse. It's piped on like icing.</p>`;
+    const { cv, x } = cakeStage(el);
+    el.insertAdjacentHTML("beforeend", `<div class="bk2-pick"><span>Icing</span><div class="bk2-swatches" id="wr-pen">${CK_PENS.map(([n, c]) => `<button type="button" data-c="${c}" title="${n}" aria-label="${n}" style="--c:${c}"></button>`).join("")}</div></div>
+      <div class="bk2-row"><button class="btn ghost" id="wr-undo" type="button">↶ Undo</button><button class="btn ghost" id="wr-clear" type="button">Clear</button></div>
+      <div class="bk2-row"><button class="btn ghost" id="wr-back" type="button">← Toppings</button><button class="btn" id="wr-next" type="button">It's done! 🎂</button></div>`);
+    cv.classList.add("draw");
+    const sync = () => { ckCake(x, d, { live }); el.querySelectorAll("#wr-pen [data-c]").forEach(b => b.classList.toggle("on", b.dataset.c === pen)); };
+    $("#wr-pen").onclick = e => { const b = e.target.closest("[data-c]"); if (!b) return; pen = d.pen = b.dataset.c; save(); sync(); buddy.bop(`${b.title} icing`); };
+    cv.addEventListener("pointerdown", e => { cv.setPointerCapture(e.pointerId); const p = canvasPoint(cv, e).map(Math.round); live = { c: pen, p: [p] }; sync(); });
+    cv.addEventListener("pointermove", e => { if (!live) return; const p = canvasPoint(cv, e).map(Math.round), q = live.p[live.p.length - 1]; if (Math.hypot(p[0] - q[0], p[1] - q[1]) < 2.5) return; live.p.push(p); sync(); });
+    const end = () => { if (!live) return; d.strokes.push(live); live = null; save(); sync(); if (d.strokes.length % 3 === 1) buddy.bop(cheer(["Nice handwriting!", "Ooh what's it say", "So neat", "Piping pro", "✍️"])); };
+    cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+    $("#wr-undo").onclick = () => { d.strokes.pop(); save(); sync(); buddy.bop("Undo!"); };
+    $("#wr-clear").onclick = () => { d.strokes = []; save(); sync(); buddy.bop("Wiped clean"); };
+    $("#wr-back").onclick = () => { buddy.bop("More toppings?"); go("top"); };
+    $("#wr-next").onclick = () => {
+      const off = document.createElement("canvas"); off.width = CKG.W; off.height = CKG.H; ckCake(off.getContext("2d"), d);
+      store.set(CAKE_KEY, { img: off.toDataURL("image/png"), w: CKG.W, h: CKG.H, candles: CK_CANDLES, smooth: true, made: Date.now() });
+      go("done");
+    };
+    sync();
+  }
+
+  /* 6 · done */
+  function stepDone(el) {
+    const pct = ([a, b]) => `left:${a / CKG.W * 100}%;top:${b / CKG.H * 100}%`;
+    el.innerHTML = `<p class="bk2-say big">Your cake is ready 🎂</p>`;
+    const { x } = cakeStage(el, `<span class="bk2-num" style="${pct(CK_CANDLES.two)}">2</span><span class="bk2-num" style="${pct(CK_CANDLES.seven)}">7</span>`);
+    ckCake(x, d);
+    el.insertAdjacentHTML("beforeend", `<div class="win"><p class="msg">This exact cake will be waiting for you on the 10th, with your 2 and 7 candles on top.</p><p class="msg"><strong>Tomorrow's candle lights at midnight.</strong></p></div>
+      <div class="bk2-row"><button class="btn ghost" id="dn-edit" type="button">← Change something</button><button class="btn ghost" id="dn-new" type="button">Bake a new one</button></div>`);
+    $("#dn-edit").onclick = () => { buddy.bop("Let's tweak it"); go("write"); };
+    $("#dn-new").onclick = () => { buddy.bop("Another one!"); Object.assign(d, { step: "mix", added: [], stir: 0, bake: null, toppings: [], strokes: [], seed: 1 + (Math.random() * 9999 | 0) }); save(); draw(); };
+    buddy.say("joy", "We made it together!! 🎂", { burst: "big" });
+  }
+
+  draw();
+  if (d.step === "mix" && !d.added.length) buddy.say("idle", "Let's bake! Apron on 👨‍🍳");
 }
 
 function renderBakers(view, pv) {
