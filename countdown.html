@@ -551,6 +551,38 @@ body.mu-lock { overflow: hidden; }
 @media (max-width: 560px) { .cw-lists { grid-template-columns: minmax(0, 1fr); } .cw-grid { gap: 2px; } .cw-cell { border-radius: 4px; border-width: 1px; } }
 @media (prefers-reduced-motion: reduce) { .cw-cell { animation: none !important; transition: none; } }
 
+
+/* day 8 as one screen: buddy stays put, each step swaps in place */
+.card.app { display: flex; flex-direction: column; gap: 10px; overflow: hidden; padding-block: 14px; }
+.card.app .preview-note { align-self: center; }
+.stage.app { flex: 1; min-height: 0; align-items: stretch; }
+.stage.app #buddy-slot { position: static; align-self: stretch; }
+body:has(.card.app) { padding-bottom: 0; }
+.stage.app .game { display: flex; flex-direction: column; gap: 8px; min-height: 0; flex: 1; }
+.stage.app .game > h2 { margin: 0; font-size: clamp(24px, 3vw, 32px); }
+.stage.app .game > p { display: none; }
+.stage.app #game { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.stage.app .bk2, .stage.app #bk2-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
+.stage.app .bk2-stage { flex: 1 1 0; min-height: 140px; max-width: none; width: 100%; position: relative; }
+.stage.app .bk2-stage canvas { position: absolute; inset: 0; margin: auto; width: auto; height: auto; max-width: 100%; max-height: 100%; }
+.stage.app .bk2-say, .stage.app .bk2-steps, .stage.app .bk2-ctrl, .stage.app .bk2-row, .stage.app .bk2-chips, .stage.app .bk2-gauge { flex: none; }
+.bk2-ctrl { display: grid; gap: 10px; justify-items: center; }
+.bk2-msg { margin: 0; text-align: center; line-height: 1.5; }
+.btn.sm { padding: 10px 14px; font-size: 14px; }
+@media (max-width: 700px) {
+  .card.app { padding: 10px 12px; border-radius: 18px; }
+  .stage.app { display: flex; flex-direction: column; gap: 10px; }
+  .stage.app .game > h2 { display: none; }
+  .stage.app .bk2, .stage.app #bk2-body { gap: 8px; }
+  .stage.app .bk2-say { font-size: 14px; } .stage.app .bk2-say.big { font-size: 26px; }
+  .stage.app .btn { padding: 10px 16px; font-size: 14px; }
+  .stage.app .btn.sm { padding: 9px 11px; font-size: 13px; }
+  .stage.app .bk2-swatches { gap: 6px; } .stage.app .bk2-swatches button, .stage.app .bk2-custom { width: 32px; height: 32px; }
+  .stage.app .bk2-chip { padding: 6px 12px; font-size: 13px; } .stage.app .bk2-chip span { font-size: 17px; }
+  .stage.app .bk2-tops button { padding: 4px 1px; border-radius: 12px; } .stage.app .bk2-tops canvas { width: 34px; height: 34px; } .stage.app .bk2-tops span { font-size: 9.5px; }
+  .stage.app .bk2-row { gap: 6px; flex-wrap: nowrap; }
+}
+
 /* ---------- day 8: bake the cake ---------- */
 .bk2 { display: grid; gap: 14px; min-width: 0; }
 .bk2-steps { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; }
@@ -2771,9 +2803,9 @@ function renderCrossword(view, pv) {
 }
 
 /* ---------- Day 8: bake his birthday cake (mix → bake → frost → toppings → write) ---------- */
-const CKG = { W: 680, H: 640, CX: 340, TOP: 215, RX: 205, RY: 82, SIDE: 215 };
+const CKG = { W: 680, H: 560, CX: 340, TOP: 150, RX: 205, RY: 82, SIDE: 215 };
 CKG.BOT = CKG.TOP + CKG.SIDE;
-const CK_CANDLES = { two: [200, 207], seven: [480, 207] };
+const CK_CANDLES = { two: [200, 142], seven: [480, 142] };
 const CK_FROST = [["Chocolate", "#3d1d0e"], ["Vanilla", "#f6ede2"], ["Pink", "#f4b3c6"], ["Red velvet", "#cf4357"], ["Lavender", "#c6b2ea"], ["Mint", "#aee0c9"], ["Baby blue", "#b5d3f1"], ["Caramel", "#d4974e"]];
 const CK_PENS = [["White", "#fffaf2"], ["Gold", "#e8b84a"], ["Pink", "#ef7f9f"], ["Red", "#c8323f"], ["Dark chocolate", "#2a1206"]];
 const CK_TOPS = [["strawberry", "Strawberry"], ["blackberry", "Blackberry"], ["blueberry", "Blueberry"], ["cherry", "Cherry"], ["swirl", "Cream swirl"], ["macaron", "Macaron"], ["heart", "Heart"], ["star", "Star"], ["sprinkles", "Sprinkles"], ["pearls", "Gold pearls"]];
@@ -2912,8 +2944,15 @@ function renderBake(view, pv) {
   const game = stage(view, pv, "Day 8 · Bake it together", "Let's make your birthday cake, from scratch.",
     ` · <a href="#" id="bk2-reset">start over</a>`);
   if (pv) $("#bk2-reset").onclick = e => { e.preventDefault(); store.del(KEY); route(); };
+  // one screen, no scrolling: the card fills the window and each step swaps in place
+  const card = view.querySelector(".card"); card.classList.add("app"); view.querySelector(".stage").classList.add("app");
+  window.scrollTo(0, 0);
+  const fit = () => { if (!card.isConnected) { removeEventListener("resize", fit); visualViewport && visualViewport.removeEventListener("resize", fit); return; }
+    const vh = (window.visualViewport ? visualViewport.height : innerHeight), top = card.getBoundingClientRect().top + scrollY;
+    card.style.height = Math.max(480, vh - top - 12) + "px"; };
+  fit(); addEventListener("resize", fit); window.visualViewport && visualViewport.addEventListener("resize", fit);
   const STEPS = [["mix", "Mix"], ["bake", "Bake"], ["frost", "Frost"], ["top", "Toppings"], ["write", "Write"], ["done", "Done"]];
-  const go = s => { d.step = s; save(); draw(); game.scrollIntoView({ behavior: "smooth", block: "start" }); };
+  const go = s => { d.step = s; save(); draw(); };
   const cheer = a => a[Math.random() * a.length | 0];
   let cleanup = () => {};
 
@@ -2931,7 +2970,7 @@ function renderBake(view, pv) {
     el.innerHTML = `<p class="bk2-say" id="mx-say"></p>
       <div class="bk2-stage"><canvas id="mx" width="600" height="400" aria-label="Mixing bowl"></canvas><div class="bk2-meter" id="mx-meter" hidden><i></i></div></div>
       <div class="bk2-chips" id="mx-ing">${ING.map(([e, n], i) => `<button type="button" class="bk2-chip" data-i="${i}"><span>${e}</span>${n}</button>`).join("")}</div>
-      <div class="bk2-row"><button class="btn" id="mx-next" type="button" hidden>Into the oven →</button></div>`;
+      <div class="bk2-row" id="mx-row" hidden><button class="btn" id="mx-next" type="button" hidden>Into the oven →</button></div>`;
     const cv = $("#mx"), x = cv.getContext("2d"), BX = 300, BY = 190, R = ckSeed(d.seed);
     const blobs = []; d.added.forEach(i => addBlobs(i));
     function addBlobs(i) { for (let k = 0; k < 5; k++) blobs.push({ c: ING[i][2], a: R() * 6.28, r: 20 + R() * 120, s: 14 + R() * 16 }); }
@@ -2960,7 +2999,7 @@ function renderBake(view, pv) {
     const say = () => {
       const left = ING.length - d.added.length;
       $("#mx-say").textContent = left ? `Tap the ingredients to add them to the bowl (${left} to go)` : mixAmt() < 1 ? "Now stir! Draw circles in the bowl with your finger 🥄" : "Smooth and glossy. Perfect batter ✨";
-      $("#mx-meter").hidden = !!left; $("#mx-meter i").style.width = (mixAmt() * 100) + "%"; $("#mx-next").hidden = mixAmt() < 1;
+      $("#mx-meter").hidden = !!left; $("#mx-meter i").style.width = (mixAmt() * 100) + "%"; $("#mx-next").hidden = mixAmt() < 1; $("#mx-ing").hidden = !left; $("#mx-row").hidden = mixAmt() < 1;
       el.querySelectorAll(".bk2-chip").forEach(b => b.disabled = d.added.includes(+b.dataset.i));
     };
     $("#mx-ing").onclick = e => { const b = e.target.closest(".bk2-chip"); if (!b || b.disabled) return; const i = +b.dataset.i;
@@ -3035,9 +3074,9 @@ function renderBake(view, pv) {
   function stepFrost(el) {
     el.innerHTML = `<p class="bk2-say">Pick the frosting colour and how it goes on.</p>`;
     const { x } = cakeStage(el);
-    el.insertAdjacentHTML("beforeend", `<div class="bk2-pick"><span>Colour</span><div class="bk2-swatches" id="fr-col">${CK_FROST.map(([n, c]) => `<button type="button" data-c="${c}" title="${n}" aria-label="${n}" style="--c:${c}"></button>`).join("")}<label class="bk2-custom" title="Any colour"><input type="color" id="fr-any" value="${d.frosting}"><span>🎨</span></label></div></div>
-      <div class="bk2-pick"><span>Style</span><div class="bk2-chips" id="fr-style">${[["drip", "Drip"], ["smooth", "All over"], ["piped", "Piped edge"]].map(([k, n]) => `<button type="button" class="bk2-chip" data-s="${k}">${n}</button>`).join("")}</div></div>
-      <div class="bk2-row"><button class="btn ghost" id="fr-back" type="button">← Re-bake</button><button class="btn" id="fr-next" type="button">Add toppings →</button></div>`);
+    el.insertAdjacentHTML("beforeend", `<div class="bk2-ctrl"><div class="bk2-swatches" id="fr-col" aria-label="Frosting colour">${CK_FROST.map(([n, c]) => `<button type="button" data-c="${c}" title="${n}" aria-label="${n}" style="--c:${c}"></button>`).join("")}<label class="bk2-custom" title="Any colour"><input type="color" id="fr-any" value="${d.frosting}"><span>🎨</span></label></div>
+      <div class="bk2-chips" id="fr-style" aria-label="Frosting style">${[["drip", "Drip"], ["smooth", "All over"], ["piped", "Piped edge"]].map(([k, n]) => `<button type="button" class="bk2-chip" data-s="${k}">${n}</button>`).join("")}</div>
+      <div class="bk2-row"><button class="btn ghost" id="fr-back" type="button">← Re-bake</button><button class="btn" id="fr-next" type="button">Toppings →</button></div></div>`);
     const sync = () => { ckCake(x, d); el.querySelectorAll("#fr-col [data-c]").forEach(b => b.classList.toggle("on", b.dataset.c === d.frosting)); el.querySelectorAll("#fr-style [data-s]").forEach(b => b.classList.toggle("on", b.dataset.s === d.style)); };
     $("#fr-col").onclick = e => { const b = e.target.closest("[data-c]"); if (!b) return; d.frosting = b.dataset.c; save(); sync(); buddy.bop(cheer([`${b.title}!`, "Ooh pretty", "Yum", "Good choice", "Love it"])); };
     $("#fr-any").oninput = e => { d.frosting = e.target.value; save(); sync(); }; $("#fr-any").onchange = () => buddy.bop("Your own colour!");
@@ -3052,9 +3091,8 @@ function renderBake(view, pv) {
     let pick = d.lastTop || "strawberry";
     el.innerHTML = `<p class="bk2-say">Pick a topping, then tap the top of the cake to place it.</p>`;
     const { cv, x } = cakeStage(el);
-    el.insertAdjacentHTML("beforeend", `<div class="bk2-tops" id="tp">${CK_TOPS.map(([k, n]) => `<button type="button" data-k="${k}" aria-label="${n}"><canvas width="88" height="88"></canvas><span>${n}</span></button>`).join("")}</div>
-      <div class="bk2-row"><button class="btn ghost" id="tp-undo" type="button">↶ Undo</button><button class="btn ghost" id="tp-clear" type="button">Clear</button></div>
-      <div class="bk2-row"><button class="btn ghost" id="tp-back" type="button">← Frosting</button><button class="btn" id="tp-next" type="button">Write on it →</button></div>`);
+    el.insertAdjacentHTML("beforeend", `<div class="bk2-ctrl"><div class="bk2-tops" id="tp">${CK_TOPS.map(([k, n]) => `<button type="button" data-k="${k}" aria-label="${n}"><canvas width="88" height="88"></canvas><span>${n}</span></button>`).join("")}</div>
+      <div class="bk2-row"><button class="btn ghost sm" id="tp-back" type="button" aria-label="Back to frosting">←</button><button class="btn ghost sm" id="tp-undo" type="button">↶ Undo</button><button class="btn ghost sm" id="tp-clear" type="button">Clear</button><button class="btn" id="tp-next" type="button">Write →</button></div></div>`);
     el.querySelectorAll("#tp canvas").forEach((c, i) => { const k = CK_TOPS[i][0], g = c.getContext("2d"); g.scale(2, 2); ckTopping(g, k, 22, ["sprinkles", "pearls"].includes(k) ? 22 : 34, 1, 4); });
     const sync = () => { ckCake(x, d); el.querySelectorAll("#tp [data-k]").forEach(b => b.classList.toggle("on", b.dataset.k === pick)); };
     $("#tp").onclick = e => { const b = e.target.closest("[data-k]"); if (!b) return; pick = d.lastTop = b.dataset.k; save(); sync(); buddy.bop(cheer(["Ooh, that one", "Yum!", "Good pick", "Cute!"])); };
@@ -3076,9 +3114,8 @@ function renderBake(view, pv) {
     let pen = d.pen || CK_PENS[0][1], live = null;
     el.innerHTML = `<p class="bk2-say">Write on the top or the front with your finger or mouse. It's piped on like icing.</p>`;
     const { cv, x } = cakeStage(el);
-    el.insertAdjacentHTML("beforeend", `<div class="bk2-pick"><span>Icing</span><div class="bk2-swatches" id="wr-pen">${CK_PENS.map(([n, c]) => `<button type="button" data-c="${c}" title="${n}" aria-label="${n}" style="--c:${c}"></button>`).join("")}</div></div>
-      <div class="bk2-row"><button class="btn ghost" id="wr-undo" type="button">↶ Undo</button><button class="btn ghost" id="wr-clear" type="button">Clear</button></div>
-      <div class="bk2-row"><button class="btn ghost" id="wr-back" type="button">← Toppings</button><button class="btn" id="wr-next" type="button">It's done! 🎂</button></div>`);
+    el.insertAdjacentHTML("beforeend", `<div class="bk2-ctrl"><div class="bk2-swatches" id="wr-pen" aria-label="Icing colour">${CK_PENS.map(([n, c]) => `<button type="button" data-c="${c}" title="${n}" aria-label="${n}" style="--c:${c}"></button>`).join("")}</div>
+      <div class="bk2-row"><button class="btn ghost sm" id="wr-back" type="button" aria-label="Back to toppings">←</button><button class="btn ghost sm" id="wr-undo" type="button">↶ Undo</button><button class="btn ghost sm" id="wr-clear" type="button">Clear</button><button class="btn" id="wr-next" type="button">Done! 🎂</button></div></div>`);
     cv.classList.add("draw");
     const sync = () => { ckCake(x, d, { live }); el.querySelectorAll("#wr-pen [data-c]").forEach(b => b.classList.toggle("on", b.dataset.c === pen)); };
     $("#wr-pen").onclick = e => { const b = e.target.closest("[data-c]"); if (!b) return; pen = d.pen = b.dataset.c; save(); sync(); buddy.bop(`${b.title} icing`); };
@@ -3102,8 +3139,8 @@ function renderBake(view, pv) {
     el.innerHTML = `<p class="bk2-say big">Your cake is ready 🎂</p>`;
     const { x } = cakeStage(el);
     ckCake(x, d);
-    el.insertAdjacentHTML("beforeend", `<div class="win"><p class="msg">Made from scratch, by you. It looks delicious 💕</p><p class="msg"><strong>Tomorrow's candle lights at midnight.</strong></p></div>
-      <div class="bk2-row"><button class="btn ghost" id="dn-edit" type="button">← Change something</button><button class="btn ghost" id="dn-new" type="button">Bake a new one</button></div>`);
+    el.insertAdjacentHTML("beforeend", `<div class="bk2-ctrl"><p class="bk2-msg">Made from scratch, by you. It looks delicious 💕<br><strong>Tomorrow's candle lights at midnight.</strong></p>
+      <div class="bk2-row"><button class="btn ghost sm" id="dn-edit" type="button">← Change something</button><button class="btn ghost sm" id="dn-new" type="button">Bake a new one</button></div></div>`);
     $("#dn-edit").onclick = () => { buddy.bop("Let's tweak it"); go("write"); };
     $("#dn-new").onclick = () => { buddy.bop("Another one!"); Object.assign(d, { step: "mix", added: [], stir: 0, bake: null, toppings: [], strokes: [], seed: 1 + (Math.random() * 9999 | 0) }); save(); draw(); };
     buddy.say("joy", "We made it together!! 🎂", { burst: "big" });
